@@ -1,5 +1,12 @@
 #include <Windows.h>
 #include <cstdint>
+#include <string>
+#include <format>			// フォーマットの自動指定をしてくれる(+安全策)
+
+// 出力ウィンドウに文字列を表示する
+void Log(const std::string& message) {
+    OutputDebugStringA(message.c_str());
+}
 
 // ウィンドウプロシージャ
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
