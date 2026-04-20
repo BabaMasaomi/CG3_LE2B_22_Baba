@@ -3,12 +3,12 @@
 #include <string>
 #include <format>			// フォーマットの自動指定をしてくれる(+安全策)
 
-// 出力ウィンドウに文字列を表示する
+// 出力ウィンドウに文字列を表示できる様にする関数
 void Log(const std::string& message) {
-    OutputDebugStringA(message.c_str());
+	OutputDebugStringA(message.c_str());
 }
 
-// ウィンドウプロシージャ
+// ウィンドウプロシージャ(ゲームウィンドウの表示に使用)
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 
 	switch (msg) {
@@ -26,6 +26,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 // Windowsアプリでのエントリーポイント
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
+	/*-------------------- ゲームウィンドウの表示処理 --------------------*/
+
 	WNDCLASS wc{};
 	// ウィンドウプロシージャ
 	wc.lpfnWndProc = WindowProc;
@@ -39,7 +41,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// ウィンドウクラスの登録
 	RegisterClass(&wc);
 
-	// クライアン領域サイズ
+	// クライアント領域サイズ
 	const int32_t kClientWidth = 1280;
 	const int32_t kClientHeight = 720;
 
@@ -67,6 +69,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	ShowWindow(hwnd, SW_SHOW);
 
 
+	/*-------------------- ゲームループの処理 --------------------*/
+
 	MSG msg{};
 	// ウィンドウのxボタンが押されるまでループ
 	while (msg.message != WM_QUIT) {
@@ -77,6 +81,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		} else {
 			// ゲームの処理
 
+			// Logを出力
+			Log(std::format("Hello, DirectX! int:{} float:{}\n", 24, 16.8));
 
 		}
 	}
