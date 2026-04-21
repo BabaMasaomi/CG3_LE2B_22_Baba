@@ -2,9 +2,22 @@
 #include <cstdint>
 #include <string>
 #include <format>			// フォーマットの自動指定をしてくれる(+安全策)
+#include <filesystem>
+// ファイルを読んだり書いたりするためのライブラリ
+#include <fstream>
+// 時間を扱うためのライブラリ
+#include <chrono>
 
 // 出力ウィンドウに文字列を表示できる様にする関数
 void Log(const std::string& message) {
+	OutputDebugStringA(message.c_str());
+}
+
+
+
+// Logファイルを出力できる様にする関数
+void Log(std::ofstream& os, const std::string& message) {
+	os << message << std::endl;
 	OutputDebugStringA(message.c_str());
 }
 
@@ -68,6 +81,27 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// ウィンドウを表示する
 	ShowWindow(hwnd, SW_SHOW);
 
+	/*-------------------- ログファイルの準備 --------------------*/
+	// Logのディレクトリを用意
+	std::filesystem::create_directories("logs");
+
+	// 現在時刻を取得
+	std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+
+	// コンマ何秒かはいらないので、秒単位に変換
+	std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds> nowSeconds = std::chrono::time_point_cast<std::chrono::seconds>(now);
+
+	// 日本時刻に変換
+	std::chrono::zoned_time localTime{ std::chrono::current_zone(), nowSeconds };
+
+	// formatを使って年月日_時分秒の文字列を作る
+	std::string dateString = std::format("{:%Y%m%d_%H%M%S}", localTime);
+
+	// 時刻を使ってログファイルの名前を作る
+	std::string dateFilePath = std::string("logs/") + dateString + ".log";
+
+	// ファイルを作って書き込み準備
+	std::ofstream logStream(dateFilePath);
 
 	/*-------------------- ゲームループの処理 --------------------*/
 
