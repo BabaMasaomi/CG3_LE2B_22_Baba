@@ -21,7 +21,7 @@
 #pragma comment(lib, "Dbghelp.lib")
 
 /*-------------------- 関数 --------------------*/
-#pragma region
+
 static LONG WINAPI ExportDump(EXCEPTION_POINTERS* exceptionPointers) {
 	// 時刻を取得して、時刻を名前に入れたファイルを作成。Dumpsディレクトリ以下に保存する
 	SYSTEMTIME time;
@@ -69,14 +69,14 @@ void Log(const std::wstring& message) {
 }
 
 // Logファイルを出力できる様にする関数
-void Log(std::ofstream& os, const std::string& message) {
+void Log(std::ostream& os, const std::string& message) {
 	os << message << std::endl;
 	OutputDebugStringA(message.c_str());
 }
-#pragma endregion
+
 
 /*-------------------- ウィンドウプロシージャ --------------------*/
-#pragma region
+
 // ウィンドウプロシージャ(ゲームウィンドウの表示に使用)
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 
@@ -96,10 +96,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// 誰も捕捉しなかった場合に、捕捉する関数を登録
 	SetUnhandledExceptionFilter(ExportDump);
-#pragma endregion
 
 	/*-------------------- ゲームウィンドウの表示処理 --------------------*/
-#pragma region
+
 	WNDCLASS wc{};
 	// ウィンドウプロシージャ
 	wc.lpfnWndProc = WindowProc;
@@ -139,10 +138,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// ウィンドウを表示する
 	ShowWindow(hwnd, SW_SHOW);
-#pragma endregion
 
 	/*-------------------- DirectX初期化 --------------------*/
-#pragma region
 	// DXGIファクトリーの生成
 	IDXGIFactory7* dxgiFactory = nullptr;
 	// HRESULT型はWindows系のエラーコードで、成功したか失敗したかを表す。SUCCEEDEDマクロで成功したかどうかを判定できる。
@@ -193,10 +190,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// デバイスが生成できなかったらエラー
 	assert(device != nullptr);
 	Log("Complete create D3D12 device!\n");	// 初期化完了のログを出す
-#pragma endregion
 
 	/*-------------------- ログファイルの準備 --------------------*/
-#pragma region
 	// Logのディレクトリを用意
 	std::filesystem::create_directories("logs");
 
@@ -217,7 +212,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// ファイルを作って書き込み準備
 	std::ofstream logStream(dateFilePath);
-#pragma endregion
+
+	// ログ出力
+	Log(logStream, "Start logging!");
 
 	/*-------------------- ゲームループの処理 --------------------*/
 
@@ -229,12 +226,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 
-			uint32_t* p = nullptr;
-			*p = 100;	// 故意にクラッシュさせるコード(動作確認用)
-
 		} else {
 			// ゲームの処理
-
+			
 		}
 	}
 
