@@ -138,6 +138,17 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// ウィンドウを表示する
 	ShowWindow(hwnd, SW_SHOW);
 
+	/*-------------------- DebugLayerの有効化 --------------------*/
+#if defined(_DEBUG)
+	ID3D12Debug1* debugController = nullptr;
+	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
+		// デバッグレイヤーを有効化する
+		debugController->EnableDebugLayer();
+		// GPUのエラーを検出するために、GPUデバッグレイヤーも有効化する
+		debugController->SetEnableGPUBasedValidation(TRUE);
+	}
+#endif
+
 	/*-------------------- DirectX初期化 --------------------*/
 	// DXGIファクトリーの生成
 	IDXGIFactory7* dxgiFactory = nullptr;
@@ -189,6 +200,24 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// デバイスが生成できなかったらエラー
 	assert(device != nullptr);
 	Log("Complete create D3D12 device!\n");	// 初期化完了のログを出す
+
+	/*-------------------- DirectXのエラー、警告時の強制停止 --------------------*/
+#ifdef _DEBUG
+	ID3D12InfoQueue* infoQueue = nullptr;
+	if (SUCCEEDED(device->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
+		// 重大なエラーが出たときに止まる
+		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, TRUE);
+		// エラー時に止まる
+		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
+		// 警告時に止まる
+		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, TRUE);
+
+		// Windowsの不具合によるエラー、警告を無視する設定(現在は特に設定なし)
+
+		// 解放
+		infoQueue->Release();
+	}
+#endif
 
 	/*-------------------- コマンドキュー作成 --------------------*/
 	// コマンドキューを作成
