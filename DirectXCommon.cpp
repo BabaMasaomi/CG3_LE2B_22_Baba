@@ -2,6 +2,20 @@
 #include "WinApp.h"
 #include <cassert>
 
+DirectXCommon::~DirectXCommon() {
+	CloseHandle(fenceEvent_);
+	fence_->Release();
+	rtvDescriptorHeap_->Release();
+	swapChainResources_[0]->Release();
+	swapChainResources_[1]->Release();
+	swapChain_->Release();
+	commandList_->Release();
+	commandAllocator_->Release();
+	commandQueue_->Release();
+	device_->Release();
+	dxgiFactory_->Release();
+}
+
 void DirectXCommon::Initialize(HWND hwnd) {
 	CreateDevice();
 	CreateCommand();
@@ -33,6 +47,9 @@ void DirectXCommon::CreateDevice() {
 
 	hr = D3D12CreateDevice(useAdapter, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&device_));
 	assert(SUCCEEDED(hr));
+
+	useAdapter->Release();
+	useAdapter = nullptr;
 }
 
 // 2.コマンドキュー、コマンドアロケータ、コマンドリストの生成

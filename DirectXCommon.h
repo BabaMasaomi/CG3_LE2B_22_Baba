@@ -10,6 +10,8 @@
 
 class DirectXCommon {
 public:
+	~DirectXCommon();
+
     void Initialize(HWND hwnd);
 
     void PreDraw();

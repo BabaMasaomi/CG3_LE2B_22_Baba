@@ -1,5 +1,9 @@
 #include "WinApp.h"
 
+WinApp::~WinApp() {
+    CloseWindow(hwnd_);
+}
+
 LRESULT CALLBACK WindowProc(
     HWND hwnd,
     UINT msg,
