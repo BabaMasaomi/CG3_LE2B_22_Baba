@@ -1,10 +1,12 @@
 #pragma once
+// ログ出力用の関数をまとめたヘッダファイル(クラスじゃないぞ)
 #include <string>
 #include <fstream>
 
+// wstring->stringの変換関数
 std::string ConvertString(const std::wstring& str);
 
-// OutputDebugString用
+// 出力ウィンドウに文字列を表示できる様にする関数
 void Log(const std::string& message);
 void Log(const std::wstring& message);
 
