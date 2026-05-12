@@ -4,13 +4,11 @@
 #include <format>			// フォーマットの自動指定をしてくれる(+安全策)
 #include <cassert>
 // Debug用のあれこれを使える様にする
-#include <dbghelp.h>
 #include <strsafe.h>
 // ReportLiveObjects(DXGIに問い合わせできる様にする)
 #include <dxgidebug.h>
 
 // libのリンク
-#pragma comment(lib, "Dbghelp.lib")
 #pragma comment(lib,"dxguid.lib")
 
 // デストラクタ
