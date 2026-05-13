@@ -15,6 +15,10 @@ Triangle::~Triangle() {
 
 /*-------------------- 初期化 --------------------*/
 void Triangle::Initialize(DirectXCommon* dxCommon, TrianglePSO* trianglePSO) {
+	transform_.scale = { 1.0f,1.0f,1.0f };
+	transform_.rotate = { 0.0f,0.0f,0.0f };
+	transform_.translate = { 0.0f,0.0f,0.0f };
+
 	dxCommon_ = dxCommon;
 	trianglePSO_ = trianglePSO;
 
@@ -82,7 +86,28 @@ void Triangle::MapTransformationMatrix() {
 	// 書き込むためのアドレスを取得
 	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&wvpMatrixData_));
 	// 単位行列を書きこんでおく
-	*wvpMatrixData_ = MakeIdentity4x4();
+	wvpMatrixData_->WVP = MakeIdentity4x4();
+}
+
+/*-------------------- 更新 --------------------*/
+void Triangle::Update() {
+	transform_.rotate.y += 0.02f;
+
+	// 回転を加える
+	Matrix4x4 worldMatrix = MakeAffineMatrix(
+		transform_.scale,
+		transform_.rotate,
+		transform_.translate
+	);
+
+	// 今回はカメラも投影もないので、一旦単位行列を用意しておく
+	Matrix4x4 viewMatrix = MakeIdentity4x4();
+	Matrix4x4 projectionMatrix = MakeIdentity4x4();
+
+	// WVP行列を計算して、CBufferに書き込む
+	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+
+	wvpMatrixData_->WVP = worldViewProjectionMatrix;
 }
 
 /*-------------------- 描画 --------------------*/
@@ -107,33 +132,3 @@ void Triangle::Draw() {
 	// 描画！(DrawCall)3頂点で一つのインスタンス
 	commandList->DrawInstanced(3, 1, 0, 0);
 }
-
-///*-------------------- BufferResourceの作成 --------------------*/
-//ID3D12Resource* Triangle::CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {
-//	HRESULT hr;
-//
-//	// 頂点リソース用のヒープを生成
-//	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
-//	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;		// UploadHeapを使う
-//	// 頂点リソースの設定
-//	D3D12_RESOURCE_DESC resourceDesc{};
-//	// バッファリソース。テクスチャの場合は別の設定をする
-//	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-//	resourceDesc.Width = sizeInBytes;						// リソースのサイズ。引数で指定
-//	// バッファの場合はこれらは全て1にする
-//	resourceDesc.Height = 1;
-//	resourceDesc.DepthOrArraySize = 1;
-//	resourceDesc.MipLevels = 1;
-//	resourceDesc.SampleDesc.Count = 1;
-//	// バッファの場合はこれにする
-//	resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-//	// 返り値を用意
-//	ID3D12Resource* resource = nullptr;
-//	// 実際に頂点リソースを作る
-//	hr = device->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE,
-//		&resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
-//		IID_PPV_ARGS(&resource));
-//	assert(SUCCEEDED(hr));
-//
-//	return resource;
-//}

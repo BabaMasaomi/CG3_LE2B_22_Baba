@@ -10,7 +10,7 @@ public:
 	~Triangle();
 
 	void Initialize(DirectXCommon* dxCommon, TrianglePSO* trianglePSO);
-	// void Update();		//	今回は特に更新処理はないので、Update関数は用意しない
+	void Update();
 	void Draw();
 
 	//// BufferResourceの作成関数(後ほどUtility系に移動させよう)
@@ -43,9 +43,9 @@ private:
 
 	// 変換行列リソースと変換行列データ
 	ID3D12Resource* wvpResource_ = nullptr;
-	Matrix4x4* wvpMatrixData_ = nullptr;
+	TransformationMatrix* wvpMatrixData_ = nullptr;
 
-	//Transform transform_;
+	Transform transform_;
 
 	// 頂点リソースにデータを書き込む
 	Vector4* vertexData_ = nullptr;
