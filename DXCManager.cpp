@@ -35,20 +35,19 @@ IDxcBlob* DXCManager::CompileShader(
 	// 初期化で生成したもの3つ
 	IDxcUtils* dxcUtils,
 	IDxcCompiler3* dxcCompiler,
-	IDxcIncludeHandler* includeHandler)
-{
+	IDxcIncludeHandler* includeHandler){
 	/// 1.hlslファイルを読む
 	// これからシェーダーをコンパイルすることをログに出す
 	Log(ConvertString(std::format(L"Begin Compiling, path:{}, profile:{}", filePath, profile)));
 	// hlslファイルを読む
-	IDxcBlobEncoding* shaderSource_ = nullptr;
-	HRESULT hr = dxcUtils_->LoadFile(filePath.c_str(), nullptr, &shaderSource_);
+	IDxcBlobEncoding* shaderSource = nullptr;
+	HRESULT hr = dxcUtils_->LoadFile(filePath.c_str(), nullptr, &shaderSource);
 	//読めなかったら止める
 	assert(SUCCEEDED(hr));
 	// 読み込んだファイルの内容を設定する
 	DxcBuffer shaderSourceBuffer{};
-	shaderSourceBuffer.Ptr = shaderSource_->GetBufferPointer();
-	shaderSourceBuffer.Size = shaderSource_->GetBufferSize();
+	shaderSourceBuffer.Ptr = shaderSource->GetBufferPointer();
+	shaderSourceBuffer.Size = shaderSource->GetBufferSize();
 	shaderSourceBuffer.Encoding = DXC_CP_ACP;
 
 	/// 2.Compileする
@@ -90,7 +89,7 @@ IDxcBlob* DXCManager::CompileShader(
 	// 成功したログを出す
 	Log(ConvertString(std::format(L"Compile Succeded, path:{}, profile:{}\n", filePath, profile)));
 	// もう使わないリソースを解放
-	if (shaderSource_) shaderSource_->Release();
+	if (shaderSource) shaderSource->Release();
 	if (shaderResult) shaderResult->Release();
 	// 実行用バイナリを返却
 	return shaderBlob;

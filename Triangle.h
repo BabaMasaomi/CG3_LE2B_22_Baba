@@ -1,5 +1,6 @@
 #pragma once
 #include <d3d12.h>
+#include"struct.h"
 
 class DirectXCommon;
 class TrianglePSO;
@@ -17,9 +18,9 @@ private:
 	void CreateVertexBufferView();
 	void MapVertexData();
 
-	struct VertexData {
-		float position[4];
-	};
+	//struct VertexData {
+	//	float position[4];
+	//};
 
 	DirectXCommon* dxCommon_ = nullptr;
 	TrianglePSO* trianglePSO_ = nullptr;
@@ -28,6 +29,6 @@ private:
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 
 	// 頂点リソースにデータを書き込む
-	VertexData* vertexData_ = nullptr;
+	Vecter4* vertexData_ = nullptr;
 };
 

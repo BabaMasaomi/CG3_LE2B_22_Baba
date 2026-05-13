@@ -2,7 +2,7 @@
 #include "DirectXCommon.h"
 #include "TrianglePSO.h"
 #include <cassert>
-#include"struct.h"
+
 
 // デストラクタ
 Triangle::~Triangle() {
@@ -11,6 +11,9 @@ Triangle::~Triangle() {
 
 /*-------------------- 初期化 --------------------*/
 void Triangle::Initialize(DirectXCommon* dxCommon, TrianglePSO* trianglePSO) {
+	dxCommon_ = dxCommon;
+	trianglePSO_ = trianglePSO;
+
 	CreateVertexResource();
 	CreateVertexBufferView();
 	MapVertexData();
@@ -67,6 +70,11 @@ void Triangle::MapVertexData() {
 
 /*-------------------- 描画 --------------------*/
 void Triangle::Draw() {
+	assert(dxCommon_ != nullptr);
+	assert(trianglePSO_ != nullptr);
+	assert(trianglePSO_->GetRootSignature() != nullptr);
+	assert(trianglePSO_->GetPipelineState() != nullptr);
+
 	// コマンドリストを取得(クラス化により必要に)
 	auto commandList = dxCommon_->GetCommandList();
 	commandList->RSSetViewports(1, &dxCommon_->GetViewPort());					// ViewPortを設定

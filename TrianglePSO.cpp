@@ -66,9 +66,12 @@ void TrianglePSO::CreateGraphicsPipeline() {
 	graphicsPipelineStateDesc.RasterizerState = rasterizerDesc;													// RasterizerState
 	// 書き込むRTVの情報
 	graphicsPipelineStateDesc.NumRenderTargets = 1;
-	graphicsPipelineStateDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	graphicsPipelineStateDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	// 利用するトポロジ(形状)のタイプ。今回は三角形
 	graphicsPipelineStateDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	// 深度ステンシルの設定。今回は使わないので、深度もステンシルも無効にする
+	graphicsPipelineStateDesc.DepthStencilState.DepthEnable = false;
+graphicsPipelineStateDesc.DepthStencilState.StencilEnable = false;
 	// どの様に画面に打ち込むかの設定(気にせんで良い)
 	graphicsPipelineStateDesc.SampleDesc.Count = 1;
 	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
