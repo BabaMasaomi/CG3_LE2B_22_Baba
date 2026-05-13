@@ -14,6 +14,7 @@ public:
 	void ProcessMessage();
 	bool IsEndGame();
 
+	// ゲッター
 	HWND GetHwnd() const { return hwnd_; }
 
 private:

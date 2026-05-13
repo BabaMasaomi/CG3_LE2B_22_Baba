@@ -25,6 +25,7 @@ DirectXCommon::~DirectXCommon() {
 	device_->Release();
 	dxgiFactory_->Release();
 
+
 #ifdef _DEBUG
 	IDXGIDebug1* debug = nullptr;
 
@@ -51,6 +52,7 @@ void DirectXCommon::Initialize(HWND hwnd) {
 	CreateSwapChain(hwnd);		// 3. SwapChainの生成
 	CreateRenderTargetView();	// 4. レンダーターゲットビューの生成
 	CreateFence();				// 5. Fenceの生成
+	CreateViewport();			// 描画用のViewPortとSissorRectの生成
 }
 
 /*-------------------- デバッグレイヤーの初期化 --------------------*/
@@ -243,6 +245,11 @@ void DirectXCommon::PreDraw() {
 
 	// 描画先のRTVを設定する
 	commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex], false, nullptr);
+
+	// ビューポートとシザー矩形を設定する
+	commandList_->RSSetViewports(1, &viewPort_);
+	commandList_->RSSetScissorRects(1, &scissorRect_);
+
 	// 指定した色で画面全体をクリアする
 	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };	// 青っぽい色
 	commandList_->ClearRenderTargetView(rtvHandles_[backBufferIndex], clearColor, 0, nullptr);
@@ -295,4 +302,18 @@ void DirectXCommon::PostDraw() {
 	assert(SUCCEEDED(hr));
 	hr = commandList_->Reset(commandAllocator_, nullptr);
 	assert(SUCCEEDED(hr));
+}
+
+/*-------------------- ViewPortとSissorRectの生成 --------------------*/
+void DirectXCommon::CreateViewport() {
+	// ビューポートの設定
+	viewPort_.Width = static_cast<float>(WinApp::kClientWidth);
+	viewPort_.Height = static_cast<float>(WinApp::kClientHeight);
+	viewPort_.MinDepth = 0.0f;
+	viewPort_.MaxDepth = 1.0f;
+	// シザー矩形の設定
+	scissorRect_.left = 0;
+	scissorRect_.top = 0;
+	scissorRect_.right = WinApp::kClientWidth;
+	scissorRect_.bottom = WinApp::kClientHeight;
 }

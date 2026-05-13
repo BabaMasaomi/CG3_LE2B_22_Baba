@@ -3,7 +3,6 @@
 #include <cstdint>
 // DirectXを使うためのライブラリ
 #include <d3d12.h>
-// #include <d3d12sdklayers.h>     // エラー回避用
 #include <dxgi1_6.h>
 
 // libのリンク
@@ -19,8 +18,11 @@ public:
     void PreDraw();
     void PostDraw();
 
+	// ゲッター
     ID3D12Device* GetDevice() const { return device_; }
     ID3D12GraphicsCommandList* GetCommandList() const { return commandList_; }
+    D3D12_VIEWPORT GetViewPort() const { return viewPort_; }
+    D3D12_RECT GetScissorRect() const { return scissorRect_; }
 
 private:
     void InitializeDebugLayer();        // デバッグレイヤーの初期化
@@ -30,6 +32,7 @@ private:
     void CreateSwapChain(HWND hwnd);    // 3. SwapChainの生成
     void CreateRenderTargetView();      // 4. レンダーターゲットビューの生成
     void CreateFence();                 // 5. Fenceの生成
+	void CreateViewport();              // 描画用のViewPortとScissorRectの生成
 
 #ifdef _DEBUG
 	// デバッグレイヤーのコントローラー
@@ -47,6 +50,10 @@ private:
     ID3D12CommandAllocator* commandAllocator_ = nullptr;
     // コマンドリストを作成
     ID3D12GraphicsCommandList* commandList_ = nullptr;
+
+    // ViewPortとScissorRectを準備(図形描画用)
+	D3D12_VIEWPORT viewPort_ = {};
+	D3D12_RECT scissorRect_ = {};
 
 	// スワップチェーンを作成
     IDXGISwapChain4* swapChain_ = nullptr;
