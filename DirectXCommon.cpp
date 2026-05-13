@@ -52,7 +52,7 @@ void DirectXCommon::Initialize(HWND hwnd) {
 	CreateSwapChain(hwnd);		// 3. SwapChainの生成
 	CreateRenderTargetView();	// 4. レンダーターゲットビューの生成
 	CreateFence();				// 5. Fenceの生成
-	CreateViewport();			// 描画用のViewPortとSissorRectの生成
+	CreateViewport();			// 描画用のViewPortとScissorRectの生成
 }
 
 /*-------------------- デバッグレイヤーの初期化 --------------------*/
@@ -304,7 +304,7 @@ void DirectXCommon::PostDraw() {
 	assert(SUCCEEDED(hr));
 }
 
-/*-------------------- ViewPortとSissorRectの生成 --------------------*/
+/*-------------------- ViewPortとScissorRectの生成 --------------------*/
 void DirectXCommon::CreateViewport() {
 	// ビューポートの設定
 	viewPort_.Width = static_cast<float>(WinApp::kClientWidth);

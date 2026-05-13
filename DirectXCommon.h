@@ -21,8 +21,8 @@ public:
 	// ゲッター
     ID3D12Device* GetDevice() const { return device_; }
     ID3D12GraphicsCommandList* GetCommandList() const { return commandList_; }
-    D3D12_VIEWPORT GetViewPort() const { return viewPort_; }
-    D3D12_RECT GetScissorRect() const { return scissorRect_; }
+    const D3D12_VIEWPORT& GetViewPort() const { return viewPort_; }
+    const D3D12_RECT& GetScissorRect() const { return scissorRect_; }
 
 private:
     void InitializeDebugLayer();        // デバッグレイヤーの初期化

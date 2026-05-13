@@ -1,6 +1,9 @@
 #include <Windows.h>
 #include "logger.h"
 #include "DirectXCommon.h"
+#include "DXCManager.h"
+#include "TrianglePSO.h"
+#include "Triangle.h"
 #include "WinApp.h"
 #include <format>	// フォーマットの自動指定をしてくれる(+安全策)
 // Debug用のあれこれを使える様にする
@@ -41,7 +44,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// Logファイルの準備
 	std::ofstream logStream = CreateLogFile();
-	
+
 	// ゲームウィンドウの表示処理
 	WinApp winApp;
 	winApp.Initialize();
@@ -49,6 +52,18 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// DirectXの初期化
 	DirectXCommon dxCommon;
 	dxCommon.Initialize(winApp.GetHwnd());
+
+	// DXCの初期化
+	DXCManager dxcManager;
+	dxcManager.Initialize();
+
+	// TrianglePSOの初期化
+	TrianglePSO trianglePSO;
+	trianglePSO.Initialize(&dxCommon, &dxcManager);
+
+	// Triangleの初期化
+	Triangle triangle;
+	triangle.Initialize(&dxCommon, &trianglePSO);
 
 	// ログ出力
 	Log(logStream, "Start logging!");
@@ -61,6 +76,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		/*-------------------- 描画処理 --------------------*/
 		dxCommon.PreDraw();		// 描画前の処理
+
+		// 三角形の描画
+		triangle.Draw();
 
 		dxCommon.PostDraw();	// 描画後の処理
 
