@@ -10,6 +10,7 @@ public:
 
 	void Initialize();
 
+	// シェーダーのコンパイル
 	IDxcBlob* CompileShader(
 		const std::wstring& filePath,
 		const wchar_t* profile,

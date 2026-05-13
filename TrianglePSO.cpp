@@ -10,6 +10,7 @@ TrianglePSO::~TrianglePSO() {
 	if (rootSignature_) rootSignature_->Release();
 }
 
+/*-------------------- 初期化 --------------------*/
 void TrianglePSO::Initialize(DirectXCommon* dxCommon, DXCManager* dxcManager) {
 	dxCommon_ = dxCommon;
 	dxcManager_ = dxcManager;
@@ -71,7 +72,7 @@ void TrianglePSO::CreateGraphicsPipeline() {
 	graphicsPipelineStateDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	// 深度ステンシルの設定。今回は使わないので、深度もステンシルも無効にする
 	graphicsPipelineStateDesc.DepthStencilState.DepthEnable = false;
-graphicsPipelineStateDesc.DepthStencilState.StencilEnable = false;
+	graphicsPipelineStateDesc.DepthStencilState.StencilEnable = false;
 	// どの様に画面に打ち込むかの設定(気にせんで良い)
 	graphicsPipelineStateDesc.SampleDesc.Count = 1;
 	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
@@ -92,6 +93,15 @@ void TrianglePSO::CreateRootSignature() {
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
 	descriptionRootSignature.Flags =
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+	// RootParameterを作成
+	D3D12_ROOT_PARAMETER rootParameters[1] = {};
+	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		// CBVを使う(b0のbと一致)
+	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		// PixelShaderで使う
+	rootParameters[0].Descriptor.ShaderRegister = 0;						// レジスタ番号0とバインド(b0の0と一致)
+	descriptionRootSignature.pParameters = rootParameters;					// ルートパラメータ配列へのポインタ
+	descriptionRootSignature.NumParameters = _countof(rootParameters);		// 配列の長さ
+
 	// シリアライズしてバイナリにする
 	ID3DBlob* signatureBlob = nullptr;
 	ID3DBlob* errorBlob = nullptr;

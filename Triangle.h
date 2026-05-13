@@ -13,20 +13,29 @@ public:
 	// void Update();		//	今回は特に更新処理はないので、Update関数は用意しない
 	void Draw();
 
+	// BufferResourceの作成関数(後ほどUtility系に移動させよう)
+	ID3D12Resource* CreateBufferResource(ID3D12Device* device,size_t sizeInBytes);
+
 private:
 	void CreateVertexResource();
 	void CreateVertexBufferView();
 	void MapVertexData();
 
-	//struct VertexData {
-	//	float position[4];
-	//};
+	// マテリアル用のResourceとデータの作成関数
+	void CreateMaterialResource();
+	void MapMaterial();
 
+	// DirectXCommonとTrianglePSOは、描画に必要な情報を持っているので、ポインタを用意しておく
 	DirectXCommon* dxCommon_ = nullptr;
 	TrianglePSO* trianglePSO_ = nullptr;
 
+	// 頂点リソースと頂点バッファビュー
 	ID3D12Resource* vertexResource_ = nullptr;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
+
+	// マテリアルリソースとマテリアルデータ
+	ID3D12Resource* materialResource_ = nullptr;
+	Vecter4* materialData_ = nullptr;
 
 	// 頂点リソースにデータを書き込む
 	Vecter4* vertexData_ = nullptr;
