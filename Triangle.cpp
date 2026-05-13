@@ -8,7 +8,6 @@
 Triangle::~Triangle() {
 	if (vertexResource_) vertexResource_->Release();
 	if (materialResource_) materialResource_->Release();
-	if (vertexResource_) vertexResource_->Release();
 }
 
 /*-------------------- 初期化 --------------------*/
