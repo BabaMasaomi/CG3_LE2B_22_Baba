@@ -10,11 +10,11 @@ public:
 	~Triangle();
 
 	void Initialize(DirectXCommon* dxCommon, TrianglePSO* trianglePSO);
-	// void Update();		//	今回は特に更新処理はないので、Update関数は用意しない
+	void Update();
 	void Draw();
 
-	// BufferResourceの作成関数(後ほどUtility系に移動させよう)
-	ID3D12Resource* CreateBufferResource(ID3D12Device* device,size_t sizeInBytes);
+	//// BufferResourceの作成関数(後ほどUtility系に移動させよう)
+	//ID3D12Resource* CreateBufferResource(ID3D12Device* device,size_t sizeInBytes);
 
 private:
 	void CreateVertexResource();
@@ -24,6 +24,10 @@ private:
 	// マテリアル用のResourceとデータの作成関数
 	void CreateMaterialResource();
 	void MapMaterial();
+
+	// 変換行列用のResourceとデータの作成関数
+	void CreateTransformationMatrixResource();
+	void MapTransformationMatrix();
 
 	// DirectXCommonとTrianglePSOは、描画に必要な情報を持っているので、ポインタを用意しておく
 	DirectXCommon* dxCommon_ = nullptr;
@@ -35,9 +39,15 @@ private:
 
 	// マテリアルリソースとマテリアルデータ
 	ID3D12Resource* materialResource_ = nullptr;
-	Vecter4* materialData_ = nullptr;
+	Vector4* materialData_ = nullptr;
+
+	// 変換行列リソースと変換行列データ
+	ID3D12Resource* wvpResource_ = nullptr;
+	TransformationMatrix* wvpMatrixData_ = nullptr;
+
+	Transform transform_;
 
 	// 頂点リソースにデータを書き込む
-	Vecter4* vertexData_ = nullptr;
+	Vector4* vertexData_ = nullptr;
 };
 

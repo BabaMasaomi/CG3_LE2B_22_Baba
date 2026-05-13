@@ -74,6 +74,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	while (!winApp.IsEndGame()) {
 		winApp.ProcessMessage();
 
+		/*-------------------- 更新処理 --------------------*/
+		triangle.Update();
+
 		/*-------------------- 描画処理 --------------------*/
 		dxCommon.PreDraw();		// 描画前の処理
 
