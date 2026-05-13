@@ -100,6 +100,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Triangle.cpp" />
     <ClCompile Include="TrianglePSO.cpp" />
+    <ClCompile Include="Utility.cpp" />
     <ClCompile Include="WinApp.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +110,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="struct.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="TrianglePSO.h" />
+    <ClInclude Include="Utility.h" />
     <ClInclude Include="WinApp.h" />
   </ItemGroup>
   <ItemGroup>
