@@ -6,7 +6,6 @@
 #include "Camera.h"
 #include "TrianglePSO.h"
 #include "Triangle.h"
-#include <format>	// フォーマットの自動指定をしてくれる(+安全策)
 // Debug用のあれこれを使える様にする
 #include <dbghelp.h>
 #include <strsafe.h>
@@ -85,15 +84,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		/*-------------------- 描画処理 --------------------*/
 		dxCommon.PreDraw();		// 描画前の処理
-
 		// 三角形の描画
 		triangle.Draw();
-
 		dxCommon.PostDraw();	// 描画後の処理
 
 	}
-
-
 
 	return 0;
 }

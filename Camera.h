@@ -17,7 +17,7 @@ private:
 	Matrix4x4 viewMatrix_;				// ビュー行列(カメラ行列の逆行列)
 	Matrix4x4 projectionMatrix_;		// 透視投影行列
 	Matrix4x4 viewProjectionMatrix_;	// ビュープロジェクション行列
-
+	// 透視投影行列を作るために、アスペクト比を計算しておく
 	float aspectRatio_ = 1.0f;
 
 };

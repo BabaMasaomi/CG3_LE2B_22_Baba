@@ -1,5 +1,4 @@
 #include <Windows.h>
-
 #include "DXCManager.h"
 #include "Logger.h"
 #include <format>			// フォーマットの自動指定をしてくれる(+安全策)
@@ -12,7 +11,7 @@ DXCManager::~DXCManager() {
 	if (dxcUtils_) dxcUtils_->Release();
 }
 
-/*-------------------- DXCの初期化 --------------------*/
+/*-------------------- 初期化 --------------------*/
 void DXCManager::Initialize() {
 	HRESULT hr;
 

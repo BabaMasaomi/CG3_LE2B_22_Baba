@@ -28,7 +28,7 @@ DirectXCommon::~DirectXCommon() {
 
 #ifdef _DEBUG
 	IDXGIDebug1* debug = nullptr;
-
+	// DXGIのDebugインターフェースを取得できたら、リークしているオブジェクトがないか確認する
 	if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
 		debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
 		debug->ReportLiveObjects(DXGI_DEBUG_APP, DXGI_DEBUG_RLO_ALL);
@@ -58,11 +58,10 @@ void DirectXCommon::Initialize(HWND hwnd) {
 /*-------------------- デバッグレイヤーの初期化 --------------------*/
 void DirectXCommon::InitializeDebugLayer() {
 #ifdef _DEBUG
-	if (SUCCEEDED(
-		D3D12GetDebugInterface(
-			IID_PPV_ARGS(&debugController_)))) {
-
+	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController_)))) {
+		// デバッグレイヤーを有効にする
 		debugController_->EnableDebugLayer();
+		// さらにGPU側でもチェックするようにする
 		debugController_->SetEnableGPUBasedValidation(TRUE);
 	}
 #endif

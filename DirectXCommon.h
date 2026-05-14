@@ -39,7 +39,6 @@ private:
     ID3D12Debug1* debugController_ = nullptr;
 #endif
 
-
     // DXGIファクトリーの生成
     IDXGIFactory7* dxgiFactory_ = nullptr;
     ID3D12Device* device_ = nullptr;

@@ -20,7 +20,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd,UINT msg,WPARAM wparam,LPARAM lparam) {
     return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
-/*-------------------- 初期化処理 --------------------*/
+/*-------------------- 初期化 --------------------*/
 void WinApp::Initialize() {
 
     WNDCLASS wc{};
