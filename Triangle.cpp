@@ -13,13 +13,15 @@ Triangle::~Triangle() {
 	if (wvpResource_) wvpResource_->Release();
 }
 
-
 /*-------------------- 初期化 --------------------*/
 void Triangle::Initialize(DirectXCommon* dxCommon, TrianglePSO* trianglePSO) {
+	// 図形の変換を管理するためのTransformとワールド行列
 	transform_.scale = { 1.0f,1.0f,1.0f };
 	transform_.rotate = { 0.0f,0.0f,0.0f };
 	transform_.translate = { 0.0f,0.0f,0.0f };
+	worldMatrix_ = {};
 
+	// DirectXCommonとTrianglePSOのポインタを保存しておく
 	dxCommon_ = dxCommon;
 	trianglePSO_ = trianglePSO;
 
@@ -95,20 +97,14 @@ void Triangle::Update(const Camera& camera) {
 	transform_.rotate.y += 0.02f;
 
 	// 回転を加える
-	Matrix4x4 worldMatrix = MakeAffineMatrix(
+	Matrix4x4 worldMatrix_ = MakeAffineMatrix(
 		transform_.scale,
 		transform_.rotate,
 		transform_.translate
 	);
 
-	// 今回はカメラも投影もないので、一旦単位行列を用意しておく
-	//Matrix4x4 viewMatrix = MakeIdentity4x4();
-	//Matrix4x4 projectionMatrix = MakeIdentity4x4();
-
 	// WVP行列を計算して、CBufferに書き込む
-	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, camera.GetViewProjectionMatrix());
-
-	//Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix_, camera.GetViewProjectionMatrix());
 
 	wvpMatrixData_->WVP = worldViewProjectionMatrix;
 }

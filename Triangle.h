@@ -44,7 +44,9 @@ private:
 	ID3D12Resource* wvpResource_ = nullptr;
 	TransformationMatrix* wvpMatrixData_ = nullptr;
 
+	// 図形の変換を管理するためのTransformとワールド行列
 	Transform transform_;
+	Matrix4x4 worldMatrix_{};
 
 	// 頂点リソースにデータを書き込む
 	Vector4* vertexData_ = nullptr;
