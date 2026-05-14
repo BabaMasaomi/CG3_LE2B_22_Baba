@@ -13,9 +13,6 @@ public:
 	void Update();
 	void Draw();
 
-	//// BufferResourceの作成関数(後ほどUtility系に移動させよう)
-	//ID3D12Resource* CreateBufferResource(ID3D12Device* device,size_t sizeInBytes);
-
 private:
 	void CreateVertexResource();
 	void CreateVertexBufferView();

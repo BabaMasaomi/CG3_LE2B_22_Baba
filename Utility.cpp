@@ -32,7 +32,7 @@ ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {
 	return resource;
 }
 
-// 単位行列の作成関数
+/*-------------------- 単位行列の作成関数 --------------------*/
 Matrix4x4 MakeIdentity4x4() {
 	Matrix4x4 result = {};
 
@@ -59,7 +59,7 @@ Matrix4x4 MakeIdentity4x4() {
 	return result;
 }
 
-// アフィン変換行列を作成する関数
+/*-------------------- アフィン変換行列を作成する関数 --------------------*/
 Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate) {
 	Matrix4x4 result = {};
 	Matrix4x4 scaleMatrix = MakeScaleMatrix(scale);
@@ -69,7 +69,7 @@ Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Ve
 	Matrix4x4 rotateXYZMatrix = Multiply(rotateXMatrix, Multiply(rotateYMatrix, rotateZMatrix));
 	Matrix4x4 translateMatrix = MakeTranslateMatrix(translate);
 	// 拡大縮小→回転→平行移動の順で行列を掛ける
-	result = Multiply(Multiply(rotateXYZMatrix, scaleMatrix), translateMatrix);
+	result = Multiply(Multiply(scaleMatrix, rotateXYZMatrix), translateMatrix);
 
 	return result;
 }
@@ -132,7 +132,7 @@ Matrix4x4 MakeRotateZMatrix(float radian) {
 	return rotateZMatrix;
 }
 
-// 逆数
+/*-------------------- 逆数 --------------------*/
 Matrix4x4 Inverse(const Matrix4x4& m) {
 	Matrix4x4 result = {};
 	float det = Determinant4x4(m);
@@ -194,7 +194,7 @@ float Determinant4x4(const Matrix4x4& m) {
 	return det;
 }
 
-// 透視投影行列
+/*-------------------- 透視投影行列 --------------------*/
 Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip) {
 	Matrix4x4 result = {};
 	float cot = 1.0f / tanf(fovY / 2.0f);
@@ -206,7 +206,7 @@ Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip
 	return result;
 }
 
-// 乗算
+/*-------------------- 乗算 --------------------*/
 Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
 	Matrix4x4 result = {};
 	for (int row = 0; row < 4; row++) {
@@ -221,7 +221,7 @@ Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
 	return result;
 }
 
-// ビューポート変換行列
+/*-------------------- ビューポート変換行列 --------------------*/
 Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth) {
 	Matrix4x4 result = {};
 	result.m[0][0] = width / 2.0f;
@@ -234,7 +234,7 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
 	return result;
 }
 
-// 座標変換
+/*-------------------- 座標変換 --------------------*/
 Vector3 CoordinateTransform(const Vector3& vector, const Matrix4x4& matrix) {
 	Vector3 result;
 
