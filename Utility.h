@@ -2,7 +2,7 @@
 #include <d3d12.h>
 #include"struct.h"
 
-// BufferResourceの作成関数(後ほどUtility系に移動させよう)
+// BufferResourceの作成関数
 ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);
 
 // 単位行列の作成関数
