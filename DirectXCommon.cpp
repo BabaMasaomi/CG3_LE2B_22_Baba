@@ -163,8 +163,8 @@ void DirectXCommon::CreateCommand() {
 void DirectXCommon::CreateSwapChain(HWND hwnd) {
 	HRESULT hr;
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
-	swapChainDesc.Width = WinApp::kClientWidth;						// ウィンドウの横幅。クライアント領域と同じにする
-	swapChainDesc.Height = WinApp::kClientHeight;					// ウィンドウの縦幅。クライアント領域と同じにする
+	swapChainDesc.Width = WinApp::kClientWidth_;						// ウィンドウの横幅。クライアント領域と同じにする
+	swapChainDesc.Height = WinApp::kClientHeight_;					// ウィンドウの縦幅。クライアント領域と同じにする
 	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;				// 色の形式
 	swapChainDesc.SampleDesc.Count = 1;								// マルチサンプルしない
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;	// 描画のターゲットとして使う
@@ -307,13 +307,13 @@ void DirectXCommon::PostDraw() {
 /*-------------------- ViewPortとScissorRectの生成 --------------------*/
 void DirectXCommon::CreateViewport() {
 	// ビューポートの設定
-	viewPort_.Width = static_cast<float>(WinApp::kClientWidth);
-	viewPort_.Height = static_cast<float>(WinApp::kClientHeight);
+	viewPort_.Width = static_cast<float>(WinApp::kClientWidth_);
+	viewPort_.Height = static_cast<float>(WinApp::kClientHeight_);
 	viewPort_.MinDepth = 0.0f;
 	viewPort_.MaxDepth = 1.0f;
 	// シザー矩形の設定
 	scissorRect_.left = 0;
 	scissorRect_.top = 0;
-	scissorRect_.right = WinApp::kClientWidth;
-	scissorRect_.bottom = WinApp::kClientHeight;
+	scissorRect_.right = WinApp::kClientWidth_;
+	scissorRect_.bottom = WinApp::kClientHeight_;
 }

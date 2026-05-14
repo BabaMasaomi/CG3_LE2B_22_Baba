@@ -5,8 +5,8 @@
 class WinApp {
 public:
 	// クライアント領域サイズ
-	static const int32_t kClientWidth = 1280;
-	static const int32_t kClientHeight = 720;
+	static const int32_t kClientWidth_ = 1280;
+	static const int32_t kClientHeight_ = 720;
 
 	~WinApp();
 

@@ -1,0 +1,24 @@
+#pragma once
+#include "struct.h"
+
+class Camera {
+public:
+	~Camera();
+
+	void Initialize(float width, float height);
+	void Update();
+
+	// ゲッター
+	Matrix4x4 GetViewProjectionMatrix() const { return viewProjectionMatrix_; }
+
+private:
+	Transform transform_;
+
+	Matrix4x4 viewMatrix_;				// ビュー行列(カメラ行列の逆行列)
+	Matrix4x4 projectionMatrix_;		// 透視投影行列
+	Matrix4x4 viewProjectionMatrix_;	// ビュープロジェクション行列
+
+	float aspectRatio_ = 1.0f;
+
+};
+

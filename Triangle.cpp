@@ -1,6 +1,7 @@
 #include "Triangle.h"
 #include "DirectXCommon.h"
 #include "TrianglePSO.h"
+#include "Camera.h"
 #include "Utility.h"
 #include <cassert>
 
@@ -90,7 +91,7 @@ void Triangle::MapTransformationMatrix() {
 }
 
 /*-------------------- 更新 --------------------*/
-void Triangle::Update() {
+void Triangle::Update(const Camera& camera) {
 	transform_.rotate.y += 0.02f;
 
 	// 回転を加える
@@ -101,11 +102,13 @@ void Triangle::Update() {
 	);
 
 	// 今回はカメラも投影もないので、一旦単位行列を用意しておく
-	Matrix4x4 viewMatrix = MakeIdentity4x4();
-	Matrix4x4 projectionMatrix = MakeIdentity4x4();
+	//Matrix4x4 viewMatrix = MakeIdentity4x4();
+	//Matrix4x4 projectionMatrix = MakeIdentity4x4();
 
 	// WVP行列を計算して、CBufferに書き込む
-	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, camera.GetViewProjectionMatrix());
+
+	//Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 
 	wvpMatrixData_->WVP = worldViewProjectionMatrix;
 }
