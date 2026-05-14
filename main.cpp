@@ -1,10 +1,11 @@
 #include <Windows.h>
 #include "logger.h"
+#include "WinApp.h"
 #include "DirectXCommon.h"
 #include "DXCManager.h"
+#include "Camera.h"
 #include "TrianglePSO.h"
 #include "Triangle.h"
-#include "WinApp.h"
 #include <format>	// フォーマットの自動指定をしてくれる(+安全策)
 // Debug用のあれこれを使える様にする
 #include <dbghelp.h>
@@ -57,6 +58,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	DXCManager dxcManager;
 	dxcManager.Initialize();
 
+	// カメラの初期化
+	Camera camera;
+	camera.Initialize(WinApp::kClientWidth_, WinApp::kClientHeight_);
+
 	// TrianglePSOの初期化
 	TrianglePSO trianglePSO;
 	trianglePSO.Initialize(&dxCommon, &dxcManager);
@@ -75,7 +80,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		winApp.ProcessMessage();
 
 		/*-------------------- 更新処理 --------------------*/
-		triangle.Update();
+		camera.Update();
+		triangle.Update(camera);
 
 		/*-------------------- 描画処理 --------------------*/
 		dxCommon.PreDraw();		// 描画前の処理

@@ -2,15 +2,17 @@
 #include <d3d12.h>
 #include"struct.h"
 
+// 前方宣言
 class DirectXCommon;
 class TrianglePSO;
+class Camera;
 
 class Triangle {
 public:
 	~Triangle();
 
 	void Initialize(DirectXCommon* dxCommon, TrianglePSO* trianglePSO);
-	void Update();
+	void Update(const Camera& camera);
 	void Draw();
 
 private:

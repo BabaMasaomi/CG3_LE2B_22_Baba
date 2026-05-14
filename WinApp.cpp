@@ -34,7 +34,7 @@ void WinApp::Initialize() {
     RegisterClass(&wc);
 
     // ウィンドウサイズを表す構造体にクライアント領域を入れる
-    RECT wrc = { 0, 0, kClientWidth, kClientHeight };
+    RECT wrc = { 0, 0, kClientWidth_, kClientHeight_ };
 
     // クライアント領域をもとに実際のサイズにwrcを変更してもらう
     AdjustWindowRect(&wrc, WS_OVERLAPPEDWINDOW, false);
