@@ -1,3 +1,4 @@
+#ifdef USE_IMGUI
 #include "ImGuiManager.h"
 #include "WinApp.h"
 #include "DirectXCommon.h"
@@ -46,3 +47,4 @@ void ImGuiManager::Finalize() {
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 }
+#endif

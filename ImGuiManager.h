@@ -1,6 +1,7 @@
 #pragma once
 #include "externals/imgui/imgui.h"
 
+#ifdef USE_IMGUI
 class WinApp;
 class DirectXCommon;
 
@@ -17,3 +18,4 @@ private:
 	WinApp* winApp_ = nullptr;
 	DirectXCommon* dxCommon_ = nullptr;
 };
+#endif

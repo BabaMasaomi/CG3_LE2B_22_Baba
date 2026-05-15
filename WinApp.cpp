@@ -1,10 +1,14 @@
 #include <Windows.h>
+#include "WinApp.h"
+// ImGuiの表示に必要
+#ifdef USE_IMGUI
 #include "externals/imgui/imgui.h"
 #include "externals/imgui/imgui_impl_win32.h"
-#include "WinApp.h"
 
+// ImGuiのウィンドウプロシージャ
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
     HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+#endif
 
 // デストラクタ 
 WinApp::~WinApp() {
@@ -14,9 +18,12 @@ WinApp::~WinApp() {
 // ウィンドウプロシージャ(ゲームウィンドウの表示に使用)
 LRESULT CALLBACK WindowProc(HWND hwnd,UINT msg,WPARAM wparam,LPARAM lparam) {
 
+	// ImGuiのウィンドウプロシージャを呼び出す
+#ifdef USE_IMGUI
     if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) {
         return true;
     }
+#endif
 
     switch (msg) {
         // ウィンドウが破棄されたときの処理
@@ -32,7 +39,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd,UINT msg,WPARAM wparam,LPARAM lparam) {
 
 /*-------------------- 初期化 --------------------*/
 void WinApp::Initialize() {
+	// ImGuiのバージョンチェック
+#ifdef USE_IMGUI
     IMGUI_CHECKVERSION();
+#endif
 
     WNDCLASS wc{};
     // ウィンドウプロシージャ

@@ -3,13 +3,16 @@
 #include "WinApp.h"
 #include "DirectXCommon.h"
 #include "DXCManager.h"
-#include "ImGuiManager.h"
 #include "Camera.h"
 #include "TrianglePSO.h"
 #include "Triangle.h"
 // Debug用のあれこれを使える様にする
 #include <dbghelp.h>
 #include <strsafe.h>
+// ImGui
+#ifdef USE_IMGUI
+#include "ImGuiManager.h"
+#endif
 
 // libのリンク
 #pragma comment(lib, "Dbghelp.lib")
@@ -59,8 +62,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	dxcManager.Initialize();
 
 	// ImGuiの初期化
+#ifdef USE_IMGUI
 	ImGuiManager imguiManager;
 	imguiManager.Initialize(&winApp, &dxCommon);
+#endif
 
 	// カメラの初期化
 	Camera camera;
@@ -92,23 +97,29 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		dxCommon.PreDraw();		// 描画前の処理
 
 		// ImGui
-		imguiManager.Begin();
+#ifdef USE_IMGUI
+		imguiManager.Begin();	// 以下にImGuiの内容を記述
 		// デモウィンドウ表示
 		ImGui::ShowDemoWindow();
-		imguiManager.End();
+		imguiManager.End();		// 以上でImGuiの内容を終える
+#endif
 
 		// 三角形の描画
 		triangle.Draw();
 
-		// Guiの描画
+		// ImGuiの描画
+#ifdef USE_IMGUI
 		imguiManager.Draw();
+#endif
 
 		dxCommon.PostDraw();	// 描画後の処理
 
 	}
 
 	// ImGuiの終了処理
+#ifdef USE_IMGUI
 	imguiManager.Finalize();
+#endif
 
 	return 0;
 }
