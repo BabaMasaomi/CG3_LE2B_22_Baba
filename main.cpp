@@ -41,10 +41,15 @@ static LONG WINAPI ExportDump(EXCEPTION_POINTERS* exceptionPointers) {
 	return EXCEPTION_EXECUTE_HANDLER;
 }
 
+
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
+	// COM初期化
+	CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+
 	// 誰も捕捉しなかった場合に、捕捉する関数を登録
 	SetUnhandledExceptionFilter(ExportDump);
+
 
 	// Logファイルの準備
 	std::ofstream logStream = CreateLogFile();
@@ -120,6 +125,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 #ifdef USE_IMGUI
 	imguiManager.Finalize();
 #endif
-
+	// COMの終了処理
+	CoUninitialize();
 	return 0;
 }
