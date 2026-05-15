@@ -83,27 +83,32 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	while (!winApp.IsEndGame()) {
 		winApp.ProcessMessage();
 
-		imguiManager.Begin();
 
 		/*-------------------- 更新処理 --------------------*/
 		camera.Update();
 		triangle.Update(camera);
 
-		// ImGui
-		
-
 		/*-------------------- 描画処理 --------------------*/
 		dxCommon.PreDraw();		// 描画前の処理
+
+		// ImGui
+		imguiManager.Begin();
+		// デモウィンドウ表示
+		ImGui::ShowDemoWindow();
+		imguiManager.End();
 
 		// 三角形の描画
 		triangle.Draw();
 
-		imguiManager.End();
+		// Guiの描画
 		imguiManager.Draw();
 
 		dxCommon.PostDraw();	// 描画後の処理
 
 	}
+
+	// ImGuiの終了処理
+	imguiManager.Finalize();
 
 	return 0;
 }

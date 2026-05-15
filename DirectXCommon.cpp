@@ -14,18 +14,22 @@
 
 // デストラクタ
 DirectXCommon::~DirectXCommon() {
-	CloseHandle(fenceEvent_);
-	fence_->Release();
-	rtvDescriptorHeap_->Release();
-	swapChainResources_[0]->Release();
-	swapChainResources_[1]->Release();
-	swapChain_->Release();
-	commandList_->Release();
-	commandAllocator_->Release();
-	commandQueue_->Release();
-	device_->Release();
-	dxgiFactory_->Release();
-
+	if (commandList_) commandList_->Release();
+	if (commandAllocator_) commandAllocator_->Release();
+	if (commandQueue_) commandQueue_->Release();
+	for (uint32_t i = 0; i < swapChainDesc_.BufferCount; ++i) {
+		if (swapChainResources_[i]) {
+			swapChainResources_[i]->Release();
+			swapChainResources_[i] = nullptr;
+		}
+	}
+	if (swapChain_) swapChain_->Release();
+	if (rtvDescriptorHeap_) rtvDescriptorHeap_->Release();
+	if (srvDescriptorHeap_) srvDescriptorHeap_->Release();
+	if (fence_) fence_->Release();
+	if (fenceEvent_) CloseHandle(fenceEvent_);
+	if (device_) device_->Release();
+	if (dxgiFactory_) dxgiFactory_->Release();
 
 #ifdef _DEBUG
 	IDXGIDebug1* debug = nullptr;
@@ -180,8 +184,8 @@ void DirectXCommon::CreateRenderTargetView() {
 
 	// ディスクリプタヒープを作成(deviceは,Typeはレンダーターゲットビュー用,ダブルバッファ用に2つ,shaderVisibleはfalse)
 	rtvDescriptorHeap_ = CreateDescriptorHeap(device_, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
-	// SRV用の物も作成(deviceは,Typeはレンダーターゲットビュー用,数は128,shaderVisibleはfalse)
-	srvDescriptorHeap_ = CreateDescriptorHeap(device_, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, false);
+	// SRV用の物も作成(deviceは,Typeはレンダーターゲットビュー用,数は128,shaderVisibleはtrue)
+	srvDescriptorHeap_ = CreateDescriptorHeap(device_, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
 
 	// SwapChainからBackBuffer取得
 	hr = swapChain_->GetBuffer(0, IID_PPV_ARGS(&swapChainResources_[0]));
@@ -248,6 +252,10 @@ void DirectXCommon::PreDraw() {
 	// 指定した色で画面全体をクリアする
 	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };	// 青っぽい色
 	commandList_->ClearRenderTargetView(rtvHandles_[backBufferIndex], clearColor, 0, nullptr);
+
+	// 描画用のDescriptorHeapの設定
+	ID3D12DescriptorHeap* descripterHeaps[] = { srvDescriptorHeap_ };
+	commandList_->SetDescriptorHeaps(1, descripterHeaps);
 }
 
 /*-------------------- 7.描画後の処理 --------------------*/

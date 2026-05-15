@@ -1,19 +1,21 @@
 #include "ImGuiManager.h"
 #include "WinApp.h"
 #include "DirectXCommon.h"
-#include "externals/imgui/imgui.h"
 #include "externals/imgui/imgui_impl_dx12.h"
 #include "externals/imgui/imgui_impl_win32.h"
 
 /*-------------------- 初期化 --------------------*/
 void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon) {
+	winApp_ = winApp;
+	dxCommon_ = dxCommon;
+
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
 	ImGui_ImplWin32_Init(winApp->GetHwnd());
 	ImGui_ImplDX12_Init(dxCommon->GetDevice(),
-		dxCommon->GetSwapChainDescBufferCount(),
-		dxCommon->GetrtvDescFormat(),
+		dxCommon->GetSwapChainDesc().BufferCount,
+		dxCommon->GetrtvDesc().Format,
 		dxCommon->GetsrvDescriptorHeap(),
 		dxCommon->GetsrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(),
 		dxCommon->GetsrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart());
@@ -30,10 +32,7 @@ void ImGuiManager::Begin() {
 
 /*-------------------- 描画処理 --------------------*/
 void ImGuiManager::Draw() {
-	ImGui_ImplDX12_RenderDrawData(
-		ImGui::GetDrawData(),
-		dxCommon_->GetCommandList()
-	);
+	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), dxCommon_->GetCommandList());
 }
 
 /*-------------------- フレーム終了 --------------------*/

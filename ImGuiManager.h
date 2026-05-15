@@ -1,18 +1,19 @@
 #pragma once
+#include "externals/imgui/imgui.h"
 
 class WinApp;
 class DirectXCommon;
 
 class ImGuiManager {
 public:
-    void Initialize(WinApp* winApp, DirectXCommon* dxCommon);
-    void Begin();
-    void End();
-    void Draw();
+	void Initialize(WinApp* winApp, DirectXCommon* dxCommon);
+	void Begin();
+	void End();
+	void Draw();
 
-    void Finalize();
+	void Finalize();
 
 private:
-    WinApp* winApp_;
-    DirectXCommon* dxCommon_;
+	WinApp* winApp_ = nullptr;
+	DirectXCommon* dxCommon_ = nullptr;
 };

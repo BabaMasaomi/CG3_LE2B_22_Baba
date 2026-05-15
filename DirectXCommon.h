@@ -24,8 +24,8 @@ public:
 	const D3D12_VIEWPORT& GetViewPort() const { return viewPort_; }
 	const D3D12_RECT& GetScissorRect() const { return scissorRect_; }
 	ID3D12DescriptorHeap* GetsrvDescriptorHeap()const { return srvDescriptorHeap_; }
-	int GetSwapChainDescBufferCount() const { return swapChainDesc_.BufferCount; }
-	DXGI_FORMAT GetrtvDescFormat() const { return rtvDesc_.Format; }
+	DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() const { return swapChainDesc_; }
+	D3D12_RENDER_TARGET_VIEW_DESC GetrtvDesc() const { return rtvDesc_; }
 
 private:
 	void InitializeDebugLayer();        // デバッグレイヤーの初期化
