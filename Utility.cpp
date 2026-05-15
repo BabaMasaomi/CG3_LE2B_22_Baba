@@ -32,6 +32,20 @@ ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {
 	return resource;
 }
 
+/*-------------------- DescriptorHeapの作成 --------------------*/
+ID3D12DescriptorHeap* CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible) {
+	// ディスクリプタヒープを作成
+	ID3D12DescriptorHeap* descriptorHeap = nullptr;
+	D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc{};
+	descriptorHeapDesc.Type = heapType;						// 引数で指定したタイプ
+	descriptorHeapDesc.NumDescriptors = numDescriptors;		// 引数で指定した数
+	descriptorHeapDesc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	HRESULT hr = device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap));
+	// ディスクリプタヒープが生成できなかったらエラー
+	assert(SUCCEEDED(hr));
+	return descriptorHeap;
+}
+
 /*-------------------- 単位行列の作成関数 --------------------*/
 Matrix4x4 MakeIdentity4x4() {
 	Matrix4x4 result = {};

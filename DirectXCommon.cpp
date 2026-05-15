@@ -1,5 +1,6 @@
 #include "DirectXCommon.h"
 #include "WinApp.h"
+#include "Utility.h"
 #include "Logger.h"
 #include <format>			// フォーマットの自動指定をしてくれる(+安全策)
 #include <cassert>
@@ -161,16 +162,15 @@ void DirectXCommon::CreateCommand() {
 /*-------------------- 3.スワップチェーンの生成 --------------------*/
 void DirectXCommon::CreateSwapChain(HWND hwnd) {
 	HRESULT hr;
-	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
-	swapChainDesc.Width = WinApp::kClientWidth_;						// ウィンドウの横幅。クライアント領域と同じにする
-	swapChainDesc.Height = WinApp::kClientHeight_;					// ウィンドウの縦幅。クライアント領域と同じにする
-	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;				// 色の形式
-	swapChainDesc.SampleDesc.Count = 1;								// マルチサンプルしない
-	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;	// 描画のターゲットとして使う
-	swapChainDesc.BufferCount = 2;									// ダブルバッファ
-	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;		// モニタに映したら中身を破棄
+	swapChainDesc_.Width = WinApp::kClientWidth_;					// ウィンドウの横幅。クライアント領域と同じにする
+	swapChainDesc_.Height = WinApp::kClientHeight_;					// ウィンドウの縦幅。クライアント領域と同じにする
+	swapChainDesc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM;				// 色の形式
+	swapChainDesc_.SampleDesc.Count = 1;							// マルチサンプルしない
+	swapChainDesc_.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;	// 描画のターゲットとして使う
+	swapChainDesc_.BufferCount = 2;									// ダブルバッファ
+	swapChainDesc_.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;		// モニタに映したら中身を破棄
 	// コマンドキュー、ウィンドウハンドル、設定をしてスワップチェーンを生成
-	hr = dxgiFactory_->CreateSwapChainForHwnd(commandQueue_, hwnd, &swapChainDesc, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>(&swapChain_));
+	hr = dxgiFactory_->CreateSwapChainForHwnd(commandQueue_, hwnd, &swapChainDesc_, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>(&swapChain_));
 	assert(SUCCEEDED(hr));	// スワップチェーンが生成できなかったらエラー	
 }
 
@@ -178,13 +178,10 @@ void DirectXCommon::CreateSwapChain(HWND hwnd) {
 void DirectXCommon::CreateRenderTargetView() {
 	HRESULT hr;
 
-	// ディスクリプタヒープを作成
-	D3D12_DESCRIPTOR_HEAP_DESC rtvDescriptorHeapDesc{};
-	rtvDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;	// レンダーターゲットビュー用
-	rtvDescriptorHeapDesc.NumDescriptors = 2;						// ダブルバッファ用に2つ
-	hr = device_->CreateDescriptorHeap(&rtvDescriptorHeapDesc, IID_PPV_ARGS(&rtvDescriptorHeap_));
-	// ディスクリプタヒープが生成できなかったらエラー
-	assert(SUCCEEDED(hr));
+	// ディスクリプタヒープを作成(deviceは,Typeはレンダーターゲットビュー用,ダブルバッファ用に2つ,shaderVisibleはfalse)
+	rtvDescriptorHeap_ = CreateDescriptorHeap(device_, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
+	// SRV用の物も作成(deviceは,Typeはレンダーターゲットビュー用,数は128,shaderVisibleはfalse)
+	srvDescriptorHeap_ = CreateDescriptorHeap(device_, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, false);
 
 	// SwapChainからBackBuffer取得
 	hr = swapChain_->GetBuffer(0, IID_PPV_ARGS(&swapChainResources_[0]));
@@ -194,18 +191,17 @@ void DirectXCommon::CreateRenderTargetView() {
 	assert(SUCCEEDED(hr));
 
 	// RTV設定
-	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
-	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;				// 出力結果をSRGBに変換して書き込む
-	rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;			// 2Dテクスチャとして描画
+	rtvDesc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;		// 出力結果をSRGBに変換して書き込む
+	rtvDesc_.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;	// 2Dテクスチャとして描画
 	// ディスクリプタの先頭を取得
 	rtvStartHandle_ = rtvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
 	// 1つ目の作成。1つ目は最初の所に、作る位置を指定してあげる
 	rtvHandles_[0] = rtvStartHandle_;
-	device_->CreateRenderTargetView(swapChainResources_[0], &rtvDesc, rtvHandles_[0]);
+	device_->CreateRenderTargetView(swapChainResources_[0], &rtvDesc_, rtvHandles_[0]);
 	// 2つ目のディスクリプタハンドルを自力で得る
 	rtvHandles_[1].ptr = rtvHandles_[0].ptr + device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	// 2つ目の作成
-	device_->CreateRenderTargetView(swapChainResources_[1], &rtvDesc, rtvHandles_[1]);
+	device_->CreateRenderTargetView(swapChainResources_[1], &rtvDesc_, rtvHandles_[1]);
 }
 
 /*-------------------- 5.Fenceの生成とEventの作成 --------------------*/

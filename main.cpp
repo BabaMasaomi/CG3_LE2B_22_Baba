@@ -3,6 +3,7 @@
 #include "WinApp.h"
 #include "DirectXCommon.h"
 #include "DXCManager.h"
+#include "ImGuiManager.h"
 #include "Camera.h"
 #include "TrianglePSO.h"
 #include "Triangle.h"
@@ -57,6 +58,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	DXCManager dxcManager;
 	dxcManager.Initialize();
 
+	// ImGuiの初期化
+	ImGuiManager imguiManager;
+	imguiManager.Initialize(&winApp, &dxCommon);
+
 	// カメラの初期化
 	Camera camera;
 	camera.Initialize(WinApp::kClientWidth_, WinApp::kClientHeight_);
@@ -78,14 +83,24 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	while (!winApp.IsEndGame()) {
 		winApp.ProcessMessage();
 
+		imguiManager.Begin();
+
 		/*-------------------- 更新処理 --------------------*/
 		camera.Update();
 		triangle.Update(camera);
 
+		// ImGui
+		
+
 		/*-------------------- 描画処理 --------------------*/
 		dxCommon.PreDraw();		// 描画前の処理
+
 		// 三角形の描画
 		triangle.Draw();
+
+		imguiManager.End();
+		imguiManager.Draw();
+
 		dxCommon.PostDraw();	// 描画後の処理
 
 	}
