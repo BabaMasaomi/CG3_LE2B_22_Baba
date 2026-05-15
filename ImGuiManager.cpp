@@ -9,14 +9,16 @@
 void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon) {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-
+	ImGui::StyleColorsDark();
 	ImGui_ImplWin32_Init(winApp->GetHwnd());
 	ImGui_ImplDX12_Init(dxCommon->GetDevice(),
 		dxCommon->GetSwapChainDescBufferCount(),
 		dxCommon->GetrtvDescFormat(),
+		dxCommon->GetsrvDescriptorHeap(),
 		dxCommon->GetsrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(),
-		dxCommon->GetsrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart(),
-	);
+		dxCommon->GetsrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart());
+	ImGuiIO& io = ImGui::GetIO();
+	io.Fonts->Build();
 }
 
 /*-------------------- フレーム開始 --------------------*/
