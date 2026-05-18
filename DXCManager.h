@@ -1,5 +1,5 @@
 #pragma once
-#include<dxcapi.h>
+#include <dxcapi.h>
 #include <string>
 
 #pragma comment(lib,"dxcompiler.lib")

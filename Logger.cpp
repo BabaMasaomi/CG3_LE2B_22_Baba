@@ -1,23 +1,9 @@
 #include "Logger.h"
 #include <Windows.h>
+#include "Utility.h"
 #include <format>			// フォーマットの自動指定をしてくれる(+安全策)
 #include <filesystem>		// ファイルを読んだり書いたりするためのライブラリ
 #include <chrono>			// 時間を扱うためのライブラリ
-
-/*-------------------- wstring->stringの変換関数 --------------------*/
-std::string ConvertString(const std::wstring& str) {
-	if (str.empty()) {
-		return std::string();
-	}
-
-	auto sizeNeeded = WideCharToMultiByte(CP_UTF8,0,str.data(),static_cast<int>(str.size()),NULL,0,NULL,NULL);
-	if (sizeNeeded == 0) {
-		return std::string();
-	}
-	std::string result(sizeNeeded, 0);
-	WideCharToMultiByte(CP_UTF8,0,str.data(),static_cast<int>(str.size()),result.data(),sizeNeeded,NULL,NULL);
-	return result;
-}
 
 /*-------------------- 出力ウィンドウに文字列を表示できる様にする関数 --------------------*/
 void Log(const std::string& message) {

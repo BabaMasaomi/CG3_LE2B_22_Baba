@@ -1,5 +1,6 @@
 #pragma once
 #include <d3d12.h>
+#include <string>
 #include"struct.h"
 
 // BufferResourceの作成関数
@@ -7,6 +8,11 @@ ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);
 
 // DescriptorHeapの作成関数
 ID3D12DescriptorHeap* CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
+
+// string->wstring
+std::wstring ConvertString(const std::string& str);
+// wstring->string
+std::string ConvertString(const std::wstring& str);
 
 // 単位行列の作成関数
 Matrix4x4 MakeIdentity4x4();

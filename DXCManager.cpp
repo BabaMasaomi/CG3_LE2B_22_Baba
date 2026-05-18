@@ -1,5 +1,6 @@
 #include <Windows.h>
 #include "DXCManager.h"
+#include "Utility.h"
 #include "Logger.h"
 #include <format>			// フォーマットの自動指定をしてくれる(+安全策)
 #include <cassert>
