@@ -49,11 +49,11 @@ private:
 	Matrix4x4 worldMatrix_{};
 
 	// 頂点リソースにデータを書き込む
-	Vector4* vertexData_ = nullptr;
+	//Vector4* vertexData_ = nullptr;
 
-	//struct VertexData_{
-	//	Vector4 pos_;
-	//	Vector2 texcoord_;
-	//};
+	struct VertexData{
+		Vector4 pos;
+		Vector2 texcoord;
+	};
 };
 

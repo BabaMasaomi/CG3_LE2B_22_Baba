@@ -41,7 +41,7 @@ void Triangle::Initialize(DirectXCommon* dxCommon, TrianglePSO* trianglePSO) {
 
 /*-------------------- VertexResourceの生成 --------------------*/
 void Triangle::CreateVertexResource() {
-	vertexResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(Vector4) * 3);
+	vertexResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(VertexData) * 3);
 }
 
 /*-------------------- VertexBufferViewの作成 --------------------*/
@@ -49,22 +49,27 @@ void Triangle::CreateVertexBufferView() {
 	// リソースの先頭のアドレスから使う
 	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	// 使用するリソースのサイズはVector4を3頂点分
-	vertexBufferView_.SizeInBytes = sizeof(Vector4) * 3;
+	vertexBufferView_.SizeInBytes = sizeof(VertexData) * 3;
 	// 1頂点あたりのサイズ
-	vertexBufferView_.StrideInBytes = sizeof(Vector4);
+	vertexBufferView_.StrideInBytes = sizeof(VertexData);
 }
 
 /*-------------------- Resourceにデータを書き込む --------------------*/
 void Triangle::MapVertexData() {
+	// 頂点リソースにデータを書きこむ
+	VertexData* vertexData = nullptr;
 	// 書き込むためのアドレスを取得
-	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData_));
+	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
 	// 三角形の頂点データを設定
 	// 左下
-	vertexData_[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
+	vertexData[0].pos = { -0.5f, -0.5f, 0.0f, 1.0f };
+	vertexData[0].texcoord = { 0.0f,1.0f };
 	// 上
-	vertexData_[1] = { 0.0f, 0.5f, 0.0f, 1.0f };
+	vertexData[1].pos = { 0.0f, 0.5f, 0.0f, 1.0f };
+	vertexData[1].texcoord = { 0.5f,0.0f };
 	// 右下
-	vertexData_[2] = { 0.5f, -0.5f, 0.0f, 1.0f };
+	vertexData[2].pos = { 0.5f, -0.5f, 0.0f, 1.0f };
+	vertexData[2].texcoord = { 1.0f,1.0f };
 }
 
 /*-------------------- MaterialResourceの生成 --------------------*/
