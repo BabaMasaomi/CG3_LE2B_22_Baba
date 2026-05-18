@@ -18,6 +18,12 @@ public:
     // 3.TextureResourceにデータを転送する
     void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
 
+    // ShaderResourceViewを作る
+    void CreateSRV(ID3D12Resource* textureResource,uint32_t srvIndex);
+
 private:
     DirectXCommon* dxCommon_ = nullptr;
+
+    // Meta情報を取得
+    DirectX::TexMetadata metaData_{};
 };

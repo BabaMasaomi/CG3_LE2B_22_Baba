@@ -5,20 +5,33 @@
 
 void TextureManager::Initialize(DirectXCommon* dxCommon) {
 	dxCommon_ = dxCommon;
+	
 }
 
-/*-------------------- 1.Textureデータを読み込む --------------------*/
+/*-------------------- 1.Textureデータを読み込む --------------------*/	// mainなどでtextureManager.LoadTexture("resources/uvChecker.png");として呼び出す
 DirectX::ScratchImage TextureManager::LoadTexture(const std::string& filePath) {
-	// テクスチャファイルを読み込んでプログラムで扱えるようにする
+	// 1.テクスチャファイルを読み込んでプログラムで扱えるようにする
 	DirectX::ScratchImage image{};
 	std::wstring filePathW = ConvertString(filePath);
 	HRESULT hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
 	assert(SUCCEEDED(hr));
 
-	// ミップマップ
+	// 2.mipMap作成
 	DirectX::ScratchImage mipImages{};
 	hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0, mipImages);
 	assert(SUCCEEDED(hr));
+
+	// 3.metaDataを取得する
+	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
+
+	// 4.resource生成
+	ID3D12Resource* textureResource = CreateTextureResource(dxCommon_->GetDevice(), metadata);
+
+	// 5.転送
+	UploadTextureData(textureResource, mipImages);
+
+	// 6. SRV生成
+	CreateSRV(textureResource, 1);
 
 	// ミップマップ付きデータを返す
 	return mipImages;
@@ -58,9 +71,9 @@ ID3D12Resource* TextureManager::CreateTextureResource(ID3D12Device* device, cons
 /*-------------------- 3.TextureResourceにデータを転送する --------------------*/
 void TextureManager::UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages) {
 	// Meta情報を取得
-	const DirectX::TexMetadata& metaData = mipImages.GetMetadata();
+	metaData_ = mipImages.GetMetadata();
 	// 全MipMapについて
-	for (size_t mipLevel = 0; mipLevel < metaData.mipLevels; ++mipLevel) {
+	for (size_t mipLevel = 0; mipLevel < metaData_.mipLevels; ++mipLevel) {
 		// MipMapLevelを指定して各Imageを取得
 		const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
 		// Textureに転送
@@ -72,4 +85,23 @@ void TextureManager::UploadTextureData(ID3D12Resource* texture, const DirectX::S
 			UINT(img->slicePitch));		// 1枚サイズ
 		assert(SUCCEEDED(hr));
 	}
+}
+
+/*-------------------- ShaderResourceViewを作る --------------------*/
+void TextureManager::CreateSRV(ID3D12Resource* textureResource, uint32_t srvIndex) {
+	// metaDataを基にSRVの設定
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = metaData_.format;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;						// 2Dテクスチャ
+	srvDesc.Texture2D.MipLevels = UINT(metaData_.mipLevels);
+
+	// SRVを作成するDescriptorHeapの場所を決める
+	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU = dxCommon_->GetsrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart();
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU = dxCommon_->GetsrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart();
+	// 先頭はImGuiが使っているのでその次を使う
+	textureSrvHandleCPU.ptr += dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	textureSrvHandleGPU.ptr += dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	// SRVの生成
+	dxCommon_->GetDevice()->CreateShaderResourceView(textureResource, &srvDesc, textureSrvHandleCPU);
 }

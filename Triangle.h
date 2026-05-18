@@ -50,5 +50,10 @@ private:
 
 	// 頂点リソースにデータを書き込む
 	Vector4* vertexData_ = nullptr;
+
+	//struct VertexData_{
+	//	Vector4 pos_;
+	//	Vector2 texcoord_;
+	//};
 };
 

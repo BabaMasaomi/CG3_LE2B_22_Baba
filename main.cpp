@@ -3,6 +3,7 @@
 #include "WinApp.h"
 #include "DirectXCommon.h"
 #include "DXCManager.h"
+#include "TextureManager.h"
 #include "Camera.h"
 #include "TrianglePSO.h"
 #include "Triangle.h"
@@ -65,6 +66,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// DXCの初期化
 	DXCManager dxcManager;
 	dxcManager.Initialize();
+
+	// TextureManagerの初期化
+	TextureManager textureManager;
+	textureManager.Initialize(&dxCommon);
+	// テクスチャの読み込み
+	textureManager.LoadTexture("resources/uvChecker.png");
 
 	// ImGuiの初期化
 #ifdef USE_IMGUI
