@@ -3,9 +3,16 @@
 #include "Utility.h"
 #include <cassert>
 
+// デストラクタ
+TextureManager::~TextureManager() {
+	if (textureResource_) {
+		textureResource_->Release();
+		textureResource_ = nullptr;
+	}
+}
+
 void TextureManager::Initialize(DirectXCommon* dxCommon) {
 	dxCommon_ = dxCommon;
-	
 }
 
 /*-------------------- 1.Textureデータを読み込む --------------------*/	// mainなどでtextureManager.LoadTexture("resources/uvChecker.png");として呼び出す
@@ -25,13 +32,13 @@ DirectX::ScratchImage TextureManager::LoadTexture(const std::string& filePath) {
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
 
 	// 4.resource生成
-	ID3D12Resource* textureResource = CreateTextureResource(dxCommon_->GetDevice(), metadata);
+	textureResource_ = CreateTextureResource(dxCommon_->GetDevice(), metadata);
 
 	// 5.転送
-	UploadTextureData(textureResource, mipImages);
+	UploadTextureData(textureResource_, mipImages);
 
 	// 6. SRV生成
-	CreateSRV(textureResource, 1);
+	CreateSRV(textureResource_, 1);
 
 	// ミップマップ付きデータを返す
 	return mipImages;
@@ -65,6 +72,7 @@ ID3D12Resource* TextureManager::CreateTextureResource(ID3D12Device* device, cons
 		nullptr,															// Clear最適値。使わないのでnullptr
 		IID_PPV_ARGS(&resource));											// 作成するResourceポインタへのポインタ
 	assert(SUCCEEDED(hr));
+
 	return resource;
 }
 
@@ -97,11 +105,11 @@ void TextureManager::CreateSRV(ID3D12Resource* textureResource, uint32_t srvInde
 	srvDesc.Texture2D.MipLevels = UINT(metaData_.mipLevels);
 
 	// SRVを作成するDescriptorHeapの場所を決める
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU = dxCommon_->GetsrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart();
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU = dxCommon_->GetsrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart();
+	textureSrvHandleCPU_ = dxCommon_->GetsrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart();
+	textureSrvHandleGPU_ = dxCommon_->GetsrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart();
 	// 先頭はImGuiが使っているのでその次を使う
-	textureSrvHandleCPU.ptr += dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	textureSrvHandleGPU.ptr += dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	textureSrvHandleCPU_.ptr += dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	textureSrvHandleGPU_.ptr += dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	// SRVの生成
-	dxCommon_->GetDevice()->CreateShaderResourceView(textureResource, &srvDesc, textureSrvHandleCPU);
+	dxCommon_->GetDevice()->CreateShaderResourceView(textureResource, &srvDesc, textureSrvHandleCPU_);
 }

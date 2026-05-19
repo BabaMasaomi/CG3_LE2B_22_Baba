@@ -5,13 +5,14 @@
 // 前方宣言
 class DirectXCommon;
 class TrianglePSO;
+class TextureManager;
 class Camera;
 
 class Triangle {
 public:
 	~Triangle();
 
-	void Initialize(DirectXCommon* dxCommon, TrianglePSO* trianglePSO);
+	void Initialize(DirectXCommon* dxCommon, TrianglePSO* trianglePSO, TextureManager* textureManager);
 	void Update(const Camera& camera);
 	void Draw();
 
@@ -31,6 +32,7 @@ private:
 	// DirectXCommonとTrianglePSOは、描画に必要な情報を持っているので、ポインタを用意しておく
 	DirectXCommon* dxCommon_ = nullptr;
 	TrianglePSO* trianglePSO_ = nullptr;
+	TextureManager* textureManager_ = nullptr;
 
 	// 頂点リソースと頂点バッファビュー
 	ID3D12Resource* vertexResource_ = nullptr;

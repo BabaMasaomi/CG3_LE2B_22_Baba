@@ -1,6 +1,7 @@
 #include "Triangle.h"
 #include "DirectXCommon.h"
 #include "TrianglePSO.h"
+#include "TextureManager.h"
 #include "Camera.h"
 #include "Utility.h"
 #include <cassert>
@@ -14,7 +15,7 @@ Triangle::~Triangle() {
 }
 
 /*-------------------- 初期化 --------------------*/
-void Triangle::Initialize(DirectXCommon* dxCommon, TrianglePSO* trianglePSO) {
+void Triangle::Initialize(DirectXCommon* dxCommon, TrianglePSO* trianglePSO, TextureManager* textureManager) {
 	// 図形の変換を管理するためのTransformとワールド行列
 	transform_.scale = { 1.0f,1.0f,1.0f };
 	transform_.rotate = { 0.0f,0.0f,0.0f };
@@ -24,6 +25,7 @@ void Triangle::Initialize(DirectXCommon* dxCommon, TrianglePSO* trianglePSO) {
 	// DirectXCommonとTrianglePSOのポインタを保存しておく
 	dxCommon_ = dxCommon;
 	trianglePSO_ = trianglePSO;
+	textureManager_ = textureManager;
 
 	// 頂点リソースの生成と、VertexBufferViewの作成、頂点データの書き込み
 	CreateVertexResource();
@@ -81,7 +83,7 @@ void Triangle::CreateMaterialResource() {
 void Triangle::MapMaterial() {
 	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
 
-	*materialData_ = { 1.0f, 0.0f, 0.0f, 1.0f }; // 赤
+	*materialData_ = { 1.0f, 1.0f, 1.0f, 1.0f };		// ここで色を弄れる
 }
 
 /*-------------------- 変換行列用のResourceの生成 --------------------*/
@@ -102,7 +104,7 @@ void Triangle::Update(const Camera& camera) {
 	transform_.rotate.y += 0.02f;
 
 	// 回転を加える
-	Matrix4x4 worldMatrix_ = MakeAffineMatrix(
+	worldMatrix_ = MakeAffineMatrix(
 		transform_.scale,
 		transform_.rotate,
 		transform_.translate
@@ -133,6 +135,8 @@ void Triangle::Draw() {
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());	// マテリアルCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());		// wvp用のCBufferの場所を設定
+	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
+	commandList->SetGraphicsRootDescriptorTable(2, textureManager_->GetTextureSrvHandleGPU());
 	// 描画！(DrawCall)3頂点で一つのインスタンス
 	commandList->DrawInstanced(3, 1, 0, 0);
 }

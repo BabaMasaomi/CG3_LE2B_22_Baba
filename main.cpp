@@ -89,7 +89,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// Triangleの初期化
 	Triangle triangle;
-	triangle.Initialize(&dxCommon, &trianglePSO);
+	triangle.Initialize(&dxCommon, &trianglePSO, &textureManager);
 
 	// ログ出力
 	Log(logStream, "Start logging!");
