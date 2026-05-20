@@ -18,8 +18,11 @@ public:
 	// 2.DirectX12のTextureResourceを作る
 	ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata);
 
-	// 3.TextureResourceにデータを転送する
-	void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
+	// 3.CPUで書きこむ用にUploadHeapのResourceを作る
+	// 4.UploadHeapのResourceに対してCPUでデータを書きこむ
+	// 5.CommandListにUploadHeapのResource(3.)をTextureResource(2.)に転送するコマンドを積む
+	ID3D12Resource* UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages, ID3D12Device* device,
+		ID3D12GraphicsCommandList* commandList);
 
 	// ShaderResourceViewを作る
 	void CreateSRV(ID3D12Resource* textureResource, uint32_t srvIndex);
@@ -35,6 +38,9 @@ private:
 
 	// Meta情報を取得
 	DirectX::TexMetadata metaData_{};
+
+	// 
+	ID3D12Resource* intermediateResource_ = nullptr;
 
 	// SRVを作成するDescriptorHeapの場所を決める
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU_;

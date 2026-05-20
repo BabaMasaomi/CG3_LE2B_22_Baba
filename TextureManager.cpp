@@ -1,7 +1,9 @@
+#include "externals/DirectXTex/d3dx12.h"
 #include "TextureManager.h"
 #include "DirectXCommon.h"
 #include "Utility.h"
 #include <cassert>
+#include <vector>
 
 // デストラクタ
 TextureManager::~TextureManager() {
@@ -9,7 +11,13 @@ TextureManager::~TextureManager() {
 		textureResource_->Release();
 		textureResource_ = nullptr;
 	}
+
+	if (intermediateResource_) {
+		intermediateResource_->Release();
+		intermediateResource_ = nullptr;
+	}
 }
+
 
 void TextureManager::Initialize(DirectXCommon* dxCommon) {
 	dxCommon_ = dxCommon;
@@ -29,13 +37,14 @@ DirectX::ScratchImage TextureManager::LoadTexture(const std::string& filePath) {
 	assert(SUCCEEDED(hr));
 
 	// 3.metaDataを取得する
-	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
+	metaData_ = mipImages.GetMetadata();
+	const DirectX::TexMetadata& metadata = metaData_;
 
 	// 4.resource生成
 	textureResource_ = CreateTextureResource(dxCommon_->GetDevice(), metadata);
 
 	// 5.転送
-	UploadTextureData(textureResource_, mipImages);
+	intermediateResource_ = UploadTextureData(textureResource_, mipImages, dxCommon_->GetDevice(), dxCommon_->GetCommandList());
 
 	// 6. SRV生成
 	CreateSRV(textureResource_, 1);
@@ -56,11 +65,9 @@ ID3D12Resource* TextureManager::CreateTextureResource(ID3D12Device* device, cons
 	resourceDesc.SampleDesc.Count = 1;										// サンプリングカウント。1固定
 	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION(metadata.dimension);	// Textureの次元数。普段使っているのは2次元
 
-	// 2.利用するHeapの設定(非常に特殊な運用。02_04exで一般的な運用例がある)
+	// 2.利用するHeapの設定
 	D3D12_HEAP_PROPERTIES heapPropaties{};
-	heapPropaties.Type = D3D12_HEAP_TYPE_CUSTOM;							// 細かい設定を行う
-	heapPropaties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;		// WriteBackポリシーでCPUアクセス可能
-	heapPropaties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;				// プロセッサの近くに配置
+	heapPropaties.Type = D3D12_HEAP_TYPE_DEFAULT;							// 細かい設定を行う
 
 	// 3.Resourceを生成する
 	ID3D12Resource* resource = nullptr;
@@ -68,7 +75,7 @@ ID3D12Resource* TextureManager::CreateTextureResource(ID3D12Device* device, cons
 		&heapPropaties,														// Heap設定
 		D3D12_HEAP_FLAG_NONE,												// Heapの特殊な設定。特に無し
 		&resourceDesc,														// Resourceの設定
-		D3D12_RESOURCE_STATE_GENERIC_READ,									// 初回のResourceState。Textureは基本読むだけ
+		D3D12_RESOURCE_STATE_COPY_DEST,										// データ転送される設定
 		nullptr,															// Clear最適値。使わないのでnullptr
 		IID_PPV_ARGS(&resource));											// 作成するResourceポインタへのポインタ
 	assert(SUCCEEDED(hr));
@@ -76,23 +83,28 @@ ID3D12Resource* TextureManager::CreateTextureResource(ID3D12Device* device, cons
 	return resource;
 }
 
-/*-------------------- 3.TextureResourceにデータを転送する --------------------*/
-void TextureManager::UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages) {
-	// Meta情報を取得
-	metaData_ = mipImages.GetMetadata();
-	// 全MipMapについて
-	for (size_t mipLevel = 0; mipLevel < metaData_.mipLevels; ++mipLevel) {
-		// MipMapLevelを指定して各Imageを取得
-		const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
-		// Textureに転送
-		HRESULT hr = texture->WriteToSubresource(
-			UINT(mipLevel),
-			nullptr,					// 全領域へコピー
-			img->pixels,				// 元データアドレス
-			UINT(img->rowPitch),		// 1ラインサイズ
-			UINT(img->slicePitch));		// 1枚サイズ
-		assert(SUCCEEDED(hr));
-	}
+/*-------------------- 3.4.5.を一括で行う --------------------*/
+[[nodiscard]]
+ID3D12Resource* TextureManager::UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages, ID3D12Device* device,
+	ID3D12GraphicsCommandList* commandList
+) {
+	// 3.CPUで書きこむ用にUploadHeapのResourceを作る
+	std::vector<D3D12_SUBRESOURCE_DATA> subresource;
+	DirectX::PrepareUpload(device, mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subresource);
+	uint64_t intermediateSize = GetRequiredIntermediateSize(texture, 0, UINT(subresource.size()));
+	intermediateResource_ = CreateBufferResource(device, intermediateSize);
+	// 4.UploadHeapのResourceに対してCPUでデータを書きこむ
+	UpdateSubresources(commandList, texture, intermediateResource_, 0, 0, UINT(subresource.size()), subresource.data());
+	// 5.CommandListにUploadHeapのResource(3.)をTextureResource(2.)に転送するコマンドを積む
+	D3D12_RESOURCE_BARRIER barrier{};
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier.Transition.pResource = texture;
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;
+	commandList->ResourceBarrier(1, &barrier);
+	return intermediateResource_;
 }
 
 /*-------------------- ShaderResourceViewを作る --------------------*/
@@ -108,8 +120,8 @@ void TextureManager::CreateSRV(ID3D12Resource* textureResource, uint32_t srvInde
 	textureSrvHandleCPU_ = dxCommon_->GetsrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart();
 	textureSrvHandleGPU_ = dxCommon_->GetsrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart();
 	// 先頭はImGuiが使っているのでその次を使う
-	textureSrvHandleCPU_.ptr += dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	textureSrvHandleGPU_.ptr += dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	textureSrvHandleCPU_.ptr += dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)* srvIndex;
+	textureSrvHandleGPU_.ptr += dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)* srvIndex;
 	// SRVの生成
 	dxCommon_->GetDevice()->CreateShaderResourceView(textureResource, &srvDesc, textureSrvHandleCPU_);
 }
