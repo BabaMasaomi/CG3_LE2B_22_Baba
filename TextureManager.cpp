@@ -11,11 +11,6 @@ TextureManager::~TextureManager() {
 		textureResource_->Release();
 		textureResource_ = nullptr;
 	}
-
-	if (intermediateResource_) {
-		intermediateResource_->Release();
-		intermediateResource_ = nullptr;
-	}
 }
 
 
@@ -24,7 +19,7 @@ void TextureManager::Initialize(DirectXCommon* dxCommon) {
 }
 
 /*-------------------- 1.Textureデータを読み込む --------------------*/	// mainなどでtextureManager.LoadTexture("resources/uvChecker.png");として呼び出す
-DirectX::ScratchImage TextureManager::LoadTexture(const std::string& filePath) {
+ID3D12Resource* TextureManager::LoadTexture(const std::string& filePath) {
 	// 1.テクスチャファイルを読み込んでプログラムで扱えるようにする
 	DirectX::ScratchImage image{};
 	std::wstring filePathW = ConvertString(filePath);
@@ -44,13 +39,13 @@ DirectX::ScratchImage TextureManager::LoadTexture(const std::string& filePath) {
 	textureResource_ = CreateTextureResource(dxCommon_->GetDevice(), metadata);
 
 	// 5.転送
-	intermediateResource_ = UploadTextureData(textureResource_, mipImages, dxCommon_->GetDevice(), dxCommon_->GetCommandList());
+	ID3D12Resource* intermediateResource = UploadTextureData(textureResource_, mipImages, dxCommon_->GetDevice(), dxCommon_->GetCommandList());
 
 	// 6. SRV生成
 	CreateSRV(textureResource_, 1);
 
 	// ミップマップ付きデータを返す
-	return mipImages;
+	return intermediateResource;
 }
 
 /*-------------------- 2.DirectX12のTextureResourceを作る --------------------*/
@@ -86,15 +81,14 @@ ID3D12Resource* TextureManager::CreateTextureResource(ID3D12Device* device, cons
 /*-------------------- 3.4.5.を一括で行う --------------------*/
 [[nodiscard]]
 ID3D12Resource* TextureManager::UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages, ID3D12Device* device,
-	ID3D12GraphicsCommandList* commandList
-) {
+	ID3D12GraphicsCommandList* commandList) {
 	// 3.CPUで書きこむ用にUploadHeapのResourceを作る
 	std::vector<D3D12_SUBRESOURCE_DATA> subresource;
 	DirectX::PrepareUpload(device, mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subresource);
 	uint64_t intermediateSize = GetRequiredIntermediateSize(texture, 0, UINT(subresource.size()));
-	intermediateResource_ = CreateBufferResource(device, intermediateSize);
+	ID3D12Resource* intermediateResource = CreateBufferResource(device, intermediateSize);
 	// 4.UploadHeapのResourceに対してCPUでデータを書きこむ
-	UpdateSubresources(commandList, texture, intermediateResource_, 0, 0, UINT(subresource.size()), subresource.data());
+	UpdateSubresources(commandList, texture, intermediateResource, 0, 0, UINT(subresource.size()), subresource.data());
 	// 5.CommandListにUploadHeapのResource(3.)をTextureResource(2.)に転送するコマンドを積む
 	D3D12_RESOURCE_BARRIER barrier{};
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -104,7 +98,7 @@ ID3D12Resource* TextureManager::UploadTextureData(ID3D12Resource* texture, const
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;
 	commandList->ResourceBarrier(1, &barrier);
-	return intermediateResource_;
+	return intermediateResource;
 }
 
 /*-------------------- ShaderResourceViewを作る --------------------*/
@@ -120,8 +114,8 @@ void TextureManager::CreateSRV(ID3D12Resource* textureResource, uint32_t srvInde
 	textureSrvHandleCPU_ = dxCommon_->GetsrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart();
 	textureSrvHandleGPU_ = dxCommon_->GetsrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart();
 	// 先頭はImGuiが使っているのでその次を使う
-	textureSrvHandleCPU_.ptr += dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)* srvIndex;
-	textureSrvHandleGPU_.ptr += dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)* srvIndex;
+	textureSrvHandleCPU_.ptr += dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV) * srvIndex;
+	textureSrvHandleGPU_.ptr += dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV) * srvIndex;
 	// SRVの生成
 	dxCommon_->GetDevice()->CreateShaderResourceView(textureResource, &srvDesc, textureSrvHandleCPU_);
 }

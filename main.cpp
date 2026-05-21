@@ -71,10 +71,15 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	TextureManager textureManager;
 	textureManager.Initialize(&dxCommon);
 	// テクスチャの読み込み
-	textureManager.LoadTexture("resources/uvChecker.png");
+	ID3D12Resource* intermediateResource = textureManager.LoadTexture("resources/uvChecker.png");
 	dxCommon.ExecuteCommandList();	// コマンドを実行
 	dxCommon.WaitForGPU();			// GPUを待機
 	dxCommon.ResetCommandList();	// commandListのReset
+	// intermediateResourceをRerease
+	if (intermediateResource) {
+		intermediateResource->Release();
+		intermediateResource = nullptr;
+	}
 
 	// ImGuiの初期化
 #ifdef USE_IMGUI

@@ -13,7 +13,7 @@ public:
 	void Initialize(DirectXCommon* dxCommon);
 
 	// 1.Textureデータを読み込む(後でuint32_tを返す設計にしよう)
-	DirectX::ScratchImage LoadTexture(const std::string& filePath);
+	ID3D12Resource* LoadTexture(const std::string& filePath);
 
 	// 2.DirectX12のTextureResourceを作る
 	ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata);
@@ -38,9 +38,6 @@ private:
 
 	// Meta情報を取得
 	DirectX::TexMetadata metaData_{};
-
-	// 中間リソースを作成
-	ID3D12Resource* intermediateResource_ = nullptr;
 
 	// SRVを作成するDescriptorHeapの場所を決める
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU_;
