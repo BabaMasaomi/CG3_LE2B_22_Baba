@@ -39,7 +39,7 @@ private:
 	// Meta情報を取得
 	DirectX::TexMetadata metaData_{};
 
-	// 
+	// 中間リソースを作成
 	ID3D12Resource* intermediateResource_ = nullptr;
 
 	// SRVを作成するDescriptorHeapの場所を決める

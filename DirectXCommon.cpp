@@ -307,6 +307,32 @@ void DirectXCommon::PostDraw() {
 	assert(SUCCEEDED(hr));
 }
 
+/*-------------------- コマンドを実行 --------------------*/
+void DirectXCommon::ExecuteCommandList() {
+	// コマンドリストを閉じる
+	HRESULT hr = commandList_->Close();
+	assert(SUCCEEDED(hr));
+	// GPUへ投げる
+	ID3D12CommandList* commandLists[] = { commandList_ };
+	commandQueue_->ExecuteCommandLists(1, commandLists);
+}
+
+/*-------------------- GPUを待機 --------------------*/
+void DirectXCommon::WaitForGPU() {
+	fenceValue_++;
+	commandQueue_->Signal(fence_, fenceValue_);
+	if (fence_->GetCompletedValue() < fenceValue_) {
+		fence_->SetEventOnCompletion(fenceValue_, fenceEvent_);
+		WaitForSingleObject(fenceEvent_, INFINITE);
+	}
+}
+
+/*-------------------- commandListのReset --------------------*/
+void DirectXCommon::ResetCommandList() {
+	commandAllocator_->Reset();
+	commandList_->Reset(commandAllocator_, nullptr);
+}
+
 /*-------------------- ViewPortとScissorRectの生成 --------------------*/
 void DirectXCommon::CreateViewport() {
 	// ビューポートの設定

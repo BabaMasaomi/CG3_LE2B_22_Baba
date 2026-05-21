@@ -18,6 +18,10 @@ public:
 	void PreDraw();
 	void PostDraw();
 
+	void ExecuteCommandList();			// コマンドを実行
+	void WaitForGPU();					// GPUを待機
+	void ResetCommandList();			// commandListのReset
+
 	// ゲッター
 	ID3D12Device* GetDevice() const { return device_; }
 	ID3D12GraphicsCommandList* GetCommandList() const { return commandList_; }

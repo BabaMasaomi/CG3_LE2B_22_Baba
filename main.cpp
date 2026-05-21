@@ -72,6 +72,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	textureManager.Initialize(&dxCommon);
 	// テクスチャの読み込み
 	textureManager.LoadTexture("resources/uvChecker.png");
+	dxCommon.ExecuteCommandList();	// コマンドを実行
+	dxCommon.WaitForGPU();			// GPUを待機
+	dxCommon.ResetCommandList();	// commandListのReset
 
 	// ImGuiの初期化
 #ifdef USE_IMGUI
