@@ -61,7 +61,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// DirectXの初期化
 	DirectXCommon dxCommon;
-	dxCommon.Initialize(winApp.GetHwnd());
+	dxCommon.Initialize(winApp.GetHwnd(), winApp.kClientWidth_, winApp.kClientHeight_);
 
 	// DXCの初期化
 	DXCManager dxcManager;
@@ -75,7 +75,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	dxCommon.ExecuteCommandList();	// コマンドを実行
 	dxCommon.WaitForGPU();			// GPUを待機
 	dxCommon.ResetCommandList();	// commandListのReset
-	// intermediateResourceをRerease
+	// intermediateResourceをRelease
 	if (intermediateResource) {
 		intermediateResource->Release();
 		intermediateResource = nullptr;

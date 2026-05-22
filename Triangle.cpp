@@ -122,7 +122,6 @@ void Triangle::Update(const Camera& camera) {
 
 	// WVP行列を計算して、CBufferに書き込む
 	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix_, camera.GetViewProjectionMatrix());
-
 	wvpMatrixData_->WVP = worldViewProjectionMatrix;
 }
 

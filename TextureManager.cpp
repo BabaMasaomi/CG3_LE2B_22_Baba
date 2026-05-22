@@ -87,8 +87,10 @@ ID3D12Resource* TextureManager::UploadTextureData(ID3D12Resource* texture, const
 	DirectX::PrepareUpload(device, mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subresource);
 	uint64_t intermediateSize = GetRequiredIntermediateSize(texture, 0, UINT(subresource.size()));
 	ID3D12Resource* intermediateResource = CreateBufferResource(device, intermediateSize);
+
 	// 4.UploadHeapのResourceに対してCPUでデータを書きこむ
 	UpdateSubresources(commandList, texture, intermediateResource, 0, 0, UINT(subresource.size()), subresource.data());
+
 	// 5.CommandListにUploadHeapのResource(3.)をTextureResource(2.)に転送するコマンドを積む
 	D3D12_RESOURCE_BARRIER barrier{};
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;

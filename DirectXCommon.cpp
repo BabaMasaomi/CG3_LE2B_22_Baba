@@ -24,6 +24,8 @@ DirectXCommon::~DirectXCommon() {
 		}
 	}
 	if (swapChain_) swapChain_->Release();
+	if (dsvDescriptorHeap_) dsvDescriptorHeap_->Release();
+	if (depthStencilResource_) depthStencilResource_->Release();
 	if (rtvDescriptorHeap_) rtvDescriptorHeap_->Release();
 	if (srvDescriptorHeap_) srvDescriptorHeap_->Release();
 	if (fence_) fence_->Release();
@@ -49,15 +51,16 @@ DirectXCommon::~DirectXCommon() {
 }
 
 /*-------------------- DirectXの初期化 --------------------*/
-void DirectXCommon::Initialize(HWND hwnd) {
-	InitializeDebugLayer();		// デバッグレイヤーの初期化
-	CreateDevice();				// 1. Factoryの生成、アダプタ選択、D3D12デバイス生成
-	InitializeInfoQueue();		// Debug情報の初期化
-	CreateCommand();			// 2. コマンドキュー、コマンドアロケータ、コマンドリストの生成
-	CreateSwapChain(hwnd);		// 3. SwapChainの生成
-	CreateRenderTargetView();	// 4. レンダーターゲットビューの生成
-	CreateFence();				// 5. Fenceの生成
-	CreateViewport();			// 描画用のViewPortとScissorRectの生成
+void DirectXCommon::Initialize(HWND hwnd, int32_t width, int32_t height) {
+	InitializeDebugLayer();					// デバッグレイヤーの初期化
+	CreateDevice();							// 1. Factoryの生成、アダプタ選択、D3D12デバイス生成
+	InitializeInfoQueue();					// Debug情報の初期化
+	CreateCommand();						// 2. コマンドキュー、コマンドアロケータ、コマンドリストの生成
+	CreateSwapChain(hwnd);					// 3. SwapChainの生成
+	CreateRenderTargetView();				// 4. レンダーターゲットビューの生成
+	CreateFence();							// 5. Fenceの生成
+	CreateViewport();						// 描画用のViewPortとScissorRectの生成
+	depthStencilResource_ = CreateDepthStencilTextureResource(device_, winApp_->kClientWidth_, winApp_->kClientHeight_);
 }
 
 /*-------------------- デバッグレイヤーの初期化 --------------------*/
@@ -206,6 +209,45 @@ void DirectXCommon::CreateRenderTargetView() {
 	rtvHandles_[1].ptr = rtvHandles_[0].ptr + device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	// 2つ目の作成
 	device_->CreateRenderTargetView(swapChainResources_[1], &rtvDesc_, rtvHandles_[1]);
+}
+
+/*--------------------  --------------------*/
+ID3D12Resource* DirectXCommon::CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height) {
+	// Resource設定
+	D3D12_RESOURCE_DESC resourceDesc{};
+	resourceDesc.Width = width;
+	resourceDesc.Height = height;
+	resourceDesc.MipLevels = 1;
+	resourceDesc.DepthOrArraySize = 1;
+	resourceDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	resourceDesc.SampleDesc.Count = 1;
+	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+
+	// Heap設定
+	D3D12_HEAP_PROPERTIES heapProperties{};
+	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;
+
+	// 深度初期値
+	D3D12_CLEAR_VALUE depthClearValue{};
+	depthClearValue.DepthStencil.Depth = 1.0f;
+	//depthClearValue.DepthStencil.Stencil = 0;
+	depthClearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+	// Resource生成
+	ID3D12Resource* resource = nullptr;
+	HRESULT hr = device->CreateCommittedResource(
+		&heapProperties,
+		D3D12_HEAP_FLAG_NONE,
+		&resourceDesc,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		&depthClearValue,
+		IID_PPV_ARGS(&resource));
+	assert(SUCCEEDED(hr));
+	return resource;
+}
+void CreateDSV() {
+
 }
 
 /*-------------------- 5.Fenceの生成とEventの作成 --------------------*/

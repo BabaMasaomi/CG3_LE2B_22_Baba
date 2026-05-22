@@ -9,11 +9,13 @@
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 
+class WinApp;
+
 class DirectXCommon {
 public:
 	~DirectXCommon();
 
-	void Initialize(HWND hwnd);
+	void Initialize(HWND hwnd, int32_t width, int32_t height);
 
 	void PreDraw();
 	void PostDraw();
@@ -32,14 +34,18 @@ public:
 	D3D12_RENDER_TARGET_VIEW_DESC GetrtvDesc() const { return rtvDesc_; }
 
 private:
-	void InitializeDebugLayer();        // デバッグレイヤーの初期化
-	void CreateDevice();                // 1. Factoryの生成、アダプタ選択、D3D12デバイス生成
-	void InitializeInfoQueue();         // Debug情報の初期化
-	void CreateCommand();               // 2. コマンドキュー、コマンドアロケータ、コマンドリストの生成
-	void CreateSwapChain(HWND hwnd);    // 3. SwapChainの生成
-	void CreateRenderTargetView();      // 4. レンダーターゲットビューの生成
-	void CreateFence();                 // 5. Fenceの生成
-	void CreateViewport();              // 描画用のViewPortとScissorRectの生成
+	WinApp* winApp_ = nullptr;
+
+	void InitializeDebugLayer();				// デバッグレイヤーの初期化
+	void CreateDevice();						// 1. Factoryの生成、アダプタ選択、D3D12デバイス生成
+	void InitializeInfoQueue();					// Debug情報の初期化
+	void CreateCommand();						// 2. コマンドキュー、コマンドアロケータ、コマンドリストの生成
+	void CreateSwapChain(HWND hwnd);			// 3. SwapChainの生成
+	void CreateRenderTargetView();				// 4. レンダーターゲットビューの生成
+	ID3D12Resource* CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height);
+	void CreateDSV();
+	void CreateFence();							// 5. Fenceの生成
+	void CreateViewport();						// 描画用のViewPortとScissorRectの生成
 
 #ifdef _DEBUG
 	// デバッグレイヤーのコントローラー
@@ -67,7 +73,13 @@ private:
 	// ディスクリプタヒープを作成
 	ID3D12DescriptorHeap* rtvDescriptorHeap_ = nullptr;     // RTV用
 	ID3D12DescriptorHeap* srvDescriptorHeap_ = nullptr;     // SRV用
-	// 
+
+	// CreateDepthStencilTextureResource()用
+	ID3D12Resource* depthStencilResource_ = nullptr;
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandleCPU_{};
+	ID3D12DescriptorHeap* dsvDescriptorHeap_ = nullptr;
+
+	// スワップチェーンの設定
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc_{};
 	// SwapChainからResourceを持ってくる
 	ID3D12Resource* swapChainResources_[2] = {};
