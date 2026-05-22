@@ -13,7 +13,7 @@ TextureManager::~TextureManager() {
 	}
 }
 
-
+/*-------------------- 初期化 --------------------*/
 void TextureManager::Initialize(DirectXCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 }
