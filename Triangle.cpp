@@ -92,8 +92,8 @@ void Triangle::CreateMaterialResource() {
 /*-------------------- MaterialResourceにデータを書き込む --------------------*/
 void Triangle::MapMaterial() {
 	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
-
-	*materialData_ = { 1.0f, 1.0f, 1.0f, 1.0f };		// ここで色を弄れる
+	// ここで色を弄れる
+	*materialData_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 }
 
 /*-------------------- 変換行列用のResourceの生成 --------------------*/

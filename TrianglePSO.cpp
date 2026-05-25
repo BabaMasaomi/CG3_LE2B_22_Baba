@@ -61,6 +61,15 @@ void TrianglePSO::CreateGraphicsPipeline() {
 	);
 	assert(pixelShaderBlob != nullptr);
 
+	// DepthStencilStateの設定
+	D3D12_DEPTH_STENCIL_DESC depthStencilDesc{};
+	// Depthの機能を有効化する
+	depthStencilDesc.DepthEnable = true;
+	//書き込みする
+	depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+	// 比較関数はLessEqual (近ければ描画される)
+	depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+
 	// PSOの生成
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
 	graphicsPipelineStateDesc.pRootSignature = rootSignature_;													// RootSignature
@@ -74,9 +83,9 @@ void TrianglePSO::CreateGraphicsPipeline() {
 	graphicsPipelineStateDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	// 利用するトポロジ(形状)のタイプ。今回は三角形
 	graphicsPipelineStateDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	// 深度ステンシルの設定。今回は使わないので、深度もステンシルも無効にする
-	graphicsPipelineStateDesc.DepthStencilState.DepthEnable = false;
-	graphicsPipelineStateDesc.DepthStencilState.StencilEnable = false;
+	// 深度ステンシルの設定
+	graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
+	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	// どの様に画面に打ち込むかの設定(気にせんで良い)
 	graphicsPipelineStateDesc.SampleDesc.Count = 1;
 	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;

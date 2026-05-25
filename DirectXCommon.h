@@ -42,8 +42,9 @@ private:
 	void CreateCommand();						// 2. コマンドキュー、コマンドアロケータ、コマンドリストの生成
 	void CreateSwapChain(HWND hwnd);			// 3. SwapChainの生成
 	void CreateRenderTargetView();				// 4. レンダーターゲットビューの生成
-	ID3D12Resource* CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height);
-	void CreateDSV();
+	// 深度バッファの生成
+	ID3D12Resource* CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height);	// DepthStencilTextureResourceを作成
+	void DepthStencilView();	// DepthStencilViewを作成
 	void CreateFence();							// 5. Fenceの生成
 	void CreateViewport();						// 描画用のViewPortとScissorRectの生成
 
