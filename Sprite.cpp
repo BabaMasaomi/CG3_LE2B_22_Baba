@@ -19,7 +19,7 @@ void Sprite::Initialize(DirectXCommon* dxCommon, WinApp* winApp) {
 	winApp_ = winApp;
 
 	// CPUで動かす用のTransformを作る
-	transform_ = { {1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };	// ここ要修正かな？
+	transform_ = { {1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };
 
 	// VertexResourceとVertexBufferViewを用意
 	CreateVertexResource();
