@@ -7,6 +7,7 @@
 #include "Camera.h"
 #include "TrianglePSO.h"
 #include "Triangle.h"
+#include "Sprite.h"
 // Debug用のあれこれを使える様にする
 #include <dbghelp.h>
 #include <strsafe.h>
@@ -99,6 +100,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	Triangle triangle;
 	triangle.Initialize(&dxCommon, &trianglePSO, &textureManager);
 
+	// Spriteの初期化
+	Sprite sprite;
+	sprite.Initialize(&dxCommon,&winApp);
+
 	// ログ出力
 	Log(logStream, "Start logging!");
 
@@ -108,10 +113,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	while (!winApp.IsEndGame()) {
 		winApp.ProcessMessage();
 
-
 		/*-------------------- 更新処理 --------------------*/
 		camera.Update();
 		triangle.Update(camera);
+		sprite.Update();
 
 		/*-------------------- 描画処理 --------------------*/
 		dxCommon.PreDraw();		// 描画前の処理
@@ -126,6 +131,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		// 三角形の描画
 		triangle.Draw();
+
+		// スプライトの描画
+		sprite.Draw();
 
 		// ImGuiの描画
 #ifdef USE_IMGUI

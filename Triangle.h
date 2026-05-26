@@ -34,6 +34,12 @@ private:
 	TrianglePSO* trianglePSO_ = nullptr;
 	TextureManager* textureManager_ = nullptr;
 
+	// 頂点リソースにデータを書き込む
+	struct VertexData{
+		Vector4 pos;
+		Vector2 texcoord;
+	};
+
 	// 頂点リソースと頂点バッファビュー
 	ID3D12Resource* vertexResource_ = nullptr;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
@@ -49,11 +55,5 @@ private:
 	// 図形の変換を管理するためのTransformとワールド行列
 	Transform transform_;
 	Matrix4x4 worldMatrix_{};
-
-	// 頂点リソースにデータを書き込む
-	struct VertexData{
-		Vector4 pos;
-		Vector2 texcoord;
-	};
 };
 

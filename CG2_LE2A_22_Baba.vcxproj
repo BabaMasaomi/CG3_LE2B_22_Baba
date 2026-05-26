@@ -121,6 +121,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="ImGuiManager.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Triangle.cpp" />
     <ClCompile Include="TrianglePSO.cpp" />
@@ -141,6 +142,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
     <ClInclude Include="ImGuiManager.h" />
     <ClInclude Include="Logger.h" />
+    <ClInclude Include="Sprite.h" />
     <ClInclude Include="struct.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Triangle.h" />
