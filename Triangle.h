@@ -17,6 +17,7 @@ public:
 	void Draw();
 
 private:
+	// VertexResourceとVertexBufferViewの作成関数
 	void CreateVertexResource();
 	void CreateVertexBufferView();
 	void MapVertexData();

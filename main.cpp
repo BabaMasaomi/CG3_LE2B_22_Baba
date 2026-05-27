@@ -5,9 +5,9 @@
 #include "DXCManager.h"
 #include "TextureManager.h"
 #include "Camera.h"
-#include "TrianglePSO.h"
-#include "Triangle.h"
 #include "Sprite.h"
+#include "Sphere.h"
+#include "SpherePSO.h"
 // Debug用のあれこれを使える様にする
 #include <dbghelp.h>
 #include <strsafe.h>
@@ -92,17 +92,18 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	Camera camera;
 	camera.Initialize(WinApp::kClientWidth_, WinApp::kClientHeight_);
 
-	// TrianglePSOの初期化
-	TrianglePSO trianglePSO;
-	trianglePSO.Initialize(&dxCommon, &dxcManager);
+	// SpherePSOの初期化
+	SpherePSO spherePSO;
+	spherePSO.Initialize(&dxCommon, &dxcManager);
 
-	// Triangleの初期化
-	Triangle triangle;
-	triangle.Initialize(&dxCommon, &trianglePSO, &textureManager);
+	// Sphereの初期化
+	Sphere sphere;
+	sphere.Initialize(&dxCommon, &spherePSO, &textureManager);
+
 
 	// Spriteの初期化
 	Sprite sprite;
-	sprite.Initialize(&dxCommon,&winApp);
+	sprite.Initialize(&dxCommon, &winApp);
 
 	// ログ出力
 	Log(logStream, "Start logging!");
@@ -115,7 +116,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		/*-------------------- 更新処理 --------------------*/
 		camera.Update();
-		triangle.Update(camera);
+		sphere.Update(camera);
 		sprite.Update();
 
 		/*-------------------- 描画処理 --------------------*/
@@ -130,7 +131,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 #endif
 
 		// 三角形の描画
-		triangle.Draw();
+		//triangle.Draw();
+		sphere.Draw();
 
 		// スプライトの描画
 		sprite.Draw();
