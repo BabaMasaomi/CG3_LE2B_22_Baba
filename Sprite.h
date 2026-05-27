@@ -15,6 +15,7 @@ public:
 	void Draw();
 
 private:
+	// VertexResourceとVertexBufferViewの作成関数
 	void CreateVertexResource();
 	void CreateVertexBufferView();
 	void MapVertexData();
@@ -23,7 +24,7 @@ private:
 	void CreateTransformationMatrixResource();
 	void MapTransformationMatrix();
 
-	// DirectXCommonのポインタを用意しておく
+	// ポインタを用意しておく
 	DirectXCommon* dxCommon_ = nullptr;
 	WinApp* winApp_ = nullptr;
 

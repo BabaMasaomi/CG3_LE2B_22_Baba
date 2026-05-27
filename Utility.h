@@ -43,5 +43,8 @@ Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2);
 // ビューポート変換行列
 Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth);
 
+// 転置行列
+Matrix4x4 Transpose(const Matrix4x4& m);
+
 // 座標変換行列
 Vector3 CoordinateTransform(const Vector3& vector, const Matrix4x4& matrix);

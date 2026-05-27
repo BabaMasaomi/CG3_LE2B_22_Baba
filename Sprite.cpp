@@ -26,7 +26,7 @@ void Sprite::Initialize(DirectXCommon* dxCommon, WinApp* winApp) {
 	CreateVertexBufferView();
 	MapVertexData();
 
-	// Transform周りの作成
+	// 変換行列用のResourceとデータの作成関数
 	CreateTransformationMatrixResource();
 	MapTransformationMatrix();
 }
@@ -95,6 +95,8 @@ void Sprite::Update() {
 /*-------------------- 描画 --------------------*/
 void Sprite::Draw() {
 	auto* commandList = dxCommon_->GetCommandList();
+
+
 	// 形状を設定
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// VertexBufferViewを設定

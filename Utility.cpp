@@ -127,8 +127,8 @@ Matrix4x4 MakeRotateXMatrix(float radian) {
 	Matrix4x4 rotateXMatrix = {};
 	rotateXMatrix.m[0][0] = 1.0f;
 	rotateXMatrix.m[1][1] = std::cos(radian);
-	rotateXMatrix.m[1][2] = std::sin(radian);
-	rotateXMatrix.m[2][1] = -std::sin(radian);
+	rotateXMatrix.m[1][2] = -std::sin(radian);
+	rotateXMatrix.m[2][1] = std::sin(radian);
 	rotateXMatrix.m[2][2] = std::cos(radian);
 	rotateXMatrix.m[3][3] = 1.0f;
 	return rotateXMatrix;
@@ -138,9 +138,9 @@ Matrix4x4 MakeRotateXMatrix(float radian) {
 Matrix4x4 MakeRotateYMatrix(float radian) {
 	Matrix4x4 rotateYMatrix = {};
 	rotateYMatrix.m[0][0] = std::cos(radian);
-	rotateYMatrix.m[0][2] = -std::sin(radian);
+	rotateYMatrix.m[0][2] = std::sin(radian);
 	rotateYMatrix.m[1][1] = 1.0f;
-	rotateYMatrix.m[2][0] = std::sin(radian);
+	rotateYMatrix.m[2][0] = -std::sin(radian);
 	rotateYMatrix.m[2][2] = std::cos(radian);
 	rotateYMatrix.m[3][3] = 1.0f;
 	return rotateYMatrix;
@@ -150,8 +150,8 @@ Matrix4x4 MakeRotateYMatrix(float radian) {
 Matrix4x4 MakeRotateZMatrix(float radian) {
 	Matrix4x4 rotateZMatrix = {};
 	rotateZMatrix.m[0][0] = std::cos(radian);
-	rotateZMatrix.m[0][1] = std::sin(radian);
-	rotateZMatrix.m[1][0] = -std::sin(radian);
+	rotateZMatrix.m[0][1] = -std::sin(radian);
+	rotateZMatrix.m[1][0] = std::sin(radian);
 	rotateZMatrix.m[1][1] = std::cos(radian);
 	rotateZMatrix.m[2][2] = 1.0f;
 	rotateZMatrix.m[3][3] = 1.0f;
@@ -163,11 +163,16 @@ Matrix4x4 Inverse(const Matrix4x4& m) {
 	Matrix4x4 result = {};
 	float det = Determinant4x4(m);
 
+	assert(std::abs(det) > 0.000001f);
+
 	for (int row = 0; row < 4; row++) {
 		for (int column = 0; column < 4; column++) {
-			result.m[row][column] = Cofactor(m, column, row) / det;
+			// 余因子行列を転置して代入
+			result.m[column][row] =
+				Cofactor(m, row, column) / det;
 		}
 	}
+
 	return result;
 }
 
@@ -270,6 +275,19 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
 	result.m[3][1] = top + height / 2.0f;
 	result.m[3][2] = minDepth;
 	result.m[3][3] = 1.0f;
+	return result;
+}
+
+/*-------------------- 転置行列 --------------------*/
+Matrix4x4 Transpose(const Matrix4x4& m) {
+	Matrix4x4 result{};
+
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			result.m[i][j] = m.m[j][i];
+		}
+	}
+
 	return result;
 }
 
