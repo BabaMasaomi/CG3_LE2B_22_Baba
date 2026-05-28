@@ -56,17 +56,17 @@ DirectXCommon::~DirectXCommon() {
 
 /*-------------------- DirectXの初期化 --------------------*/
 void DirectXCommon::Initialize(HWND hwnd, int32_t width, int32_t height) {
-	InitializeDebugLayer();					// デバッグレイヤーの初期化
-	CreateDevice();							// 1. Factoryの生成、アダプタ選択、D3D12デバイス生成
-	InitializeInfoQueue();					// Debug情報の初期化
-	CreateCommand();						// 2. コマンドキュー、コマンドアロケータ、コマンドリストの生成
-	CreateSwapChain(hwnd);					// 3. SwapChainの生成
-	CreateRenderTargetView();				// 4. レンダーターゲットビューの生成
+	InitializeDebugLayer();		// デバッグレイヤーの初期化
+	CreateDevice();				// 1. Factoryの生成、アダプタ選択、D3D12デバイス生成
+	InitializeInfoQueue();		// Debug情報の初期化
+	CreateCommand();			// 2. コマンドキュー、コマンドアロケータ、コマンドリストの生成
+	CreateSwapChain(hwnd);		// 3. SwapChainの生成
+	CreateRenderTargetView();	// 4. レンダーターゲットビューの生成
 	// 深度バッファの生成
 	depthStencilResource_ = CreateDepthStencilTextureResource(device_, width, height);	// DepthStencilTextureResourceを作成
-	DepthStencilView();																	// DepthStencilViewを作成
-	CreateFence();							// 5. Fenceの生成
-	CreateViewport();						// 描画用のViewPortとScissorRectの生成
+	DepthStencilView();			// DepthStencilViewを作成
+	CreateFence();				// 5. Fenceの生成
+	CreateViewport();			// 描画用のViewPortとScissorRectの生成
 }
 
 /*-------------------- デバッグレイヤーの初期化 --------------------*/
@@ -265,15 +265,12 @@ void DirectXCommon::DepthStencilView() {
 	// DSVHeapの先頭にDSVを作る
 	dsvHandleCPU_ = dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();	// 先に保存しておく(使い回しできる様に)
 	device_->CreateDepthStencilView(depthStencilResource_, &dsvDesc, dsvHandleCPU_);
-	// device_->CreateDepthStencilView(depthStencilResource_, &dsvDesc, dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart());
-
 }
 
 /*-------------------- 5.Fenceの生成とEventの作成 --------------------*/
 void DirectXCommon::CreateFence() {
-	HRESULT hr;
-
-	hr = device_->CreateFence(fenceValue_, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence_));
+	// Fenceの生成。初期値は0、フラグはNone
+	HRESULT hr = device_->CreateFence(fenceValue_, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence_));
 	assert(SUCCEEDED(hr));
 
 	// FenceのSignalを待つためのEventを作成
@@ -292,7 +289,7 @@ void DirectXCommon::PreDraw() {
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	// Noneにしておく
 	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	// 
+	// TransitionBarrierの設定。全てのサブリソースに対して行う
 	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 	// バリアを張る対象のリソース。現在のバックバッファに対して行う
 	barrier.Transition.pResource = swapChainResources_[backBufferIndex];

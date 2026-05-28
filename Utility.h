@@ -19,11 +19,11 @@ Matrix4x4 MakeIdentity4x4();
 
 // アフィン変換行列を作成する関数
 Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
-Matrix4x4 MakeScaleMatrix(const Vector3& Scale);				// 拡大縮小行列
-Matrix4x4 MakeTranslateMatrix(const Vector3& translate);		// 平行移動行列
-Matrix4x4 MakeRotateXMatrix(float radian);						// X軸回転行列
-Matrix4x4 MakeRotateYMatrix(float radian);						// Y軸回転行列
-Matrix4x4 MakeRotateZMatrix(float radian);						// Z軸回転行列
+Matrix4x4 MakeScaleMatrix(const Vector3& Scale);			// 拡大縮小行列
+Matrix4x4 MakeTranslateMatrix(const Vector3& translate);	// 平行移動行列
+Matrix4x4 MakeRotateXMatrix(float radian);					// X軸回転行列
+Matrix4x4 MakeRotateYMatrix(float radian);					// Y軸回転行列
+Matrix4x4 MakeRotateZMatrix(float radian);					// Z軸回転行列
 
 // 逆数
 Matrix4x4 Inverse(const Matrix4x4& m);

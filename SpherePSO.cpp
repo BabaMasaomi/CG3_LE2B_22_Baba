@@ -2,7 +2,6 @@
 #include "DirectXCommon.h"
 #include "DXCManager.h"
 #include "Logger.h"
-#include <format>			// フォーマットの自動指定をしてくれる(+安全策)
 #include <cassert>
 
 SpherePSO::~SpherePSO() {
@@ -109,16 +108,14 @@ void SpherePSO::CreateRootSignature() {
 
 	// RootParameterを作成
 	D3D12_ROOT_PARAMETER rootParameters[3] = {};
-	// WVP用
-	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		// CBVを使う(b1のbと一致)
-	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;	// VertexShaderで使う
-	rootParameters[0].Descriptor.ShaderRegister = 0;						// レジスタ番号1を使う
-
 	// Material用
-	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		// CBVを使う(b0のbと一致)
-	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		// PixelShaderで使う
-	rootParameters[1].Descriptor.ShaderRegister = 1;						// レジスタ番号0とバインド(b0の0と一致)
-	
+	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		// CBVを使う(b0のbと一致)
+	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		// PixelShaderで使う
+	rootParameters[0].Descriptor.ShaderRegister = 0;						// レジスタ番号0とバインド(b0の0と一致)
+	// WVP用
+	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		// CBVを使う(b1のbと一致)
+	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;	// VertexShaderで使う
+	rootParameters[1].Descriptor.ShaderRegister = 1;						// レジスタ番号1を使う
 	descriptionRootSignature.pParameters = rootParameters;					// ルートパラメータ配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParameters);		// 配列の長さ
 	// DescriptorRangeを用意(SRVのため)
@@ -128,8 +125,8 @@ void SpherePSO::CreateRootSignature() {
 	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;									// SRVを使う
 	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;	// Offsetは自動計算
 	// SRV用
-	rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;					// DescriptorTableを使う
-	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;				// PixelShaderで使う
+	rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;		// DescriptorTableを使う
+	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;					// PixelShaderで使う
 	rootParameters[2].DescriptorTable.pDescriptorRanges = descriptorRange;				// Tableの中身の配列を指定
 	rootParameters[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);	// Tableで利用する数
 

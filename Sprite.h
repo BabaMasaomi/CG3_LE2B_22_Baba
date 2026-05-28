@@ -28,6 +28,7 @@ private:
 	DirectXCommon* dxCommon_ = nullptr;
 	WinApp* winApp_ = nullptr;
 
+	// 図形の変換を管理するためのTransform
 	Transform transform_;
 
 	// スプライト用頂点構造体

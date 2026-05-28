@@ -15,6 +15,7 @@ public:
 	ID3D12PipelineState* GetPipelineState() const { return pipelineState_; }
 
 private:
+	// RootSignatureとGraphicsPipelineの生成関数
 	void CreateRootSignature();
 	void CreateGraphicsPipeline();
 

@@ -13,7 +13,7 @@ ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {
 	D3D12_RESOURCE_DESC resourceDesc{};
 	// バッファリソース。テクスチャの場合は別の設定をする
 	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	resourceDesc.Width = sizeInBytes;						// リソースのサイズ。引数で指定
+	resourceDesc.Width = sizeInBytes;	// リソースのサイズ。引数で指定
 	// バッファの場合はこれらは全て1にする
 	resourceDesc.Height = 1;
 	resourceDesc.DepthOrArraySize = 1;
@@ -162,7 +162,6 @@ Matrix4x4 MakeRotateZMatrix(float radian) {
 Matrix4x4 Inverse(const Matrix4x4& m) {
 	Matrix4x4 result = {};
 	float det = Determinant4x4(m);
-
 	for (int row = 0; row < 4; row++) {
 		for (int column = 0; column < 4; column++) {
 			result.m[row][column] = Cofactor(m, column, row) / det;
@@ -182,14 +181,12 @@ float Determinant3x3(float m[3][3]) {
 float Cofactor(const Matrix4x4& m, int row, int column) {
 	float subMatrix[3][3];		// 計算用の3x3の部分行列
 	int subRow = 0;				// 部分行列の行インデックス
-
 	for (int i = 0; i < 4; i++) {
 		if (i == row) {
 			continue;
 		}
-
-		int subColumn = 0;		// 部分行列の列インデックス
-
+		// 部分行列の列インデックス
+		int subColumn = 0;
 		for (int j = 0; j < 4; j++) {
 			if (j == column) {
 				continue;
@@ -198,12 +195,9 @@ float Cofactor(const Matrix4x4& m, int row, int column) {
 			subMatrix[subRow][subColumn] = m.m[i][j];
 			subColumn++;
 		}
-
-		subRow++;
+		subRow++;	// 部分行列の行インデックスを進める
 	}
-
 	float result = Determinant3x3(subMatrix);
-
 	if ((row + column) % 2 == 1) {
 		result *= -1.0f;
 	}
@@ -213,7 +207,6 @@ float Cofactor(const Matrix4x4& m, int row, int column) {
 // 4x4の行列式の計算
 float Determinant4x4(const Matrix4x4& m) {
 	float det = 0.0f;
-
 	for (int column = 0; column < 4; column++) {
 		det += m.m[0][column] * Cofactor(m, 0, column);
 	}
@@ -276,25 +269,22 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
 /*-------------------- 転置行列 --------------------*/
 Matrix4x4 Transpose(const Matrix4x4& m) {
 	Matrix4x4 result{};
-
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {
 			result.m[i][j] = m.m[j][i];
 		}
 	}
-
 	return result;
 }
 
 /*-------------------- 座標変換 --------------------*/
 Vector3 CoordinateTransform(const Vector3& vector, const Matrix4x4& matrix) {
 	Vector3 result;
-
 	result.x = vector.x * matrix.m[0][0] + vector.y * matrix.m[1][0] + vector.z * matrix.m[2][0] + matrix.m[3][0];
 	result.y = vector.x * matrix.m[0][1] + vector.y * matrix.m[1][1] + vector.z * matrix.m[2][1] + matrix.m[3][1];
 	result.z = vector.x * matrix.m[0][2] + vector.y * matrix.m[1][2] + vector.z * matrix.m[2][2] + matrix.m[3][2];
 	float w = vector.x * matrix.m[0][3] + vector.y * matrix.m[1][3] + vector.z * matrix.m[2][3] + matrix.m[3][3];
-
+	// 0除算の防止
 	assert(w != 0.0f);
 	result.x /= w;
 	result.y /= w;

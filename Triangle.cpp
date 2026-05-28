@@ -134,12 +134,12 @@ void Triangle::Draw() {
 
 	// コマンドリストを取得(クラス化により必要に)
 	auto commandList = dxCommon_->GetCommandList();
-	commandList->RSSetViewports(1, &dxCommon_->GetViewPort());										// ViewPortを設定
-	commandList->RSSetScissorRects(1, &dxCommon_->GetScissorRect());								// ScissorRectを設定
+	commandList->RSSetViewports(1, &dxCommon_->GetViewPort());			// ViewPortを設定
+	commandList->RSSetScissorRects(1, &dxCommon_->GetScissorRect());	// ScissorRectを設定
 	// RootSignatureを設定。PSOとは別途設定する必要があることに注意
 	commandList->SetGraphicsRootSignature(trianglePSO_->GetRootSignature());
-	commandList->SetPipelineState(trianglePSO_->GetPipelineState());								// PSOを設定
-	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);										// VertexBufferViewを設定
+	commandList->SetPipelineState(trianglePSO_->GetPipelineState());	// PSOを設定
+	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);			// VertexBufferViewを設定
 	// 形状を設定。こちらもPSOとは別途設定する必要がある
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());	// マテリアルCBufferの場所を設定

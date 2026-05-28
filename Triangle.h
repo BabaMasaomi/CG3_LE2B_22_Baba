@@ -30,10 +30,14 @@ private:
 	void CreateTransformationMatrixResource();
 	void MapTransformationMatrix();
 
-	// DirectXCommonとTrianglePSOは、描画に必要な情報を持っているので、ポインタを用意しておく
+	// ポインタを用意しておく
 	DirectXCommon* dxCommon_ = nullptr;
 	TrianglePSO* trianglePSO_ = nullptr;
 	TextureManager* textureManager_ = nullptr;
+	
+	// 図形の変換を管理するためのTransformとワールド行列
+	Transform transform_;
+	Matrix4x4 worldMatrix_{};
 
 	// 頂点リソースにデータを書き込む
 	struct VertexData{
@@ -53,8 +57,5 @@ private:
 	ID3D12Resource* wvpResource_ = nullptr;
 	TransformationMatrix* wvpMatrixData_ = nullptr;
 
-	// 図形の変換を管理するためのTransformとワールド行列
-	Transform transform_;
-	Matrix4x4 worldMatrix_{};
 };
 

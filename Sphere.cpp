@@ -167,20 +167,17 @@ void Sphere::Update(const Camera& camera) {
 
 /*-------------------- 描画 --------------------*/
 void Sphere::Draw() {
+	// コマンドリストを取得
 	auto* commandList = dxCommon_->GetCommandList();
 	// RootSignature設定
 	commandList->SetGraphicsRootSignature(spherePSO_->GetRootSignature());
-	// PSO設定
-	commandList->SetPipelineState(spherePSO_->GetPipelineState());
+	commandList->SetPipelineState(spherePSO_->GetPipelineState());	// PSOを設定
+	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);		// VertexBufferViewを設定
 	// 形状を設定
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	// VertexBufferViewを設定
-	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);
-	// TransformationMatrixCBufferの場所を指定
-	commandList->SetGraphicsRootConstantBufferView(0, transformationMatrixResource_->GetGPUVirtualAddress());
-	// 1 : Material
-	commandList->SetGraphicsRootConstantBufferView(1, materialResource_->GetGPUVirtualAddress());
-	// 2 : Texture
+	commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());				// マテリアルCBufferの場所を設定	
+	commandList->SetGraphicsRootConstantBufferView(1, transformationMatrixResource_->GetGPUVirtualAddress());	// wvp用のCBufferの場所を設定
+	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
 	commandList->SetGraphicsRootDescriptorTable(2, textureManager_->GetTextureSrvHandleGPU());
 	// 描画！(DrawCall)
 	commandList->DrawInstanced(vertexCount_, 1, 0, 0);
