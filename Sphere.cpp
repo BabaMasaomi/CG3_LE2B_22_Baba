@@ -103,8 +103,8 @@ void Sphere::MapVertexData() {
 			float u0 = float(lonIndex) / float(kSubdivision_);
 			float u1 = float(lonIndex + 1) / float(kSubdivision_);
 
-			float v0 = float(latIndex) / float(kSubdivision_);
-			float v1 = float(latIndex + 1) / float(kSubdivision_);
+			float v0 = 1.0f - float(latIndex) / float(kSubdivision_);
+			float v1 = 1.0f - float(latIndex + 1) / float(kSubdivision_);
 			// 6頂点書き込み
 			// triangle 1
 			vertexData[start + 0].pos = p0;
@@ -159,7 +159,7 @@ void Sphere::Update(const Camera& camera) {
 		transform_.rotate,
 		transform_.translate
 	);
-	
+
 	// WVP行列を計算して、CBufferに書き込む
 	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix_, camera.GetViewProjectionMatrix());
 	transformationMatrixData_->WVP = worldViewProjectionMatrix;
