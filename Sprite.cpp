@@ -95,14 +95,12 @@ void Sprite::Update() {
 /*-------------------- 描画 --------------------*/
 void Sprite::Draw() {
 	auto* commandList = dxCommon_->GetCommandList();
-
-
 	// 形状を設定
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// VertexBufferViewを設定
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);
 	// TransformationMatrixCBufferの場所を指定
-	commandList->SetGraphicsRootConstantBufferView(1, transformationMatrixResource_->GetGPUVirtualAddress());
+	commandList->SetGraphicsRootConstantBufferView(0, transformationMatrixResource_->GetGPUVirtualAddress());
 	// 描画！(DrawCall)
 	commandList->DrawInstanced(6, 1, 0, 0);
 }
