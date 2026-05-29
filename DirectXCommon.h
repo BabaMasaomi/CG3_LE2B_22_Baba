@@ -25,11 +25,14 @@ public:
 	void ResetCommandList();	// commandListのReset
 
 	// ゲッター
+	uint32_t GetDescriptorSizeSRV() const { return DescriptorSizeSRV_; }
+	uint32_t GetDescriptorSizeRTV() const { return DescriptorSizeRTV_; }
+	uint32_t GetDescriptorSizeDSV() const { return DescriptorSizeDSV_; }
 	ID3D12Device* GetDevice() const { return device_; }
 	ID3D12GraphicsCommandList* GetCommandList() const { return commandList_; }
 	const D3D12_VIEWPORT& GetViewPort() const { return viewPort_; }
 	const D3D12_RECT& GetScissorRect() const { return scissorRect_; }
-	ID3D12DescriptorHeap* GetsrvDescriptorHeap()const { return srvDescriptorHeap_; }
+	ID3D12DescriptorHeap* GetSrvDescriptorHeap()const { return srvDescriptorHeap_; }
 	DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() const { return swapChainDesc_; }
 	D3D12_RENDER_TARGET_VIEW_DESC GetrtvDesc() const { return rtvDesc_; }
 
@@ -43,7 +46,7 @@ private:
 	void CreateSwapChain(HWND hwnd);	// 3. SwapChainの生成
 	void CreateRenderTargetView();		// 4. レンダーターゲットビューの生成
 	// DepthStencilTextureResourceを作成
-	ID3D12Resource* CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height);	
+	ID3D12Resource* CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height);
 	void DepthStencilView();	// DepthStencilViewを作成
 	void CreateFence();			// 5. Fenceの生成
 	void CreateViewport();		// 描画用のViewPortとScissorRectの生成
@@ -95,5 +98,10 @@ private:
 	ID3D12Fence* fence_ = nullptr;
 	uint64_t fenceValue_ = 0;
 	HANDLE fenceEvent_ = nullptr;
+
+	// descriptorSizeを取得
+	uint32_t DescriptorSizeSRV_ = 0;
+	uint32_t DescriptorSizeRTV_ = 0;
+	uint32_t DescriptorSizeDSV_ = 0;
 
 };

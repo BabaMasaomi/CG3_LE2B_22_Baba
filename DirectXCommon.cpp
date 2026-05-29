@@ -67,6 +67,11 @@ void DirectXCommon::Initialize(HWND hwnd, int32_t width, int32_t height) {
 	DepthStencilView();			// DepthStencilViewを作成
 	CreateFence();				// 5. Fenceの生成
 	CreateViewport();			// 描画用のViewPortとScissorRectの生成
+
+	// descriptorSizeを取得
+	DescriptorSizeSRV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	DescriptorSizeRTV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	DescriptorSizeDSV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 }
 
 /*-------------------- デバッグレイヤーの初期化 --------------------*/

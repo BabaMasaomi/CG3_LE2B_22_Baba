@@ -17,9 +17,9 @@ void ImGuiManager::Initialize(WinApp* winApp, DirectXCommon* dxCommon) {
 	ImGui_ImplDX12_Init(dxCommon->GetDevice(),
 		dxCommon->GetSwapChainDesc().BufferCount,
 		dxCommon->GetrtvDesc().Format,
-		dxCommon->GetsrvDescriptorHeap(),
-		dxCommon->GetsrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(),
-		dxCommon->GetsrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart());
+		dxCommon->GetSrvDescriptorHeap(),
+		dxCommon->GetSrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(),
+		dxCommon->GetSrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart());
 	ImGuiIO& io = ImGui::GetIO();
 	io.Fonts->Build();
 }
