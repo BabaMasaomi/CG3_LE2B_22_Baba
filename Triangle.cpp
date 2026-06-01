@@ -126,7 +126,7 @@ void Triangle::Update(const Camera& camera) {
 }
 
 /*-------------------- 描画 --------------------*/
-void Triangle::Draw() {
+void Triangle::Draw(uint32_t textureIndex) {
 	assert(dxCommon_ != nullptr);
 	assert(trianglePSO_ != nullptr);
 	assert(trianglePSO_->GetRootSignature() != nullptr);
@@ -145,7 +145,7 @@ void Triangle::Draw() {
 	commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());	// マテリアルCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());		// wvp用のCBufferの場所を設定
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	commandList->SetGraphicsRootDescriptorTable(2, textureManager_->GetTextureSrvHandleGPU());
+	commandList->SetGraphicsRootDescriptorTable(2, textureManager_->GetTextureSrvHandleGPU(textureIndex - 1));
 	// 描画！(DrawCall)3頂点で一つのインスタンス
 	commandList->DrawInstanced(6, 1, 0, 0);
 }

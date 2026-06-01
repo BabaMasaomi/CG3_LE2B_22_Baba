@@ -1,5 +1,6 @@
 #pragma once
 #include <d3d12.h>
+#include <cstdint>
 #include"struct.h"
 
 // 前方宣言
@@ -14,7 +15,7 @@ public:
 
 	void Initialize(DirectXCommon* dxCommon, TrianglePSO* trianglePSO, TextureManager* textureManager);
 	void Update(const Camera& camera);
-	void Draw();
+	void Draw(uint32_t textureIndex);
 
 private:
 	// VertexResourceとVertexBufferViewの作成関数

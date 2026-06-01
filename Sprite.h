@@ -1,18 +1,20 @@
 #pragma once
 #include <d3d12.h>
+#include <cstdint>
 #include"struct.h"
 
 // 前方宣言
 class DirectXCommon;
+class TextureManager;
 class WinApp;
 
 class Sprite {
 public:
 	~Sprite();
 
-	void Initialize(DirectXCommon* dxCommon, WinApp* winApp);
+	void Initialize(DirectXCommon* dxCommon, TextureManager* textureManager, WinApp* winApp);
 	void Update();
-	void Draw();
+	void Draw(uint32_t textureIndex);
 
 private:
 	// VertexResourceとVertexBufferViewの作成関数
@@ -26,6 +28,7 @@ private:
 
 	// ポインタを用意しておく
 	DirectXCommon* dxCommon_ = nullptr;
+	TextureManager* textureManager_ = nullptr;
 	WinApp* winApp_ = nullptr;
 
 	// 図形の変換を管理するためのTransform

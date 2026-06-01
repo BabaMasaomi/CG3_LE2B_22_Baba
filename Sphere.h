@@ -15,7 +15,7 @@ public:
 
     void Initialize(DirectXCommon* dxCommon,SpherePSO* spherePSO, TextureManager* textureManager);
     void Update(const Camera& camera);
-    void Draw();
+    void Draw(uint32_t textureIndex);
 
 private:
     // VertexResourceとVertexBufferViewの作成関数

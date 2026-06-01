@@ -1,6 +1,7 @@
 #include "Sprite.h"
 #include "DirectXCommon.h"
 #include "WinApp.h"
+#include "TextureManager.h"
 #include "Utility.h"
 
 // デストラクタ
@@ -12,10 +13,11 @@ Sprite::~Sprite() {
 }
 
 /*-------------------- 初期化 --------------------*/
-void Sprite::Initialize(DirectXCommon* dxCommon, WinApp* winApp) {
+void Sprite::Initialize(DirectXCommon* dxCommon, TextureManager* textureManager, WinApp* winApp) {
 
 	// DirectXCommonのポインタを保存しておく
 	dxCommon_ = dxCommon;
+	textureManager_ = textureManager;
 	winApp_ = winApp;
 
 	// CPUで動かす用のTransformを作る
@@ -93,7 +95,7 @@ void Sprite::Update() {
 }
 
 /*-------------------- 描画 --------------------*/
-void Sprite::Draw() {
+void Sprite::Draw(uint32_t textureIndex) {
 	auto* commandList = dxCommon_->GetCommandList();
 	// 形状を設定
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -101,6 +103,8 @@ void Sprite::Draw() {
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);
 	// TransformationMatrixCBufferの場所を指定
 	commandList->SetGraphicsRootConstantBufferView(1, transformationMatrixResource_->GetGPUVirtualAddress());
+	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
+	commandList->SetGraphicsRootDescriptorTable(2, textureManager_->GetTextureSrvHandleGPU(textureIndex - 1));
 	// 描画！(DrawCall)
 	commandList->DrawInstanced(6, 1, 0, 0);
 }

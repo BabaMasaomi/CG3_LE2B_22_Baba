@@ -166,7 +166,7 @@ void Sphere::Update(const Camera& camera) {
 }
 
 /*-------------------- 描画 --------------------*/
-void Sphere::Draw() {
+void Sphere::Draw(uint32_t textureIndex) {
 	// コマンドリストを取得
 	auto* commandList = dxCommon_->GetCommandList();
 	// RootSignature設定
@@ -178,7 +178,7 @@ void Sphere::Draw() {
 	commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());				// マテリアルCBufferの場所を設定	
 	commandList->SetGraphicsRootConstantBufferView(1, transformationMatrixResource_->GetGPUVirtualAddress());	// wvp用のCBufferの場所を設定
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	commandList->SetGraphicsRootDescriptorTable(2, textureManager_->GetTextureSrvHandleGPU());
+	commandList->SetGraphicsRootDescriptorTable(2, textureManager_->GetTextureSrvHandleGPU(textureIndex - 1));
 	// 描画！(DrawCall)
 	commandList->DrawInstanced(vertexCount_, 1, 0, 0);
 }

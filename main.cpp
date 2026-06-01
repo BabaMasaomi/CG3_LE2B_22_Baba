@@ -72,15 +72,18 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	TextureManager textureManager;
 	textureManager.Initialize(&dxCommon);
 	// テクスチャの読み込み
-	ID3D12Resource* intermediateResource = textureManager.LoadTexture("resources/uvChecker.png");
+	//ID3D12Resource* intermediateResource = textureManager.LoadTexture("resources/uvChecker.png");
+	textureManager.LoadTexture("resources/uvChecker.png", 1);
+	textureManager.LoadTexture("resources/monsterBall.png", 2);
+
 	dxCommon.ExecuteCommandList();	// コマンドを実行
 	dxCommon.WaitForGPU();			// GPUを待機
 	dxCommon.ResetCommandList();	// commandListのReset
-	// intermediateResourceをRelease
-	if (intermediateResource) {
-		intermediateResource->Release();
-		intermediateResource = nullptr;
-	}
+	//// intermediateResourceをRelease
+	//if (intermediateResource) {
+	//	intermediateResource->Release();
+	//	intermediateResource = nullptr;
+	//}
 
 	// ImGuiの初期化
 #ifdef USE_IMGUI
@@ -103,7 +106,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// Spriteの初期化
 	Sprite sprite;
-	sprite.Initialize(&dxCommon, &winApp);
+	sprite.Initialize(&dxCommon,&textureManager, &winApp);
 
 	// ログ出力
 	Log(logStream, "Start logging!");
@@ -132,10 +135,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		// 三角形の描画
 		//triangle.Draw();
-		sphere.Draw();
+		sphere.Draw(2);
 
 		// スプライトの描画
-		sprite.Draw();
+		sprite.Draw(1);
 
 		// ImGuiの描画
 #ifdef USE_IMGUI
