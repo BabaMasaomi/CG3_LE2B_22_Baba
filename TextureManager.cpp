@@ -25,7 +25,7 @@ void TextureManager::Initialize(DirectXCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 }
 
-/*-------------------- 1.Textureデータを読み込む --------------------*/	// mainなどでtextureManager.LoadTexture("resources/uvChecker.png");として呼び出す
+/*-------------------- 1.Textureデータを読み込む --------------------*/	// mainなどでtextureManager.LoadTexture("resources/uvChecker.png", 1);として呼び出す
 void TextureManager::LoadTexture(const std::string& filePath, uint32_t index) {
 	assert(index > 0);
 	// 1.テクスチャファイルを読み込んでプログラムで扱えるようにする
