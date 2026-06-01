@@ -22,6 +22,10 @@ private:
 	void CreateVertexBufferView();
 	void MapVertexData();
 
+	// マテリアル用のResourceとデータの作成関数
+	void CreateMaterialResource();
+	void MapMaterial();
+
 	// 変換行列用のResourceとデータの作成関数
 	void CreateTransformationMatrixResource();
 	void MapTransformationMatrix();
@@ -45,6 +49,17 @@ private:
 	ID3D12Resource* vertexResource_ = nullptr;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 	VertexData* vertexData = nullptr;
+
+	// マテリアルデータの構造体
+	struct Material {
+		Vector4 color;
+		int32_t enableLighting;
+		float padding[3];
+	};
+	// マテリアルリソース
+	ID3D12Resource* materialResource_ = nullptr;
+	// マテリアルデータ
+	Material* materialData_ = nullptr;
 
 	// 変換行列リソースと変換行列データ
 	ID3D12Resource* transformationMatrixResource_ = nullptr;

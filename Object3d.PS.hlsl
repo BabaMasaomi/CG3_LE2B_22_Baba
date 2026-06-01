@@ -3,6 +3,8 @@
 struct Material
 {
     float32_t4 color;
+    int32_t enableLighting;
+    float32_t3 padding;
 };
 ConstantBuffer<Material> gMaterial : register(b0);
 Texture2D<float32_t4> gTexture : register(t0);

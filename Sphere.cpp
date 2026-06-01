@@ -149,9 +149,11 @@ void Sphere::CreateMaterialResource() {
 
 /*-------------------- MaterialResourceにデータを書き込む --------------------*/
 void Sphere::MapMaterial() {
+	// Mapする
 	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
 	// ここで色を弄れる
-	*materialData_ = { 1.0f, 1.0f, 1.0f, 1.0f };
+	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	materialData_->enableLighting = true;
 }
 
 /*-------------------- 変換行列用のResourceの生成 --------------------*/

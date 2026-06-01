@@ -7,6 +7,7 @@
 // デストラクタ
 Sprite::~Sprite() {
 	if (vertexResource_) vertexResource_->Release();
+	if (materialResource_) materialResource_->Release();
 	if (transformationMatrixResource_) {
 		transformationMatrixResource_->Release();
 	}
@@ -27,6 +28,10 @@ void Sprite::Initialize(DirectXCommon* dxCommon, TextureManager* textureManager,
 	CreateVertexResource();
 	CreateVertexBufferView();
 	MapVertexData();
+
+	// 色付けのためのMaterialResourceも作る
+	CreateMaterialResource();
+	MapMaterial();
 
 	// 変換行列用のResourceとデータの作成関数
 	CreateTransformationMatrixResource();
@@ -75,6 +80,20 @@ void Sprite::MapVertexData() {
 	vertexData[5].pos = { 640.0f, 360.0f, 0.0f, 1.0f };	// 右下
 	vertexData[5].texcoord = { 1.0f, 1.0f };
 	vertexData[5].normal = { 0.0f,0.0f,-1.0f };
+}
+
+/*-------------------- MaterialResourceの生成 --------------------*/
+void Sprite::CreateMaterialResource() {
+	materialResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(Material));
+}
+
+/*-------------------- MaterialResourceにデータを書き込む --------------------*/
+void Sprite::MapMaterial() {
+	// Mapする
+	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
+	// ここで色を弄れる
+	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	materialData_->enableLighting = false;
 }
 
 /*-------------------- 変換行列用のResourceの生成 --------------------*/
