@@ -14,6 +14,7 @@
 
 // デストラクタ
 DirectXCommon::~DirectXCommon() {
+	WaitForGPU();	// GPUを待機
 	if (commandList_) commandList_->Release();
 	if (commandAllocator_) commandAllocator_->Release();
 	if (commandQueue_) commandQueue_->Release();
@@ -24,7 +25,6 @@ DirectXCommon::~DirectXCommon() {
 		}
 	}
 	if (swapChain_) swapChain_->Release();
-	if (dsvDescriptorHeap_) dsvDescriptorHeap_->Release();
 	if (depthStencilResource_) depthStencilResource_->Release();
 	if (dsvDescriptorHeap_) {
 		dsvDescriptorHeap_->Release();
