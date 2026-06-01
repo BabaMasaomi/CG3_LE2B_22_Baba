@@ -40,10 +40,11 @@ private:
     Transform transform_;
     Matrix4x4 worldMatrix_{};
 
-    // スプライト用頂点構造体
+    // 球用頂点構造体
     struct VertexData {
         Vector4 pos;
         Vector2 texcoord;
+        Vector3 normal;
     };
 
     // 頂点リソースと頂点バッファビュー

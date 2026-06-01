@@ -107,19 +107,37 @@ void Sphere::MapVertexData() {
 			float v1 = 1.0f - float(latIndex + 1) / float(kSubdivision_);
 			// 6頂点書き込み
 			// triangle 1
-			vertexData[start + 0].pos = p0;
-			vertexData[start + 0].texcoord = { u0, v0 };
+			vertexData[start].pos = p0;
+			vertexData[start].texcoord = { u0, v0 };
+			vertexData[start].normal.x = vertexData[start].pos.x;
+			vertexData[start].normal.y = vertexData[start].pos.y;
+			vertexData[start].normal.z = vertexData[start].pos.z;
 			vertexData[start + 1].pos = p1;
 			vertexData[start + 1].texcoord = { u0, v1 };
+			vertexData[start + 1].normal.x = vertexData[start + 1].pos.x;
+			vertexData[start + 1].normal.y = vertexData[start + 1].pos.y;
+			vertexData[start + 1].normal.z = vertexData[start + 1].pos.z;
 			vertexData[start + 2].pos = p2;
 			vertexData[start + 2].texcoord = { u1, v0 };
+			vertexData[start + 2].normal.x = vertexData[start + 2].pos.x;
+			vertexData[start + 2].normal.y = vertexData[start + 2].pos.y;
+			vertexData[start + 2].normal.z = vertexData[start + 2].pos.z;
 			// triangle 2
 			vertexData[start + 3].pos = p2;
 			vertexData[start + 3].texcoord = { u1, v0 };
+			vertexData[start + 3].normal.x = vertexData[start + 3].pos.x;
+			vertexData[start + 3].normal.y = vertexData[start + 3].pos.y;
+			vertexData[start + 3].normal.z = vertexData[start + 3].pos.z;
 			vertexData[start + 4].pos = p1;
 			vertexData[start + 4].texcoord = { u0, v1 };
+			vertexData[start + 4].normal.x = vertexData[start + 4].pos.x;
+			vertexData[start + 4].normal.y = vertexData[start + 4].pos.y;
+			vertexData[start + 4].normal.z = vertexData[start + 4].pos.z;
 			vertexData[start + 5].pos = p3;
 			vertexData[start + 5].texcoord = { u1, v1 };
+			vertexData[start + 5].normal.x = vertexData[start + 5].pos.x;
+			vertexData[start + 5].normal.y = vertexData[start + 5].pos.y;
+			vertexData[start + 5].normal.z = vertexData[start + 5].pos.z;
 		}
 	}
 }

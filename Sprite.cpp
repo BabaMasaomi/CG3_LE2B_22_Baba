@@ -58,17 +58,23 @@ void Sprite::MapVertexData() {
 	// 1枚目の三角形
 	vertexData[0].pos = { 0.0f, 360.0f, 0.0f, 1.0f };	// 左下
 	vertexData[0].texcoord = { 0.0f, 1.0f };
+	vertexData[0].normal = { 0.0f,0.0f,-1.0f };
 	vertexData[1].pos = { 0.0f, 0.0f, 0.0f, 1.0f };		// 左上
 	vertexData[1].texcoord = { 0.0f, 0.0f };
+	vertexData[1].normal = { 0.0f,0.0f,-1.0f };
 	vertexData[2].pos = { 640.0f, 360.0f, 0.0f, 1.0f };	// 右下
 	vertexData[2].texcoord = { 1.0f, 1.0f };
+	vertexData[2].normal = { 0.0f,0.0f,-1.0f };
 	// 2枚目の三角形
 	vertexData[3].pos = { 0.0f, 0.0f, 0.0f, 1.0f };		// 左上
 	vertexData[3].texcoord = { 0.0f, 0.0f };
+	vertexData[3].normal = { 0.0f,0.0f,-1.0f };
 	vertexData[4].pos = { 640.0f, 0.0f, 0.0f, 1.0f };	// 右上
 	vertexData[4].texcoord = { 1.0f, 0.0f };
+	vertexData[4].normal = { 0.0f,0.0f,-1.0f };
 	vertexData[5].pos = { 640.0f, 360.0f, 0.0f, 1.0f };	// 右下
 	vertexData[5].texcoord = { 1.0f, 1.0f };
+	vertexData[5].normal = { 0.0f,0.0f,-1.0f };
 }
 
 /*-------------------- 変換行列用のResourceの生成 --------------------*/

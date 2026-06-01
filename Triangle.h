@@ -35,15 +35,16 @@ private:
 	DirectXCommon* dxCommon_ = nullptr;
 	TrianglePSO* trianglePSO_ = nullptr;
 	TextureManager* textureManager_ = nullptr;
-	
+
 	// 図形の変換を管理するためのTransformとワールド行列
 	Transform transform_;
 	Matrix4x4 worldMatrix_{};
 
 	// 頂点リソースにデータを書き込む
-	struct VertexData{
+	struct VertexData {
 		Vector4 pos;
 		Vector2 texcoord;
+		//Vector3 normal;
 	};
 
 	// 頂点リソースと頂点バッファビュー
