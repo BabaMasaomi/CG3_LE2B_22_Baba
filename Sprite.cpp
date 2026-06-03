@@ -126,6 +126,8 @@ void Sprite::Draw(uint32_t textureIndex) {
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// VertexBufferViewを設定
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);
+	// マテリアルのCBufferの場所を設定
+	commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
 	// TransformationMatrixCBufferの場所を指定
 	commandList->SetGraphicsRootConstantBufferView(1, transformationMatrixResource_->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
