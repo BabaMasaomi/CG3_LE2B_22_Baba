@@ -5,6 +5,7 @@
 #include "DXCManager.h"
 #include "TextureManager.h"
 #include "Camera.h"
+#include "DirectionalLight.h"
 #include "Sprite.h"
 #include "Sphere.h"
 #include "SpherePSO.h"
@@ -88,18 +89,22 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	Camera camera;
 	camera.Initialize(WinApp::kClientWidth_, WinApp::kClientHeight_);
 
+	// 平行光源の初期化
+	DirectionalLight directionalLight;
+	directionalLight.Initialize(&dxCommon);
+
 	// SpherePSOの初期化
 	SpherePSO spherePSO;
 	spherePSO.Initialize(&dxCommon, &dxcManager);
 
 	// Sphereの初期化
 	Sphere sphere;
-	sphere.Initialize(&dxCommon, &spherePSO, &textureManager);
+	sphere.Initialize(&dxCommon, &spherePSO, &textureManager, &directionalLight);
 
 
 	// Spriteの初期化
 	Sprite sprite;
-	sprite.Initialize(&dxCommon,&textureManager, &winApp);
+	sprite.Initialize(&dxCommon, &textureManager, &winApp);
 
 	// ログ出力
 	Log(logStream, "Start logging!");
@@ -117,6 +122,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		/*-------------------- 更新処理 --------------------*/
 		camera.Update();
+		directionalLight.Update();
 		sphere.Update(camera);
 		sprite.Update();
 

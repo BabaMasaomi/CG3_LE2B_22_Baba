@@ -1,4 +1,6 @@
 #include "Utility.h"
+#include "Logger.h"
+#include <format>			// フォーマットの自動指定をしてくれる(+安全策)
 #include<cmath>
 #include <cassert>
 
@@ -13,7 +15,7 @@ ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {
 	D3D12_RESOURCE_DESC resourceDesc{};
 	// バッファリソース。テクスチャの場合は別の設定をする
 	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	resourceDesc.Width = sizeInBytes;	// リソースのサイズ。引数で指定
+	resourceDesc.Width = (sizeInBytes + 255) & ~255;;	// リソースのサイズ。引数で指定
 	// バッファの場合はこれらは全て1にする
 	resourceDesc.Height = 1;
 	resourceDesc.DepthOrArraySize = 1;

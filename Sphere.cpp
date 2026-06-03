@@ -2,8 +2,11 @@
 #include "DirectXCommon.h"
 #include "SpherePSO.h"
 #include "TextureManager.h"
+#include "DirectionalLight.h"
 #include "Camera.h"
 #include "Utility.h"
+#include "Logger.h"
+#include <format>			// フォーマットの自動指定をしてくれる(+安全策)
 #include <cmath>
 #include <cassert>
 
@@ -17,12 +20,13 @@ Sphere::~Sphere() {
 }
 
 /*-------------------- 初期化 --------------------*/
-void Sphere::Initialize(DirectXCommon* dxCommon, SpherePSO* spherePSO, TextureManager* textureManager) {
+void Sphere::Initialize(DirectXCommon* dxCommon, SpherePSO* spherePSO, TextureManager* textureManager, DirectionalLight* directionalLight) {
 
-	// DirectXCommonのポインタを保存しておく
+	// ポインタを保存しておく
 	dxCommon_ = dxCommon;
 	spherePSO_ = spherePSO;
 	textureManager_ = textureManager;
+	directionalLight_ = directionalLight;
 
 	// CPUで動かす用のTransformを作る
 	transform_ = { {1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };
@@ -144,7 +148,7 @@ void Sphere::MapVertexData() {
 
 /*-------------------- MaterialResourceの生成 --------------------*/
 void Sphere::CreateMaterialResource() {
-	materialResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(Vector4));
+	materialResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(Material));
 }
 
 /*-------------------- MaterialResourceにデータを書き込む --------------------*/
@@ -168,6 +172,7 @@ void Sphere::MapTransformationMatrix() {
 	assert(SUCCEEDED(hr));
 	// 単位行列を書きこんでおく
 	transformationMatrixData_->WVP = MakeIdentity4x4();
+	transformationMatrixData_->World = MakeIdentity4x4();
 }
 
 /*-------------------- 更新 --------------------*/
@@ -183,6 +188,7 @@ void Sphere::Update(const Camera& camera) {
 	// WVP行列を計算して、CBufferに書き込む
 	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix_, camera.GetViewProjectionMatrix());
 	transformationMatrixData_->WVP = worldViewProjectionMatrix;
+	transformationMatrixData_->World = worldMatrix_;
 }
 
 /*-------------------- 描画 --------------------*/
@@ -195,10 +201,11 @@ void Sphere::Draw(uint32_t textureIndex) {
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);		// VertexBufferViewを設定
 	// 形状を設定
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());				// マテリアルCBufferの場所を設定	
+	commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());				// マテリアルCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(1, transformationMatrixResource_->GetGPUVirtualAddress());	// wvp用のCBufferの場所を設定
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
 	commandList->SetGraphicsRootDescriptorTable(2, textureManager_->GetTextureSrvHandleGPU(textureIndex - 1));
+	commandList->SetGraphicsRootConstantBufferView(3, directionalLight_->GetResource()->GetGPUVirtualAddress());	// 平行光源を適用
 	// 描画！(DrawCall)
 	commandList->DrawInstanced(vertexCount_, 1, 0, 0);
 }

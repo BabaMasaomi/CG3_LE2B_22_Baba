@@ -7,13 +7,14 @@
 class DirectXCommon;
 class SpherePSO;
 class TextureManager;
+class DirectionalLight;
 class Camera;
 
 class Sphere {
 public:
 	~Sphere();
 
-	void Initialize(DirectXCommon* dxCommon, SpherePSO* spherePSO, TextureManager* textureManager);
+	void Initialize(DirectXCommon* dxCommon, SpherePSO* spherePSO, TextureManager* textureManager, DirectionalLight* directionalLight);
 	void Update(const Camera& camera);
 	void Draw(uint32_t textureIndex);
 
@@ -35,6 +36,7 @@ private:
 	DirectXCommon* dxCommon_ = nullptr;
 	SpherePSO* spherePSO_ = nullptr;
 	TextureManager* textureManager_ = nullptr;
+	DirectionalLight* directionalLight_ = nullptr;
 
 	// 図形の変換を管理するためのTransformとワールド行列
 	Transform transform_;
