@@ -19,6 +19,10 @@ public:
 
 	// ゲッター
 	ID3D12Resource* GetResource() const { return resource_; }
+	Vector4& GetColor() { return color_; }
+	Vector3& GetDirection() { return direction_; }
+	float& GetIntensity() { return intensity_; }
+
 private:
 	// ポインタを用意
 	DirectXCommon* dxCommon_ = nullptr;
