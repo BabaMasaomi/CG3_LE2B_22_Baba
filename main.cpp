@@ -7,6 +7,8 @@
 #include "Camera.h"
 #include "DirectionalLight.h"
 #include "Sprite.h"
+#include "Triangle.h"
+#include "TrianglePSO.h"
 #include "Sphere.h"
 #include "SpherePSO.h"
 // Debug用のあれこれを使える様にする
@@ -93,14 +95,21 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	DirectionalLight directionalLight;
 	directionalLight.Initialize(&dxCommon);
 
-	// SpherePSOの初期化
-	SpherePSO spherePSO;
-	spherePSO.Initialize(&dxCommon, &dxcManager);
+	//// SpherePSOの初期化
+	//SpherePSO spherePSO;
+	//spherePSO.Initialize(&dxCommon, &dxcManager);
 
-	// Sphereの初期化
-	Sphere sphere;
-	sphere.Initialize(&dxCommon, &spherePSO, &textureManager, &directionalLight);
+	//// Sphereの初期化
+	//Sphere sphere;
+	//sphere.Initialize(&dxCommon, &spherePSO, &textureManager, &directionalLight);
 
+	// TrianglePSOの初期化
+	TrianglePSO trianglePSO;
+	trianglePSO.Initialize(&dxCommon, &dxcManager);
+
+	// Triangleの初期化
+	Triangle triangle;
+	triangle.Initialize(&dxCommon, &trianglePSO, &textureManager);
 
 	// Spriteの初期化
 	Sprite sprite;
@@ -123,7 +132,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		/*-------------------- 更新処理 --------------------*/
 		camera.Update();
 		directionalLight.Update();
-		sphere.Update(camera);
+		//sphere.Update(camera);
+		triangle.Update(camera);
 		sprite.Update();
 
 		/*-------------------- 描画処理 --------------------*/
@@ -147,7 +157,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		// 三角形の描画
 		//triangle.Draw();
-		sphere.Draw(sphereTextureIndex);
+
+		// 球の描画
+		//sphere.Draw(sphereTextureIndex);
+
+		// 三角形の描画
+		triangle.Draw(sphereTextureIndex);
 
 		// スプライトの描画
 		sprite.Draw(1);

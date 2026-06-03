@@ -66,39 +66,46 @@ void Triangle::MapVertexData() {
 	// 左下
 	vertexData[0].pos = { -0.5f, -0.5f, 0.0f, 1.0f };
 	vertexData[0].texcoord = { 0.0f,1.0f };
+	vertexData[0].normal = { 0.0f,0.0f,-1.0f };
 	// 上
 	vertexData[1].pos = { 0.0f, 0.5f, 0.0f, 1.0f };
 	vertexData[1].texcoord = { 0.5f,0.0f };
+	vertexData[1].normal = { 0.0f,0.0f,-1.0f };
 	// 右下
 	vertexData[2].pos = { 0.5f, -0.5f, 0.0f, 1.0f };
 	vertexData[2].texcoord = { 1.0f,1.0f };
+	vertexData[2].normal = { 0.0f,0.0f,-1.0f };
 	// 2つ目の三角形
 	// 左下
 	vertexData[3].pos = { -0.5f, -0.5f, 0.5f, 1.0f };
 	vertexData[3].texcoord = { 0.0f,1.0f };
+	vertexData[3].normal = { 0.0f,0.0f,-1.0f };
 	// 上
 	vertexData[4].pos = { 0.0f, 0.0f, 0.0f, 1.0f };
 	vertexData[4].texcoord = { 0.5f,0.0f };
+	vertexData[4].normal = { 0.0f,0.0f,-1.0f };
 	// 右下
 	vertexData[5].pos = { 0.5f, -0.5f, -0.5f, 1.0f };
 	vertexData[5].texcoord = { 1.0f,1.0f };
+	vertexData[5].normal = { 0.0f,0.0f,-1.0f };
 }
 
 /*-------------------- MaterialResourceの生成 --------------------*/
 void Triangle::CreateMaterialResource() {
-	materialResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(Vector4));
+	materialResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(Material));
 }
 
 /*-------------------- MaterialResourceにデータを書き込む --------------------*/
 void Triangle::MapMaterial() {
 	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
 	// ここで色を弄れる
-	*materialData_ = { 1.0f, 1.0f, 1.0f, 1.0f };
+	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	materialData_->enableLighting = false;
 }
 
 /*-------------------- 変換行列用のResourceの生成 --------------------*/
 void Triangle::CreateTransformationMatrixResource() {
-	wvpResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(Matrix4x4));
+	wvpResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(TransformationMatrix));
 }
 
 /*-------------------- 変換行列用のResourceにデータを書き込む --------------------*/
@@ -107,6 +114,7 @@ void Triangle::MapTransformationMatrix() {
 	wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&wvpMatrixData_));
 	// 単位行列を書きこんでおく
 	wvpMatrixData_->WVP = MakeIdentity4x4();
+	wvpMatrixData_->World = MakeIdentity4x4();
 }
 
 /*-------------------- 更新 --------------------*/
@@ -123,15 +131,11 @@ void Triangle::Update(const Camera& camera) {
 	// WVP行列を計算して、CBufferに書き込む
 	Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix_, camera.GetViewProjectionMatrix());
 	wvpMatrixData_->WVP = worldViewProjectionMatrix;
+	wvpMatrixData_->World = worldMatrix_;
 }
 
 /*-------------------- 描画 --------------------*/
 void Triangle::Draw(uint32_t textureIndex) {
-	assert(dxCommon_ != nullptr);
-	assert(trianglePSO_ != nullptr);
-	assert(trianglePSO_->GetRootSignature() != nullptr);
-	assert(trianglePSO_->GetPipelineState() != nullptr);
-
 	// コマンドリストを取得(クラス化により必要に)
 	auto commandList = dxCommon_->GetCommandList();
 	commandList->RSSetViewports(1, &dxCommon_->GetViewPort());			// ViewPortを設定

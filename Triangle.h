@@ -44,16 +44,22 @@ private:
 	struct VertexData {
 		Vector4 pos;
 		Vector2 texcoord;
-		//Vector3 normal;
+		Vector3 normal;
 	};
 
 	// 頂点リソースと頂点バッファビュー
 	ID3D12Resource* vertexResource_ = nullptr;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 
-	// マテリアルリソースとマテリアルデータ
+	struct Material {
+		Vector4 color;
+		int32_t enableLighting;
+		float padding[3];
+	};
+	// マテリアルリソース
 	ID3D12Resource* materialResource_ = nullptr;
-	Vector4* materialData_ = nullptr;
+	// マテリアルデータ
+	Material* materialData_ = nullptr;
 
 	// 変換行列リソースと変換行列データ
 	ID3D12Resource* wvpResource_ = nullptr;
