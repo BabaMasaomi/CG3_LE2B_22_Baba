@@ -97,16 +97,26 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	trianglePSO.Initialize(&dxCommon, &dxcManager);
 
 	// Triangleの初期化
-	Triangle triangle;
-	triangle.Initialize(&dxCommon, &trianglePSO, &textureManager);
+	Triangle triangles[2];
+	triangles[0].Initialize(&dxCommon, &trianglePSO, &textureManager);
+	triangles[1].Initialize(&dxCommon, &trianglePSO, &textureManager);
+
+	triangles[0].SetTextureIndex(1);
+	triangles[1].SetTextureIndex(1);
+
+	triangles[0].GetScale() = { 1.0f,1.0f,1.0f };
+	triangles[1].GetScale() = { 1.5f,0.8f,1.0f };
+	triangles[0].GetRotate() = { 0.0f,0.0f,0.0f };
+	triangles[1].GetRotate() = { 0.0f,0.8f,0.0f };
+	triangles[0].GetTranslate() = { 0.0f,0.0f,0.0f };
+	triangles[1].GetTranslate() = { 0.0f,-0.1f,0.0f };
+	triangles[0].GetTextureIndex() = 1;
+	triangles[1].GetTextureIndex() = 1;
 
 	// ログ出力
 	Log(logStream, "Start logging!");
 
 	/*-------------------- 変数 --------------------*/
-	// ImGui用に変数を用意
-	uint32_t textureIndex = 1;
-	bool useMonsterBall = false;
 
 	/*-------------------- ゲームループの処理 --------------------*/
 	MSG msg{};
@@ -117,7 +127,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		/*-------------------- 更新処理 --------------------*/
 		camera.Update();
 		directionalLight.Update();
-		triangle.Update(camera);
+		for (auto& triangle : triangles) {
+			triangle.Update(camera);
+		}
 
 		/*-------------------- 描画処理 --------------------*/
 		dxCommon.PreDraw();		// 描画前の処理
@@ -132,24 +144,45 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			ImGui::DragFloat3("Camera.Rotate", &camera.GetRotate().x, 0.01f);
 			ImGui::DragFloat3("Camera.Translate", &camera.GetTranslate().x, 0.01f);
 		};
-		if (ImGui::CollapsingHeader("Triangle")) {
+
+		if (ImGui::CollapsingHeader("Triangle1")) {
 			// リストからテクスチャを選択
 			const char* items[] = { "uvChecker", "monsterBall" };
 			static int currentItemIndex = 0;
 			if (ImGui::Combo("Texture", &currentItemIndex, items, IM_ARRAYSIZE(items), 2)) {
-				textureIndex = currentItemIndex + 1;	// Textureは1から始まっているので合わせる
+				triangles[0].SetTextureIndex(currentItemIndex + 1);	// Textureは1から始まっているので合わせる
 			}
 			// color,SRTを変更
-			ImGui::ColorEdit4("Triangle.Color", &triangle.GetColor().x);
-			ImGui::DragFloat3("Triangle.Scale", &triangle.GetScale().x, 0.01f);
-			ImGui::DragFloat3("Triangle.Rotate", &triangle.GetRotate().x, 0.01f);
-			ImGui::DragFloat3("Triangle.Translate", &triangle.GetTranslate().x, 0.01f);
+			ImGui::PushID(0);
+			ImGui::ColorEdit4("Color", &triangles[0].GetColor().x);
+			ImGui::DragFloat3("Scale", &triangles[0].GetScale().x, 0.01f);
+			ImGui::DragFloat3("Rotate", &triangles[0].GetRotate().x, 0.01f);
+			ImGui::DragFloat3("Translate", &triangles[0].GetTranslate().x, 0.01f);
+			ImGui::PopID();
+		}
+
+		if (ImGui::CollapsingHeader("Triangle2")) {
+			// リストからテクスチャを選択
+			const char* items[] = { "uvChecker", "monsterBall" };
+			static int currentItemIndex = 0;
+			if (ImGui::Combo("Texture", &currentItemIndex, items, IM_ARRAYSIZE(items), 2)) {
+				triangles[1].SetTextureIndex(currentItemIndex + 1);	// Textureは1から始まっているので合わせる
+			}
+			// color,SRTを変更
+			ImGui::PushID(1);
+			ImGui::ColorEdit4("Color", &triangles[1].GetColor().x);
+			ImGui::DragFloat3("Scale", &triangles[1].GetScale().x, 0.01f);
+			ImGui::DragFloat3("Rotate", &triangles[1].GetRotate().x, 0.01f);
+			ImGui::DragFloat3("Translate", &triangles[1].GetTranslate().x, 0.01f);
+			ImGui::PopID();
 		}
 		imguiManager.End();		// 以上でImGuiの内容を終える
 #endif
 
 		// 三角形の描画
-		triangle.Draw(textureIndex);
+		for (auto& triangle : triangles) {
+			triangle.Draw();
+		}
 
 		// ImGuiの描画
 #ifdef USE_IMGUI

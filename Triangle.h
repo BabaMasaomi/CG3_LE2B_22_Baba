@@ -15,13 +15,17 @@ public:
 
 	void Initialize(DirectXCommon* dxCommon, TrianglePSO* trianglePSO, TextureManager* textureManager);
 	void Update(const Camera& camera);
-	void Draw(uint32_t textureIndex);
+	void Draw();
 
 	// ゲッター
 	Vector4& GetColor() { return color_; }
 	Vector3& GetScale() { return scale_; }
 	Vector3& GetRotate() { return rotate_; }
 	Vector3& GetTranslate() { return translate_; }
+	int32_t& GetTextureIndex() { return textureIndex_; }
+
+	// セッター
+	void SetTextureIndex(uint32_t index) { textureIndex_ = index; }
 
 private:
 	// VertexResourceとVertexBufferViewの作成関数
@@ -76,6 +80,7 @@ private:
 	Vector3 scale_;
 	Vector3 rotate_;
 	Vector3 translate_;
+	int32_t textureIndex_ = 1;
 
 };
 
