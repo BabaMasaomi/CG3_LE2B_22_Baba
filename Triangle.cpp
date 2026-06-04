@@ -4,8 +4,6 @@
 #include "TextureManager.h"
 #include "Camera.h"
 #include "Utility.h"
-#include <cassert>
-
 
 // デストラクタ
 Triangle::~Triangle() {
@@ -23,9 +21,9 @@ void Triangle::Initialize(DirectXCommon* dxCommon, TrianglePSO* trianglePSO, Tex
 	worldMatrix_ = {};
 	// ImGui用
 	color_ = { 1.0f,1.0f,1.0f,1.0f };
-	scale_ = { 1.0f,1.0f,1.0f };
-	rotate_ = { 0.0f,0.0f,0.0f };
-	translate_ = { 0.0f,0.0f,0.0f };
+	scale_ = transform_.scale;
+	rotate_ = transform_.rotate;
+	translate_ = transform_.translate;
 
 	// DirectXCommonとTrianglePSOのポインタを保存しておく
 	dxCommon_ = dxCommon;

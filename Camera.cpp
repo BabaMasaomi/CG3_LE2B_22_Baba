@@ -15,8 +15,8 @@ void Camera::Initialize(float width, float height) {
 	aspectRatio_ = width / height;
 
 	// ImGui用
-	rotate_ = { 0.0f,0.0f,0.0f };
-	translate_ = { 0.0f,0.0f,-5.0f };
+	rotate_ = transform_.rotate;
+	translate_ = transform_.translate;
 }
 
 /*-------------------- 更新処理 --------------------*/

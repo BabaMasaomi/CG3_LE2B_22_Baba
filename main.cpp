@@ -101,22 +101,19 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	triangles[0].Initialize(&dxCommon, &trianglePSO, &textureManager);
 	triangles[1].Initialize(&dxCommon, &trianglePSO, &textureManager);
 
-	triangles[0].SetTextureIndex(1);
-	triangles[1].SetTextureIndex(1);
-
-	triangles[0].GetScale() = { 1.0f,1.0f,1.0f };
-	triangles[1].GetScale() = { 1.5f,0.8f,1.0f };
-	triangles[0].GetRotate() = { 0.0f,0.0f,0.0f };
-	triangles[1].GetRotate() = { 0.0f,0.8f,0.0f };
-	triangles[0].GetTranslate() = { 0.0f,0.0f,0.0f };
-	triangles[1].GetTranslate() = { 0.0f,-0.1f,0.0f };
-	triangles[0].GetTextureIndex() = 1;
-	triangles[1].GetTextureIndex() = 1;
-
 	// ログ出力
 	Log(logStream, "Start logging!");
 
 	/*-------------------- 変数 --------------------*/
+	// 三角形
+	triangles[0].SetTextureIndex(1);
+	triangles[1].SetTextureIndex(1);
+	triangles[0].GetScale() = { 1.0f,1.0f,1.0f };
+	triangles[1].GetScale() = { 1.5f,0.8f,1.0f };
+	triangles[0].GetRotate() = { 0.0f,0.0f,0.0f };
+	triangles[1].GetRotate() = { 0.0f,0.8f,0.0f };
+	triangles[0].GetTranslate() = { -0.2f,0.0f,0.0f };
+	triangles[1].GetTranslate() = { -0.2f,-0.1f,0.0f };
 
 	/*-------------------- ゲームループの処理 --------------------*/
 	MSG msg{};
@@ -138,43 +135,30 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 #ifdef USE_IMGUI
 		imguiManager.Begin();	// 以下にImGuiの内容を記述
 		//ImGui::ShowDemoWindow();
-
+		// カメラを操作
 		if (ImGui::CollapsingHeader("Camera")) {
-			// Cameraの位置を調整
+			// 位置を調整
 			ImGui::DragFloat3("Camera.Rotate", &camera.GetRotate().x, 0.01f);
 			ImGui::DragFloat3("Camera.Translate", &camera.GetTranslate().x, 0.01f);
 		};
-
-		if (ImGui::CollapsingHeader("Triangle1")) {
-			// リストからテクスチャを選択
-			const char* items[] = { "uvChecker", "monsterBall" };
-			static int currentItemIndex = 0;
-			if (ImGui::Combo("Texture", &currentItemIndex, items, IM_ARRAYSIZE(items), 2)) {
-				triangles[0].SetTextureIndex(currentItemIndex + 1);	// Textureは1から始まっているので合わせる
+		// 三角形を操作
+		for (int i = 0; i < 2; i++) {
+			std::string headerName = "Triangle" + std::to_string(i + 1);	// ラベル名に番号を加える処理
+			if (ImGui::CollapsingHeader(headerName.c_str())) {
+				ImGui::PushID(i);
+				// リストからテクスチャを選択
+				const char* items[] = { "uvChecker", "monsterBall" };
+				int textureIndex = static_cast<int>(triangles[i].GetTextureIndex()) - 1;
+				if (ImGui::Combo("Texture", &textureIndex, items, IM_ARRAYSIZE(items))) {
+					triangles[i].SetTextureIndex(textureIndex + 1);	// Textureは1から始まっているので合わせる
+				}
+				// color,SRTを変更
+				ImGui::ColorEdit4("Color", &triangles[i].GetColor().x);
+				ImGui::DragFloat3("Scale", &triangles[i].GetScale().x, 0.01f);
+				ImGui::DragFloat3("Rotate", &triangles[i].GetRotate().x, 0.01f);
+				ImGui::DragFloat3("Translate", &triangles[i].GetTranslate().x, 0.01f);
+				ImGui::PopID();
 			}
-			// color,SRTを変更
-			ImGui::PushID(0);
-			ImGui::ColorEdit4("Color", &triangles[0].GetColor().x);
-			ImGui::DragFloat3("Scale", &triangles[0].GetScale().x, 0.01f);
-			ImGui::DragFloat3("Rotate", &triangles[0].GetRotate().x, 0.01f);
-			ImGui::DragFloat3("Translate", &triangles[0].GetTranslate().x, 0.01f);
-			ImGui::PopID();
-		}
-
-		if (ImGui::CollapsingHeader("Triangle2")) {
-			// リストからテクスチャを選択
-			const char* items[] = { "uvChecker", "monsterBall" };
-			static int currentItemIndex = 0;
-			if (ImGui::Combo("Texture", &currentItemIndex, items, IM_ARRAYSIZE(items), 2)) {
-				triangles[1].SetTextureIndex(currentItemIndex + 1);	// Textureは1から始まっているので合わせる
-			}
-			// color,SRTを変更
-			ImGui::PushID(1);
-			ImGui::ColorEdit4("Color", &triangles[1].GetColor().x);
-			ImGui::DragFloat3("Scale", &triangles[1].GetScale().x, 0.01f);
-			ImGui::DragFloat3("Rotate", &triangles[1].GetRotate().x, 0.01f);
-			ImGui::DragFloat3("Translate", &triangles[1].GetTranslate().x, 0.01f);
-			ImGui::PopID();
 		}
 		imguiManager.End();		// 以上でImGuiの内容を終える
 #endif
@@ -190,7 +174,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 #endif
 
 		dxCommon.PostDraw();	// 描画後の処理
-
 	}
 
 	// ImGuiの終了処理
