@@ -48,7 +48,7 @@ void Triangle::Initialize(DirectXCommon* dxCommon, TrianglePSO* trianglePSO, Tex
 
 /*-------------------- VertexResourceの生成 --------------------*/
 void Triangle::CreateVertexResource() {
-	vertexResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(VertexData) * 6);
+	vertexResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(VertexData) * 3);
 }
 
 /*-------------------- VertexBufferViewの作成 --------------------*/
@@ -56,7 +56,7 @@ void Triangle::CreateVertexBufferView() {
 	// リソースの先頭のアドレスから使う
 	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	// 使用するリソースのサイズはVector4を3頂点分
-	vertexBufferView_.SizeInBytes = sizeof(VertexData) * 6;
+	vertexBufferView_.SizeInBytes = sizeof(VertexData) * 3;
 	// 1頂点あたりのサイズ
 	vertexBufferView_.StrideInBytes = sizeof(VertexData);
 }
@@ -80,19 +80,6 @@ void Triangle::MapVertexData() {
 	vertexData[2].pos = { 0.5f, -0.5f, 0.0f, 1.0f };
 	vertexData[2].texcoord = { 1.0f,1.0f };
 	vertexData[2].normal = { 0.0f,0.0f,-1.0f };
-	// 2つ目の三角形
-	// 左下
-	vertexData[3].pos = { -0.5f, -0.5f, 0.5f, 1.0f };
-	vertexData[3].texcoord = { 0.0f,1.0f };
-	vertexData[3].normal = { 0.0f,0.0f,-1.0f };
-	// 上
-	vertexData[4].pos = { 0.0f, 0.0f, 0.0f, 1.0f };
-	vertexData[4].texcoord = { 0.5f,0.0f };
-	vertexData[4].normal = { 0.0f,0.0f,-1.0f };
-	// 右下
-	vertexData[5].pos = { 0.5f, -0.5f, -0.5f, 1.0f };
-	vertexData[5].texcoord = { 1.0f,1.0f };
-	vertexData[5].normal = { 0.0f,0.0f,-1.0f };
 }
 
 /*-------------------- MaterialResourceの生成 --------------------*/
@@ -160,5 +147,5 @@ void Triangle::Draw(uint32_t textureIndex) {
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
 	commandList->SetGraphicsRootDescriptorTable(2, textureManager_->GetTextureSrvHandleGPU(textureIndex - 1));
 	// 描画！(DrawCall)3頂点で一つのインスタンス
-	commandList->DrawInstanced(6, 1, 0, 0);
+	commandList->DrawInstanced(3, 1, 0, 0);
 }
