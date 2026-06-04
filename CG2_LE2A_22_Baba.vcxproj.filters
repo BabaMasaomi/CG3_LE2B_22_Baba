@@ -16,36 +16,51 @@
     <Filter Include="imgui">
       <UniqueIdentifier>{ffd99cda-a357-46d5-a9cf-8c8be80100ce}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Camera">
+      <UniqueIdentifier>{01db9298-9a77-429c-9568-fd9e8b492711}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DirectionalLight">
+      <UniqueIdentifier>{e4ea55fb-ceea-425b-a85b-26320fd94868}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DirectXCommon">
+      <UniqueIdentifier>{f4010c1b-7f34-4e37-90c0-34c52ebab4a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DXCManager">
+      <UniqueIdentifier>{aed6bd4a-599f-490f-885d-912edc131547}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGuiManager">
+      <UniqueIdentifier>{d0eac150-d8f5-4b66-b45d-8b0c183767b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logger">
+      <UniqueIdentifier>{87146f68-29e4-4cf8-b82c-6400e62630e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sphere">
+      <UniqueIdentifier>{cc949d5a-6595-4600-8ce9-31b017177d43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SpherePSO">
+      <UniqueIdentifier>{68748b77-9520-4912-8020-f3b0bdf9c83b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sprite">
+      <UniqueIdentifier>{63e7ad60-6f1e-4f8e-99e2-22b8c9eccf38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TextureManager">
+      <UniqueIdentifier>{04aaf4cf-85af-42b7-95b2-ec5b1bb62fae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Triangle">
+      <UniqueIdentifier>{cc087743-728d-46c3-87c0-6185797f292f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TrianglePSO">
+      <UniqueIdentifier>{91bd7c7f-e5d1-439f-b6da-a639fe5c48d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WinApp">
+      <UniqueIdentifier>{6ea4220e-fe8d-46cd-bbbf-e3282d9251fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{de929029-07c9-418c-9e98-bfcb998f6f7c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectXCommon.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Logger.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="WinApp.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="DXCManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Triangle.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="TrianglePSO.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Utility.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGuiManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="externals\imgui\imgui.cpp">
@@ -69,51 +84,51 @@
     <ClCompile Include="externals\imgui\imgui_widgets.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="TextureManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Sprite.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Sphere.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="SpherePSO.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Camera</Filter>
     </ClCompile>
     <ClCompile Include="DirectionalLight.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>DirectionalLight</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXCommon.cpp">
+      <Filter>DirectXCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="DXCManager.cpp">
+      <Filter>DXCManager</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuiManager.cpp">
+      <Filter>ImGuiManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Logger.cpp">
+      <Filter>Logger</Filter>
+    </ClCompile>
+    <ClCompile Include="Sphere.cpp">
+      <Filter>Sphere</Filter>
+    </ClCompile>
+    <ClCompile Include="SpherePSO.cpp">
+      <Filter>SpherePSO</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>TextureManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Triangle.cpp">
+      <Filter>Triangle</Filter>
+    </ClCompile>
+    <ClCompile Include="TrianglePSO.cpp">
+      <Filter>TrianglePSO</Filter>
+    </ClCompile>
+    <ClCompile Include="WinApp.cpp">
+      <Filter>WinApp</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility.cpp">
+      <Filter>Utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DirectXCommon.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Logger.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="WinApp.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="DXCManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Triangle.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="TrianglePSO.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="struct.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGuiManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -140,20 +155,47 @@
     <ClInclude Include="externals\imgui\imstb_truetype.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="TextureManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Sprite.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Sphere.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="SpherePSO.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="Camera.h">
+      <Filter>Camera</Filter>
     </ClInclude>
     <ClInclude Include="DirectionalLight.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>DirectionalLight</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXCommon.h">
+      <Filter>DirectXCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="DXCManager.h">
+      <Filter>DXCManager</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuiManager.h">
+      <Filter>ImGuiManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Logger</Filter>
+    </ClInclude>
+    <ClInclude Include="Sphere.h">
+      <Filter>Sphere</Filter>
+    </ClInclude>
+    <ClInclude Include="SpherePSO.h">
+      <Filter>SpherePSO</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>TextureManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Triangle.h">
+      <Filter>Triangle</Filter>
+    </ClInclude>
+    <ClInclude Include="TrianglePSO.h">
+      <Filter>TrianglePSO</Filter>
+    </ClInclude>
+    <ClInclude Include="WinApp.h">
+      <Filter>WinApp</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility.h">
+      <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
