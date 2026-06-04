@@ -127,19 +127,24 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		imguiManager.Begin();	// 以下にImGuiの内容を記述
 		//ImGui::ShowDemoWindow();
 
-		// Cameraの位置を調整
-		ImGui::DragFloat3("Camera.Rotate", &camera.GetRotate().x, 0.01f);
-		ImGui::DragFloat3("Camera.Translate", &camera.GetTranslate().x, 0.01f);
-		// リストからテクスチャを選択
-		const char* items[] = { "uvChecker", "monsterBall" };
-		static int currentItemIndex = 0;
-		if(ImGui::Combo("Texture", &currentItemIndex, items, IM_ARRAYSIZE(items), 2)){
-			textureIndex = currentItemIndex + 1;	// Texturは1から始まっているので合わせる
+		if (ImGui::CollapsingHeader("Camera")) {
+			// Cameraの位置を調整
+			ImGui::DragFloat3("Camera.Rotate", &camera.GetRotate().x, 0.01f);
+			ImGui::DragFloat3("Camera.Translate", &camera.GetTranslate().x, 0.01f);
+		};
+		if (ImGui::CollapsingHeader("Triangle")) {
+			// リストからテクスチャを選択
+			const char* items[] = { "uvChecker", "monsterBall" };
+			static int currentItemIndex = 0;
+			if (ImGui::Combo("Texture", &currentItemIndex, items, IM_ARRAYSIZE(items), 2)) {
+				textureIndex = currentItemIndex + 1;	// Textureは1から始まっているので合わせる
+			}
+			// color,SRTを変更
+			ImGui::ColorEdit4("Triangle.Color", &triangle.GetColor().x);
+			ImGui::DragFloat3("Triangle.Scale", &triangle.GetScale().x, 0.01f);
+			ImGui::DragFloat3("Triangle.Rotate", &triangle.GetRotate().x, 0.01f);
+			ImGui::DragFloat3("Triangle.Translate", &triangle.GetTranslate().x, 0.01f);
 		}
-		ImGui::ColorEdit4("Triangle.Color", &triangle.GetColor().x);
-		ImGui::DragFloat3("Triangle.Scale", &triangle.GetScale().x, 0.01f);
-		ImGui::DragFloat3("Triangle.Rotate", &triangle.GetRotate().x, 0.01f);
-		ImGui::DragFloat3("Triangle.Translate", &triangle.GetTranslate().x, 0.01f);
 		imguiManager.End();		// 以上でImGuiの内容を終える
 #endif
 
