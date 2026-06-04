@@ -6,11 +6,8 @@
 #include "TextureManager.h"
 #include "Camera.h"
 #include "DirectionalLight.h"
-#include "Sprite.h"
-//#include "Triangle.h"
-//#include "TrianglePSO.h"
-#include "Sphere.h"
-#include "SpherePSO.h"
+#include "Triangle.h"
+#include "TrianglePSO.h"
 // Debug用のあれこれを使える様にする
 #include <dbghelp.h>
 #include <strsafe.h>
@@ -95,32 +92,20 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	DirectionalLight directionalLight;
 	directionalLight.Initialize(&dxCommon);
 
-	// SpherePSOの初期化
-	SpherePSO spherePSO;
-	spherePSO.Initialize(&dxCommon, &dxcManager);
-
-	// Sphereの初期化
-	Sphere sphere;
-	sphere.Initialize(&dxCommon, &spherePSO, &textureManager, &directionalLight);
-
 	// TrianglePSOの初期化
-	//TrianglePSO trianglePSO;
-	//trianglePSO.Initialize(&dxCommon, &dxcManager);
+	TrianglePSO trianglePSO;
+	trianglePSO.Initialize(&dxCommon, &dxcManager);
 
 	// Triangleの初期化
-	//Triangle triangle;
-	//triangle.Initialize(&dxCommon, &trianglePSO, &textureManager);
-
-	// Spriteの初期化
-	Sprite sprite;
-	sprite.Initialize(&dxCommon, &textureManager, &winApp);
+	Triangle triangle;
+	triangle.Initialize(&dxCommon, &trianglePSO, &textureManager);
 
 	// ログ出力
 	Log(logStream, "Start logging!");
 
 	/*-------------------- 変数 --------------------*/
 	// ImGui用に変数を用意
-	uint32_t sphereTextureIndex = 1;
+	uint32_t textureIndex = 1;
 	bool useMonsterBall = false;
 
 	/*-------------------- ゲームループの処理 --------------------*/
@@ -132,9 +117,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		/*-------------------- 更新処理 --------------------*/
 		camera.Update();
 		directionalLight.Update();
-		sphere.Update(camera);
-		//triangle.Update(camera);
-		sprite.Update();
+		triangle.Update(camera);
 
 		/*-------------------- 描画処理 --------------------*/
 		dxCommon.PreDraw();		// 描画前の処理
@@ -142,30 +125,26 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// ImGui
 #ifdef USE_IMGUI
 		imguiManager.Begin();	// 以下にImGuiの内容を記述
-		// 球のテクスチャを変更
-		if (ImGui::Checkbox("useMonsterBall", &useMonsterBall)) {
-			sphereTextureIndex = 1;
-			if (useMonsterBall) {
-				sphereTextureIndex = 2;
-			}
+		//ImGui::ShowDemoWindow();
+
+		// Cameraの位置を調整
+		ImGui::DragFloat3("Camera.Rotate", &camera.GetRotate().x, 0.01f);
+		ImGui::DragFloat3("Camera.Translate", &camera.GetTranslate().x, 0.01f);
+		// リストからテクスチャを選択
+		const char* items[] = { "uvChecker", "monsterBall" };
+		static int currentItemIndex = 0;
+		if(ImGui::Combo("Texture", &currentItemIndex, items, IM_ARRAYSIZE(items), 2)){
+			textureIndex = currentItemIndex + 1;	// Texturは1から始まっているので合わせる
 		}
-		ImGui::ColorEdit4("LightColor", &directionalLight.GetColor().x);							// 色を変更
-		ImGui::DragFloat3("LightDirection", &directionalLight.GetDirection().x, 0.01f);				// 向きを変更
-		ImGui::DragFloat("LightIntensity", &directionalLight.GetIntensity(), 0.01f, 0.0f, 10.0f);	// 輝度を変更
+		ImGui::ColorEdit4("Triangle.Color", &triangle.GetColor().x);
+		ImGui::DragFloat3("Triangle.Scale", &triangle.GetScale().x, 0.01f);
+		ImGui::DragFloat3("Triangle.Rotate", &triangle.GetRotate().x, 0.01f);
+		ImGui::DragFloat3("Triangle.Translate", &triangle.GetTranslate().x, 0.01f);
 		imguiManager.End();		// 以上でImGuiの内容を終える
 #endif
 
 		// 三角形の描画
-		//triangle.Draw();
-
-		// 球の描画
-		sphere.Draw(sphereTextureIndex);
-
-		// 三角形の描画
-		//triangle.Draw(sphereTextureIndex);
-
-		// スプライトの描画
-		sprite.Draw(1);
+		triangle.Draw(textureIndex);
 
 		// ImGuiの描画
 #ifdef USE_IMGUI

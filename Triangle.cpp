@@ -21,6 +21,11 @@ void Triangle::Initialize(DirectXCommon* dxCommon, TrianglePSO* trianglePSO, Tex
 	transform_.rotate = { 0.0f,0.0f,0.0f };
 	transform_.translate = { 0.0f,0.0f,0.0f };
 	worldMatrix_ = {};
+	// ImGui用
+	color_ = { 1.0f,1.0f,1.0f,1.0f };
+	scale_ = { 1.0f,1.0f,1.0f };
+	rotate_ = { 0.0f,0.0f,0.0f };
+	translate_ = { 0.0f,0.0f,0.0f };
 
 	// DirectXCommonとTrianglePSOのポインタを保存しておく
 	dxCommon_ = dxCommon;
@@ -119,9 +124,13 @@ void Triangle::MapTransformationMatrix() {
 
 /*-------------------- 更新 --------------------*/
 void Triangle::Update(const Camera& camera) {
-	transform_.rotate.y += 0.02f;
+	// ImGuiの変更を反映する
+	materialData_->color = color_;
+	transform_.scale = scale_;
+	transform_.rotate = rotate_;
+	transform_.translate = translate_;
 
-	// 回転を加える
+	// SRTの変化を加える
 	worldMatrix_ = MakeAffineMatrix(
 		transform_.scale,
 		transform_.rotate,

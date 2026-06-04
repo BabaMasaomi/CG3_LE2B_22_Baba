@@ -17,6 +17,12 @@ public:
 	void Update(const Camera& camera);
 	void Draw(uint32_t textureIndex);
 
+	// ゲッター
+	Vector4& GetColor() { return color_; }
+	Vector3& GetScale() { return scale_; }
+	Vector3& GetRotate() { return rotate_; }
+	Vector3& GetTranslate() { return translate_; }
+
 private:
 	// VertexResourceとVertexBufferViewの作成関数
 	void CreateVertexResource();
@@ -37,7 +43,7 @@ private:
 	TextureManager* textureManager_ = nullptr;
 
 	// 図形の変換を管理するためのTransformとワールド行列
-	Transform transform_;
+	Transform transform_{};
 	Matrix4x4 worldMatrix_{};
 
 	// 頂点リソースにデータを書き込む
@@ -64,6 +70,12 @@ private:
 	// 変換行列リソースと変換行列データ
 	ID3D12Resource* wvpResource_ = nullptr;
 	TransformationMatrix* wvpMatrixData_ = nullptr;
+
+	// ImGuiで弄る用
+	Vector4 color_;
+	Vector3 scale_;
+	Vector3 rotate_;
+	Vector3 translate_;
 
 };
 
