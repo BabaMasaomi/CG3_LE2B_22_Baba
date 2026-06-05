@@ -43,6 +43,10 @@ static LONG WINAPI ExportDump(EXCEPTION_POINTERS* exceptionPointers) {
 	return EXCEPTION_EXECUTE_HANDLER;
 }
 
+// Triangle演出用
+float RandRange(float min, float max) {
+	return min + (float)rand() / RAND_MAX * (max - min);
+}
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
@@ -100,12 +104,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	Triangle triangles[2];
 	triangles[0].Initialize(&dxCommon, &trianglePSO, &textureManager);
 	triangles[1].Initialize(&dxCommon, &trianglePSO, &textureManager);
-
-	// ログ出力
-	Log(logStream, "Start logging!");
-
-	/*-------------------- 変数 --------------------*/
-	// 三角形
 	triangles[0].SetTextureIndex(1);
 	triangles[1].SetTextureIndex(1);
 	triangles[0].GetScale() = { 1.0f,1.0f,1.0f };
@@ -115,65 +113,167 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	triangles[0].GetTranslate() = { -0.2f,0.0f,0.0f };
 	triangles[1].GetTranslate() = { -0.2f,-0.1f,0.0f };
 
+	// 演出用のTriangleの初期化
+	Triangle flyingTriangles[200];
+	Vector3 velocity[200];
+	Vector3 rotateVelocity[200];
+	for (int i = 0; i < 200; i++) {
+		flyingTriangles[i].Initialize(&dxCommon, &trianglePSO, &textureManager);
+		flyingTriangles[i].SetTextureIndex(1);
+		flyingTriangles[i].GetScale() = { 2.0f,2.0f,2.0f };
+		flyingTriangles[i].GetRotate() = { RandRange(0.0f, 6.28f),RandRange(0.0f, 6.28f),RandRange(0.0f, 6.28f) };
+		flyingTriangles[i].GetTranslate() = { 0.0f,0.0f,RandRange(200.0f, 800.0f) };
+		velocity[i] = { RandRange(-0.1f, 0.1f),RandRange(-0.1f, 0.1f),-1.0f };
+		rotateVelocity[i] = { RandRange(-0.05f, 0.05f),RandRange(-0.05f, 0.05f),RandRange(-0.05f, 0.05f) };
+	}
+
+	// ログ出力
+	Log(logStream, "Start logging!");
+
+	/*-------------------- 変数 --------------------*/
+	// シーン分け用
+	int currentScene = 0;
+	const char* items[] = { "TriangleScene", "PerformanceScene" };
+	int SceneIndex = 0;
+
 	/*-------------------- ゲームループの処理 --------------------*/
 	MSG msg{};
 	// ウィンドウのxボタンが押されるまでループ
 	while (!winApp.IsEndGame()) {
 		winApp.ProcessMessage();
 
-		/*-------------------- 更新処理 --------------------*/
-		camera.Update();
-		directionalLight.Update();
-		for (auto& triangle : triangles) {
-			triangle.Update(camera);
-		}
+		switch (currentScene) {
+		case 0:
+			/*==============================================================
+			*	ImGuiで2つの三角形を操作
+			==============================================================*/
 
-		/*-------------------- 描画処理 --------------------*/
-		dxCommon.PreDraw();		// 描画前の処理
-
-		// ImGui
-#ifdef USE_IMGUI
-		imguiManager.Begin();	// 以下にImGuiの内容を記述
-		//ImGui::ShowDemoWindow();
-		// カメラを操作
-		if (ImGui::CollapsingHeader("Camera")) {
-			// 位置を調整
-			ImGui::DragFloat3("Camera.Rotate", &camera.GetRotate().x, 0.01f);
-			ImGui::DragFloat3("Camera.Translate", &camera.GetTranslate().x, 0.01f);
-		};
-		// 三角形を操作
-		for (int i = 0; i < 2; i++) {
-			std::string headerName = "Triangle" + std::to_string(i + 1);	// ラベル名に番号を加える処理
-			if (ImGui::CollapsingHeader(headerName.c_str())) {
-				ImGui::PushID(i);
-				// リストからテクスチャを選択
-				const char* items[] = { "uvChecker", "monsterBall" };
-				int textureIndex = static_cast<int>(triangles[i].GetTextureIndex()) - 1;
-				if (ImGui::Combo("Texture", &textureIndex, items, IM_ARRAYSIZE(items))) {
-					triangles[i].SetTextureIndex(textureIndex + 1);	// Textureは1から始まっているので合わせる
-				}
-				// color,SRTを変更
-				ImGui::ColorEdit4("Color", &triangles[i].GetColor().x);
-				ImGui::DragFloat3("Scale", &triangles[i].GetScale().x, 0.01f);
-				ImGui::DragFloat3("Rotate", &triangles[i].GetRotate().x, 0.01f);
-				ImGui::DragFloat3("Translate", &triangles[i].GetTranslate().x, 0.01f);
-				ImGui::PopID();
+			/*-------------------- 更新処理 --------------------*/
+			camera.Update();
+			directionalLight.Update();
+			for (auto& triangle : triangles) {
+				triangle.Update(camera);
 			}
-		}
-		imguiManager.End();		// 以上でImGuiの内容を終える
-#endif
 
-		// 三角形の描画
-		for (auto& triangle : triangles) {
-			triangle.Draw();
-		}
+			/*-------------------- 描画処理 --------------------*/
+			dxCommon.PreDraw();		// 描画前の処理
 
-		// ImGuiの描画
+			// ImGui
 #ifdef USE_IMGUI
-		imguiManager.Draw();
+			imguiManager.Begin();	// 以下にImGuiの内容を記述
+			// リストからシーンを変更
+			if (ImGui::Combo("Scene", &SceneIndex, items, IM_ARRAYSIZE(items))) {
+				currentScene = SceneIndex;
+				for (int i = 0; i < 200; i++) {
+					flyingTriangles[i].GetRotate() = { RandRange(0.0f, 6.28f),RandRange(0.0f, 6.28f),RandRange(0.0f, 6.28f) };
+					flyingTriangles[i].GetTranslate() = { 0.0f,0.0f,RandRange(200.0f, 800.0f) };
+					velocity[i] = { RandRange(-0.1f, 0.1f),RandRange(-0.1f, 0.1f),-1.0f };
+					rotateVelocity[i] = { RandRange(-0.05f, 0.05f),RandRange(-0.05f, 0.05f),RandRange(-0.05f, 0.05f) };
+				}
+			}
+			// カメラを操作
+			if (ImGui::CollapsingHeader("Camera")) {
+				// 位置を調整
+				ImGui::DragFloat3("Camera.Rotate", &camera.GetRotate().x, 0.01f);
+				ImGui::DragFloat3("Camera.Translate", &camera.GetTranslate().x, 0.01f);
+			};
+			// 三角形を操作
+			for (int i = 0; i < 2; i++) {
+				std::string headerName = "Triangle" + std::to_string(i + 1);	// ラベル名に番号を加える処理
+				if (ImGui::CollapsingHeader(headerName.c_str())) {
+					ImGui::PushID(i);
+					// リストからテクスチャを選択
+					const char* items[] = { "uvChecker", "monsterBall" };
+					int textureIndex = static_cast<int>(triangles[i].GetTextureIndex()) - 1;
+					if (ImGui::Combo("Texture", &textureIndex, items, IM_ARRAYSIZE(items))) {
+						triangles[i].SetTextureIndex(textureIndex + 1);	// Textureは1から始まっているので合わせる
+					}
+					// color,SRTを変更
+					ImGui::ColorEdit4("Color", &triangles[i].GetColor().x);
+					ImGui::DragFloat3("Scale", &triangles[i].GetScale().x, 0.01f);
+					ImGui::DragFloat3("Rotate", &triangles[i].GetRotate().x, 0.01f);
+					ImGui::DragFloat3("Translate", &triangles[i].GetTranslate().x, 0.01f);
+					ImGui::PopID();
+				}
+			}
+			imguiManager.End();		// 以上でImGuiの内容を終える
 #endif
 
-		dxCommon.PostDraw();	// 描画後の処理
+			// 三角形の描画
+			for (auto& triangle : triangles) {
+				triangle.Draw();
+			}
+
+			// ImGuiの描画
+#ifdef USE_IMGUI
+			imguiManager.Draw();
+#endif
+
+			dxCommon.PostDraw();	// 描画後の処理
+
+			break;
+		case 1:
+			/*==============================================================
+			*	三角形が奥から飛んでくる演出
+			==============================================================*/
+
+			/*-------------------- 更新処理 --------------------*/
+			camera.Update();
+			directionalLight.Update();
+			for (int i = 0; i < 200; i++) {
+				// 三角形を移動
+				flyingTriangles[i].GetTranslate().x += velocity[i].x;
+				flyingTriangles[i].GetTranslate().y += velocity[i].y;
+				flyingTriangles[i].GetTranslate().z += velocity[i].z;
+				// 三角形を回転
+				flyingTriangles[i].GetRotate().x += rotateVelocity[i].x;
+				flyingTriangles[i].GetRotate().y += rotateVelocity[i].y;
+				flyingTriangles[i].GetRotate().z += rotateVelocity[i].z;
+
+				// 初期状態に戻す
+				if (flyingTriangles[i].GetTranslate().z < -20.0f) {
+					flyingTriangles[i].GetTranslate() = { 0.0f,0.0f,RandRange(200.0f, 500.0f) };
+					flyingTriangles[i].GetRotate() = { RandRange(0.0f, 6.28f),RandRange(0.0f, 6.28f),RandRange(0.0f, 6.28f) };
+					velocity[i] = { RandRange(-0.1f, 0.1f),RandRange(-0.1f, 0.1f),-1.0f };
+					rotateVelocity[i] = { RandRange(-0.05f, 0.05f),RandRange(-0.05f, 0.05f),RandRange(-0.05f, 0.05f) };
+				}
+
+				flyingTriangles[i].Update(camera);
+			}
+
+			/*-------------------- 描画処理 --------------------*/
+			dxCommon.PreDraw();		// 描画前の処理
+
+			// ImGui
+#ifdef USE_IMGUI
+			imguiManager.Begin();	// 以下にImGuiの内容を記述
+			// リストからシーンを変更
+			if (ImGui::Combo("Scene", &SceneIndex, items, IM_ARRAYSIZE(items))) {
+				currentScene = SceneIndex;
+			}
+			// カメラを操作
+			if (ImGui::CollapsingHeader("Camera")) {
+				// 位置を調整
+				ImGui::DragFloat3("Camera.Rotate", &camera.GetRotate().x, 0.01f);
+				ImGui::DragFloat3("Camera.Translate", &camera.GetTranslate().x, 0.01f);
+			};
+
+			imguiManager.End();		// 以上でImGuiの内容を終える
+#endif
+			// 三角形の描画
+			for (auto& triangle : flyingTriangles) {
+				triangle.Draw();
+			}
+
+			// ImGuiの描画
+#ifdef USE_IMGUI
+			imguiManager.Draw();
+#endif
+
+			dxCommon.PostDraw();	// 描画後の処理
+
+			break;
+		}
 	}
 
 	// ImGuiの終了処理
