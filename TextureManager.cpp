@@ -40,16 +40,16 @@ void TextureManager::LoadTexture(const std::string& filePath, uint32_t index) {
 	assert(SUCCEEDED(hr));
 
 	// 3.metaDataを取得する
-	metaData_[index-1] = mipImages.GetMetadata();
+	metaData_[index - 1] = mipImages.GetMetadata();
 
 	// 4.resource生成
-	textureResources_[index-1] = CreateTextureResource(dxCommon_->GetDevice(), metaData_[index-1]);
+	textureResources_[index - 1] = CreateTextureResource(dxCommon_->GetDevice(), metaData_[index - 1]);
 
 	// 5.転送
-	intermediateResources_[index-1] = UploadTextureData(textureResources_[index-1], mipImages, dxCommon_->GetDevice(), dxCommon_->GetCommandList());
+	intermediateResources_[index - 1] = UploadTextureData(textureResources_[index - 1], mipImages, dxCommon_->GetDevice(), dxCommon_->GetCommandList());
 
 	// 6. SRV生成
-	CreateSRV(textureResources_[index-1], index);
+	CreateSRV(textureResources_[index - 1], index);
 }
 
 /*-------------------- 2.DirectX12のTextureResourceを作る --------------------*/

@@ -8,11 +8,11 @@ class TrianglePSO {
 public:
 	~TrianglePSO();
 
-	void Initialize(DirectXCommon* dxCommon,DXCManager* dxcManager);
+	void Initialize(DirectXCommon* dxCommon, DXCManager* dxcManager);
 
 	// ゲッター
-	ID3D12RootSignature* GetRootSignature() const {return rootSignature_;}
-	ID3D12PipelineState* GetPipelineState() const {return pipelineState_;}
+	ID3D12RootSignature* GetRootSignature() const { return rootSignature_; }
+	ID3D12PipelineState* GetPipelineState() const { return pipelineState_; }
 
 private:
 	// RootSignatureとGraphicsPipelineの生成関数

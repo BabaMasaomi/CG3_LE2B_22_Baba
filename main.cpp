@@ -123,7 +123,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		flyingTriangles[i].SetTextureIndex(3);
 		flyingTriangles[i].GetScale() = { 2.0f,2.0f,2.0f };
 		flyingTriangles[i].GetRotate() = { RandRange(0.0f, 6.28f),RandRange(0.0f, 6.28f),RandRange(0.0f, 6.28f) };
-		flyingTriangles[i].GetTranslate() = { 0.0f,0.0f,RandRange(200.0f, 800.0f) };
+		flyingTriangles[i].GetTranslate() = { RandRange(-5.0f,5.0f),RandRange(-5.0f,5.0f),RandRange(200.0f, 800.0f) };
 		velocity[i] = { RandRange(-0.1f, 0.1f),RandRange(-0.1f, 0.1f),-1.0f };
 		rotateVelocity[i] = { RandRange(-0.05f, 0.05f),RandRange(-0.05f, 0.05f),RandRange(-0.05f, 0.05f) };
 	}
@@ -168,7 +168,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 				currentScene = SceneIndex;
 				for (int i = 0; i < 200; i++) {
 					flyingTriangles[i].GetRotate() = { RandRange(0.0f, 6.28f),RandRange(0.0f, 6.28f),RandRange(0.0f, 6.28f) };
-					flyingTriangles[i].GetTranslate() = { 0.0f,0.0f,RandRange(200.0f, 800.0f) };
+					flyingTriangles[i].GetTranslate() = { RandRange(-5.0f,5.0f),RandRange(-5.0f,5.0f),RandRange(200.0f, 800.0f) };
 					velocity[i] = { RandRange(-0.1f, 0.1f),RandRange(-0.1f, 0.1f),-1.0f };
 					rotateVelocity[i] = { RandRange(-0.05f, 0.05f),RandRange(-0.05f, 0.05f),RandRange(-0.05f, 0.05f) };
 				}
@@ -176,6 +176,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			// カメラを操作
 			if (ImGui::CollapsingHeader("Camera")) {
 				// 位置を調整
+				if (ImGui::Button("CameraReset")) {
+					camera.GetRotate() = { 0.0f,0.0f,0.0f };
+					camera.GetTranslate() = { 0.0f,0.0f,-5.0f };
+				}
 				ImGui::DragFloat3("Camera.Rotate", &camera.GetRotate().x, 0.01f);
 				ImGui::DragFloat3("Camera.Translate", &camera.GetTranslate().x, 0.01f);
 			};
@@ -185,7 +189,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 				if (ImGui::CollapsingHeader(headerName.c_str())) {
 					ImGui::PushID(i);
 					// リストからテクスチャを選択
-					const char* items[] = { "uvChecker", "monsterBall","smile"};
+					const char* items[] = { "uvChecker", "monsterBall","smile" };
 					int textureIndex = static_cast<int>(triangles[i].GetTextureIndex()) - 1;
 					if (ImGui::Combo("Texture", &textureIndex, items, IM_ARRAYSIZE(items))) {
 						triangles[i].SetTextureIndex(textureIndex + 1);	// Textureは1から始まっているので合わせる
@@ -229,13 +233,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 				flyingTriangles[i].GetTranslate().y += velocity[i].y;
 				flyingTriangles[i].GetTranslate().z += velocity[i].z;
 				// 三角形を回転
-				flyingTriangles[i].GetRotate().x += rotateVelocity[i].x;
-				flyingTriangles[i].GetRotate().y += rotateVelocity[i].y;
-				flyingTriangles[i].GetRotate().z += rotateVelocity[i].z;
+				flyingTriangles[i].GetRotate().x += rotateVelocity[i].x * 2.0f;
+				flyingTriangles[i].GetRotate().y += rotateVelocity[i].y * 2.0f;
+				flyingTriangles[i].GetRotate().z += rotateVelocity[i].z * 2.0f;
 
 				// 初期状態に戻す
 				if (flyingTriangles[i].GetTranslate().z < -20.0f) {
-					flyingTriangles[i].GetTranslate() = { 0.0f,0.0f,RandRange(200.0f, 500.0f) };
+					flyingTriangles[i].GetTranslate() = { RandRange(-5.0f,5.0f),RandRange(-5.0f,5.0f),RandRange(200.0f, 500.0f) };
 					flyingTriangles[i].GetRotate() = { RandRange(0.0f, 6.28f),RandRange(0.0f, 6.28f),RandRange(0.0f, 6.28f) };
 					velocity[i] = { RandRange(-0.1f, 0.1f),RandRange(-0.1f, 0.1f),-1.0f };
 					rotateVelocity[i] = { RandRange(-0.05f, 0.05f),RandRange(-0.05f, 0.05f),RandRange(-0.05f, 0.05f) };
@@ -257,6 +261,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			// カメラを操作
 			if (ImGui::CollapsingHeader("Camera")) {
 				// 位置を調整
+				if (ImGui::Button("CameraReset")) {
+					camera.GetRotate() = { 0.0f,0.0f,0.0f };
+					camera.GetTranslate() = { 0.0f,0.0f,-5.0f };
+				}
 				ImGui::DragFloat3("Camera.Rotate", &camera.GetRotate().x, 0.01f);
 				ImGui::DragFloat3("Camera.Translate", &camera.GetTranslate().x, 0.01f);
 			};
