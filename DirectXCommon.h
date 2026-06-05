@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <cstdint>
+#include "struct.h"
 // DirectXを使うためのライブラリ
 #include <d3d12.h>
 #include <dxgi1_6.h>
@@ -35,6 +36,10 @@ public:
 	ID3D12DescriptorHeap* GetSrvDescriptorHeap()const { return srvDescriptorHeap_; }
 	DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() const { return swapChainDesc_; }
 	D3D12_RENDER_TARGET_VIEW_DESC GetrtvDesc() const { return rtvDesc_; }
+	Vector4& GetClearColor() { return clearColor_; }
+
+	// セッター
+	void SetClearColor(const Vector4& color) { clearColor_ = color; }
 
 private:
 	WinApp* winApp_ = nullptr;
@@ -98,6 +103,8 @@ private:
 	ID3D12Fence* fence_ = nullptr;
 	uint64_t fenceValue_ = 0;
 	HANDLE fenceEvent_ = nullptr;
+
+	Vector4 clearColor_ = { 0.1f,0.25f,0.5f,1.0 };
 
 	// descriptorSizeを取得
 	uint32_t DescriptorSizeSRV_ = 0;

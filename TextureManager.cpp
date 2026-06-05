@@ -25,7 +25,7 @@ void TextureManager::Initialize(DirectXCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 }
 
-/*-------------------- 1.Textureデータを読み込む --------------------*/	// mainなどでtextureManager.LoadTexture("resources/uvChecker.png", 1);として呼び出す
+/*-------------------- 1.Textureデータを読み込む --------------------*/	// mainでtextureManager.LoadTexture("resources/uvChecker.png", 1);などとして呼び出す
 void TextureManager::LoadTexture(const std::string& filePath, uint32_t index) {
 	assert(index > 0);
 	// 1.テクスチャファイルを読み込んでプログラムで扱えるようにする
@@ -41,7 +41,6 @@ void TextureManager::LoadTexture(const std::string& filePath, uint32_t index) {
 
 	// 3.metaDataを取得する
 	metaData_[index-1] = mipImages.GetMetadata();
-	//const DirectX::TexMetadata& metadata = metaData_;
 
 	// 4.resource生成
 	textureResources_[index-1] = CreateTextureResource(dxCommon_->GetDevice(), metaData_[index-1]);
@@ -67,17 +66,17 @@ ID3D12Resource* TextureManager::CreateTextureResource(ID3D12Device* device, cons
 
 	// 2.利用するHeapの設定
 	D3D12_HEAP_PROPERTIES heapPropaties{};
-	heapPropaties.Type = D3D12_HEAP_TYPE_DEFAULT;							// 細かい設定を行う
+	heapPropaties.Type = D3D12_HEAP_TYPE_DEFAULT;	// 細かい設定を行う
 
 	// 3.Resourceを生成する
 	ID3D12Resource* resource = nullptr;
 	HRESULT hr = device->CreateCommittedResource(
-		&heapPropaties,														// Heap設定
-		D3D12_HEAP_FLAG_NONE,												// Heapの特殊な設定。特に無し
-		&resourceDesc,														// Resourceの設定
-		D3D12_RESOURCE_STATE_COPY_DEST,										// データ転送される設定
-		nullptr,															// Clear最適値。使わないのでnullptr
-		IID_PPV_ARGS(&resource));											// 作成するResourceポインタへのポインタ
+		&heapPropaties,					// Heap設定
+		D3D12_HEAP_FLAG_NONE,			// Heapの特殊な設定。特に無し
+		&resourceDesc,					// Resourceの設定
+		D3D12_RESOURCE_STATE_COPY_DEST,	// データ転送される設定
+		nullptr,						// Clear最適値。使わないのでnullptr
+		IID_PPV_ARGS(&resource));		// 作成するResourceポインタへのポインタ
 	assert(SUCCEEDED(hr));
 
 	return resource;

@@ -56,6 +56,7 @@ DirectXCommon::~DirectXCommon() {
 
 /*-------------------- DirectXの初期化 --------------------*/
 void DirectXCommon::Initialize(HWND hwnd, int32_t width, int32_t height) {
+
 	InitializeDebugLayer();		// デバッグレイヤーの初期化
 	CreateDevice();				// 1. Factoryの生成、アダプタ選択、D3D12デバイス生成
 	InitializeInfoQueue();		// Debug情報の初期化
@@ -313,7 +314,7 @@ void DirectXCommon::PreDraw() {
 	commandList_->RSSetScissorRects(1, &scissorRect_);
 
 	// 指定した色で画面全体をクリアする
-	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };	// 青っぽい色
+	float clearColor[] = { clearColor_.x, clearColor_.y, clearColor_.z, clearColor_.w };	// 青っぽい色
 	commandList_->ClearRenderTargetView(rtvHandles_[backBufferIndex], clearColor, 0, nullptr);
 	commandList_->ClearDepthStencilView(dsvHandleCPU_, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 

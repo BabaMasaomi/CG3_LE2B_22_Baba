@@ -9,7 +9,7 @@ class TextureManager {
 public:
 	~TextureManager();
 
-	static const uint32_t kTextureCount = 2;
+	static const uint32_t kTextureCount = 128;
 
 	void Initialize(DirectXCommon* dxCommon);
 

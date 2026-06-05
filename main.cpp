@@ -77,6 +77,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// テクスチャの読み込み
 	textureManager.LoadTexture("resources/uvChecker.png", 1);
 	textureManager.LoadTexture("resources/monsterBall.png", 2);
+	textureManager.LoadTexture("resources/smile.png", 3);
 
 	dxCommon.ExecuteCommandList();	// コマンドを実行
 	dxCommon.WaitForGPU();			// GPUを待機
@@ -119,7 +120,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	Vector3 rotateVelocity[200];
 	for (int i = 0; i < 200; i++) {
 		flyingTriangles[i].Initialize(&dxCommon, &trianglePSO, &textureManager);
-		flyingTriangles[i].SetTextureIndex(1);
+		flyingTriangles[i].SetTextureIndex(3);
 		flyingTriangles[i].GetScale() = { 2.0f,2.0f,2.0f };
 		flyingTriangles[i].GetRotate() = { RandRange(0.0f, 6.28f),RandRange(0.0f, 6.28f),RandRange(0.0f, 6.28f) };
 		flyingTriangles[i].GetTranslate() = { 0.0f,0.0f,RandRange(200.0f, 800.0f) };
@@ -149,6 +150,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			==============================================================*/
 
 			/*-------------------- 更新処理 --------------------*/
+			dxCommon.SetClearColor({ 0.1f,0.25f,0.5f,1.0f });
 			camera.Update();
 			directionalLight.Update();
 			for (auto& triangle : triangles) {
@@ -183,7 +185,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 				if (ImGui::CollapsingHeader(headerName.c_str())) {
 					ImGui::PushID(i);
 					// リストからテクスチャを選択
-					const char* items[] = { "uvChecker", "monsterBall" };
+					const char* items[] = { "uvChecker", "monsterBall","smile"};
 					int textureIndex = static_cast<int>(triangles[i].GetTextureIndex()) - 1;
 					if (ImGui::Combo("Texture", &textureIndex, items, IM_ARRAYSIZE(items))) {
 						triangles[i].SetTextureIndex(textureIndex + 1);	// Textureは1から始まっているので合わせる
@@ -218,6 +220,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			==============================================================*/
 
 			/*-------------------- 更新処理 --------------------*/
+			dxCommon.SetClearColor({ 0.0f,0.0f,0.0f,1.0f });
 			camera.Update();
 			directionalLight.Update();
 			for (int i = 0; i < 200; i++) {
