@@ -7,6 +7,7 @@
 // デストラクタ
 Sprite::~Sprite() {
 	if (vertexResource_) vertexResource_->Release();
+	if (indexResource_) indexResource_->Release();
 	if (materialResource_) materialResource_->Release();
 	if (transformationMatrixResource_) {
 		transformationMatrixResource_->Release();
@@ -29,6 +30,11 @@ void Sprite::Initialize(DirectXCommon* dxCommon, TextureManager* textureManager,
 	CreateVertexBufferView();
 	MapVertexData();
 
+	// IndexResourceとIndexBufferViewの作成関数
+	CreateIndexResource();
+	CreateIndexBufferView();
+	MapIndexData();
+
 	// 色付けのためのMaterialResourceも作る
 	CreateMaterialResource();
 	MapMaterial();
@@ -40,7 +46,7 @@ void Sprite::Initialize(DirectXCommon* dxCommon, TextureManager* textureManager,
 
 /*-------------------- VertexResourceの生成 --------------------*/
 void Sprite::CreateVertexResource() {
-	vertexResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(VertexData) * 6);
+	vertexResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(VertexData) * 4);
 }
 
 /*-------------------- VertexBufferViewの作成 --------------------*/
@@ -48,19 +54,18 @@ void Sprite::CreateVertexBufferView() {
 	// リソースの先頭のアドレスから使う
 	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	// 使用するリソースのサイズはVector4を6頂点分
-	vertexBufferView_.SizeInBytes = sizeof(VertexData) * 6;
+	vertexBufferView_.SizeInBytes = sizeof(VertexData) * 4;
 	// 1頂点あたりのサイズ
 	vertexBufferView_.StrideInBytes = sizeof(VertexData);
 }
 
-/*-------------------- Resourceにデータを書き込む --------------------*/
+/*-------------------- VertexResourceにデータを書き込む --------------------*/
 void Sprite::MapVertexData() {
 	// 頂点リソースにデータを書きこむ
 	VertexData* vertexData = nullptr;
 	// 書き込むためのアドレスを取得
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
 	// 四角形(二つの三角形)のデータを設定
-	// 1枚目の三角形
 	vertexData[0].pos = { 0.0f, 360.0f, 0.0f, 1.0f };	// 左下
 	vertexData[0].texcoord = { 0.0f, 1.0f };
 	vertexData[0].normal = { 0.0f,0.0f,-1.0f };
@@ -70,16 +75,39 @@ void Sprite::MapVertexData() {
 	vertexData[2].pos = { 640.0f, 360.0f, 0.0f, 1.0f };	// 右下
 	vertexData[2].texcoord = { 1.0f, 1.0f };
 	vertexData[2].normal = { 0.0f,0.0f,-1.0f };
-	// 2枚目の三角形
-	vertexData[3].pos = { 0.0f, 0.0f, 0.0f, 1.0f };		// 左上
-	vertexData[3].texcoord = { 0.0f, 0.0f };
+	vertexData[3].pos = { 640.0f, 0.0f, 0.0f, 1.0f };		// 右上
+	vertexData[3].texcoord = { 1.0f, 0.0f };
 	vertexData[3].normal = { 0.0f,0.0f,-1.0f };
-	vertexData[4].pos = { 640.0f, 0.0f, 0.0f, 1.0f };	// 右上
-	vertexData[4].texcoord = { 1.0f, 0.0f };
-	vertexData[4].normal = { 0.0f,0.0f,-1.0f };
-	vertexData[5].pos = { 640.0f, 360.0f, 0.0f, 1.0f };	// 右下
-	vertexData[5].texcoord = { 1.0f, 1.0f };
-	vertexData[5].normal = { 0.0f,0.0f,-1.0f };
+}
+
+/*-------------------- IndexResourceの生成 --------------------*/
+void Sprite::CreateIndexResource() {
+	indexResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(uint32_t) * 6);
+}
+
+/*-------------------- IndexBufferViewの作成 --------------------*/
+void Sprite::CreateIndexBufferView() {
+	// リソースの先頭のアドレスから使う
+	indexBufferView_.BufferLocation = indexResource_->GetGPUVirtualAddress();
+	// 使用するリソースのサイズはVector4を6頂点分
+	indexBufferView_.SizeInBytes = sizeof(uint32_t) * 6;
+	// 1頂点あたりのサイズ
+	indexBufferView_.Format = DXGI_FORMAT_R32_UINT;
+}
+
+/*-------------------- IndexResourceにデータを書き込む --------------------*/
+void Sprite::MapIndexData() {
+	// IndexResourceにデータを書き込む
+	uint32_t* indexData = nullptr;
+	// 書き込むためのアドレスを取得
+	indexResource_->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
+	// データを設定
+	indexData[0] = 0;
+	indexData[1] = 1;
+	indexData[2] = 2;
+	indexData[3] = 1;
+	indexData[4] = 3;
+	indexData[5] = 2;
 }
 
 /*-------------------- MaterialResourceの生成 --------------------*/
@@ -126,6 +154,8 @@ void Sprite::Draw(uint32_t textureIndex) {
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// VertexBufferViewを設定
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);
+	// IBVを設定
+	commandList->IASetIndexBuffer(&indexBufferView_);
 	// マテリアルのCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
 	// TransformationMatrixCBufferの場所を指定
@@ -133,5 +163,5 @@ void Sprite::Draw(uint32_t textureIndex) {
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
 	commandList->SetGraphicsRootDescriptorTable(2, textureManager_->GetTextureSrvHandleGPU(textureIndex - 1));
 	// 描画！(DrawCall)
-	commandList->DrawInstanced(6, 1, 0, 0);
+	commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 }

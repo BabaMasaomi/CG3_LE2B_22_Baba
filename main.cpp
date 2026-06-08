@@ -7,8 +7,6 @@
 #include "Camera.h"
 #include "DirectionalLight.h"
 #include "Sprite.h"
-//#include "Triangle.h"
-//#include "TrianglePSO.h"
 #include "Sphere.h"
 #include "SpherePSO.h"
 // Debug用のあれこれを使える様にする
@@ -103,14 +101,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	Sphere sphere;
 	sphere.Initialize(&dxCommon, &spherePSO, &textureManager, &directionalLight);
 
-	// TrianglePSOの初期化
-	//TrianglePSO trianglePSO;
-	//trianglePSO.Initialize(&dxCommon, &dxcManager);
-
-	// Triangleの初期化
-	//Triangle triangle;
-	//triangle.Initialize(&dxCommon, &trianglePSO, &textureManager);
-
 	// Spriteの初期化
 	Sprite sprite;
 	sprite.Initialize(&dxCommon, &textureManager, &winApp);
@@ -155,14 +145,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		imguiManager.End();		// 以上でImGuiの内容を終える
 #endif
 
-		// 三角形の描画
-		//triangle.Draw();
-
 		// 球の描画
 		sphere.Draw(sphereTextureIndex);
-
-		// 三角形の描画
-		//triangle.Draw(sphereTextureIndex);
 
 		// スプライトの描画
 		sprite.Draw(1);

@@ -22,6 +22,11 @@ private:
 	void CreateVertexBufferView();
 	void MapVertexData();
 
+	// IndexResourceとIndexBufferViewの作成関数
+	void CreateIndexResource();
+	void CreateIndexBufferView();
+	void MapIndexData();
+
 	// マテリアル用のResourceとデータの作成関数
 	void CreateMaterialResource();
 	void MapMaterial();
@@ -49,6 +54,10 @@ private:
 	ID3D12Resource* vertexResource_ = nullptr;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 	VertexData* vertexData = nullptr;
+
+	// Index用のリソースとバッファビュー
+	ID3D12Resource* indexResource_ = nullptr;
+	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
 
 	// マテリアルデータの構造体
 	struct Material {
