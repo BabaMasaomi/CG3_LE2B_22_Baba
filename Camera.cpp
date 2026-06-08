@@ -13,10 +13,18 @@ void Camera::Initialize(float width, float height) {
 	transform_.translate = { 0.0f,0.0f,-5.0f };
 	// 透視投影行列を作るために、アスペクト比を計算しておく
 	aspectRatio_ = width / height;
+
+	// ImGui用
+	rotate_ = transform_.rotate;
+	translate_ = transform_.translate;
 }
 
 /*-------------------- 更新処理 --------------------*/
 void Camera::Update() {
+	// ImGuiの変更を反映する
+	transform_.rotate = rotate_;
+	transform_.translate = translate_;
+
 	// カメラの行列を作成
 	Matrix4x4 cameraMatrix = MakeAffineMatrix(
 		transform_.scale,

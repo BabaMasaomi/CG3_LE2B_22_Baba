@@ -132,21 +132,23 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// ImGui
 #ifdef USE_IMGUI
 		imguiManager.Begin();	// 以下にImGuiの内容を記述
-		// 球のテクスチャを変更
-		if (ImGui::Checkbox("useMonsterBall", &useMonsterBall)) {
-			sphereTextureIndex = 1;
-			if (useMonsterBall) {
-				sphereTextureIndex = 2;
+		if (ImGui::CollapsingHeader("Sphere")) {
+			// 球のテクスチャを変更
+			if (ImGui::Checkbox("useMonsterBall", &useMonsterBall)) {
+				sphereTextureIndex = 1;
+				if (useMonsterBall) {
+					sphereTextureIndex = 2;
+				}
 			}
 		}
 		// Lightを調整
-		if (ImGui::CollapsingHeader("Light"),ImGuiTreeNodeFlags_DefaultOpen) {
+		if (ImGui::CollapsingHeader("Light")) {
 			ImGui::ColorEdit4("Color", &directionalLight.GetColor().x);							// 色を変更
 			ImGui::DragFloat3("Direction", &directionalLight.GetDirection().x, 0.01f);				// 向きを変更
 			ImGui::DragFloat("Intensity", &directionalLight.GetIntensity(), 0.01f, 0.0f, 10.0f);	// 輝度を変更
 		}
 		// SpriteのUVTransformを調整
-		if (ImGui::CollapsingHeader("UVTransform"), ImGuiTreeNodeFlags_DefaultOpen) {
+		if (ImGui::CollapsingHeader("UVTransform")) {
 			ImGui::DragFloat2("Scale", &sprite.GetUVTransformScale().x, 0.01f, -10.0f, 10.0f);
 			ImGui::DragFloat2("Translate", &sprite.GetUVTransformTranslate().x, 0.01f, -10.0f, 10.0f);
 			ImGui::SliderAngle("Rotate", &sprite.GetUVTransformRotate().z);
