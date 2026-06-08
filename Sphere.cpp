@@ -9,6 +9,7 @@
 #include <format>			// フォーマットの自動指定をしてくれる(+安全策)
 #include <cmath>
 #include <cassert>
+#include <cstring>
 
 // デストラクタ
 Sphere::~Sphere() {
@@ -140,6 +141,7 @@ void Sphere::CreateMaterialResource() {
 void Sphere::MapMaterial() {
 	// Mapする
 	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
+	std::memset(materialData_, 0, sizeof(Material));
 	// ここで色を弄れる
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	materialData_->enableLighting = true;
@@ -163,6 +165,13 @@ void Sphere::MapTransformationMatrix() {
 
 /*-------------------- 更新 --------------------*/
 void Sphere::Update(const Camera& camera) {
+	// UVTransform用の行列を作成
+	Matrix4x4 uvTransformMatrix = MakeScaleMatrix(uvTransform_.scale);
+	uvTransformMatrix = Multiply(uvTransformMatrix, MakeRotateZMatrix(uvTransform_.rotate.z));
+	uvTransformMatrix = Multiply(uvTransformMatrix, MakeTranslateMatrix(uvTransform_.translate));
+	materialData_->uvTransform = uvTransformMatrix;
+
+	// 回転させる
 	transform_.rotate.y += 0.02f;
 
 	worldMatrix_ = MakeAffineMatrix(

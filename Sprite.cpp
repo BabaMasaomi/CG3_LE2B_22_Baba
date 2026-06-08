@@ -3,6 +3,7 @@
 #include "WinApp.h"
 #include "TextureManager.h"
 #include "Utility.h"
+#include <cstring>
 
 // デストラクタ
 Sprite::~Sprite() {
@@ -119,6 +120,7 @@ void Sprite::CreateMaterialResource() {
 void Sprite::MapMaterial() {
 	// Mapする
 	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
+	std::memset(materialData_, 0, sizeof(Material));
 	// ここで色を弄れる
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	materialData_->enableLighting = false;
@@ -140,7 +142,7 @@ void Sprite::MapTransformationMatrix() {
 
 /*-------------------- 更新 --------------------*/
 void Sprite::Update() {
-	// ImGuiの変更を反映
+	// UVTransform用の行列を作成
 	Matrix4x4 uvTransformMatrix = MakeScaleMatrix(uvTransform_.scale);
 	uvTransformMatrix = Multiply(uvTransformMatrix, MakeRotateZMatrix(uvTransform_.rotate.z));
 	uvTransformMatrix = Multiply(uvTransformMatrix, MakeTranslateMatrix(uvTransform_.translate));

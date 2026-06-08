@@ -72,6 +72,13 @@ private:
 		float padding[3];
 		Matrix4x4 uvTransform;
 	};
+	// UVTransform用の変数
+	Transform uvTransform_ = {
+		{1.0f,1.0f,1.0f},
+		{0.0f,0.0f,0.0f},
+		{0.0f,0.0f,0.0f},
+	};
+
 	// マテリアルリソース
 	ID3D12Resource* materialResource_ = nullptr;
 	// マテリアルデータ
