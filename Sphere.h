@@ -24,6 +24,11 @@ private:
 	void CreateVertexBufferView();
 	void MapVertexData();
 
+	// IndexResourceとIndexBufferViewの作成関数
+	void CreateIndexResource();
+	void CreateIndexBufferView();
+	void MapIndexData();
+
 	// マテリアル用のResourceとデータの作成関数
 	void CreateMaterialResource();
 	void MapMaterial();
@@ -54,6 +59,12 @@ private:
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 	VertexData* vertexData = nullptr;
 
+	// Index用のリソースとバッファビュー
+	ID3D12Resource* indexResource_ = nullptr;
+	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
+	uint32_t* indexData_ = nullptr;
+	uint32_t indexCount_ = 0;
+
 	// マテリアルデータの構造体
 	struct Material {
 		Vector4 color;
@@ -71,5 +82,5 @@ private:
 
 	// 球の分割数
 	static const uint32_t kSubdivision_ = 16;
-	const uint32_t vertexCount_ = kSubdivision_ * kSubdivision_ * 6;
+	const uint32_t vertexCount_ = (kSubdivision_ + 1) * (kSubdivision_ + 1);
 };

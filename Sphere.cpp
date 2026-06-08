@@ -13,6 +13,7 @@
 // デストラクタ
 Sphere::~Sphere() {
 	if (vertexResource_) vertexResource_->Release();
+	if (indexResource_) indexResource_->Release();
 	if (materialResource_) materialResource_->Release();
 	if (transformationMatrixResource_) {
 		transformationMatrixResource_->Release();
@@ -35,6 +36,11 @@ void Sphere::Initialize(DirectXCommon* dxCommon, SpherePSO* spherePSO, TextureMa
 	CreateVertexResource();
 	CreateVertexBufferView();
 	MapVertexData();
+
+	// IndexResourceとIndexBufferViewの作成関数
+	CreateIndexResource();
+	CreateIndexBufferView();
+	MapIndexData();
 
 	// 色付けのためのMaterialResourceも作る
 	CreateMaterialResource();
@@ -60,7 +66,7 @@ void Sphere::CreateVertexBufferView() {
 	vertexBufferView_.StrideInBytes = sizeof(VertexData);
 }
 
-/*-------------------- Resourceにデータを書き込む --------------------*/
+/*-------------------- VertexResourceにデータを書き込む --------------------*/
 void Sphere::MapVertexData() {
 	// 頂点リソースにデータを書きこむ
 	VertexData* vertexData = nullptr;
@@ -73,75 +79,54 @@ void Sphere::MapVertexData() {
 	// 緯度1つ分の角度
 	const float kLatEvery = pi / float(kSubdivision_);
 	// 球(大量の三角形)のデータを設定
-	// 緯度の方向に分割
-	for (uint32_t latIndex = 0; latIndex < kSubdivision_; ++latIndex) {
-		float lat0 = -pi / 2.0f + kLatEvery * latIndex;
-		float lat1 = lat0 + kLatEvery;
-		for (uint32_t lonIndex = 0; lonIndex < kSubdivision_; ++lonIndex) {
-			float lon0 = lonIndex * kLonEvery;
-			float lon1 = lon0 + kLonEvery;
-			uint32_t start = (latIndex * kSubdivision_ + lonIndex) * 6;
-			// 頂点にデータを入力する
-			// 4点計算
-			Vector4 p0 = {
-				std::cos(lat0) * std::cos(lon0),
-				std::sin(lat0),
-				std::cos(lat0) * std::sin(lon0),
-				1.0f };
-			Vector4 p1 = {
-				std::cos(lat1) * std::cos(lon0),
-				std::sin(lat1),
-				std::cos(lat1) * std::sin(lon0),
-				1.0f };
-			Vector4 p2 = {
-				std::cos(lat0) * std::cos(lon1),
-				std::sin(lat0),
-				std::cos(lat0) * std::sin(lon1)
-				,1.0f };
-			Vector4 p3 = {
-				std::cos(lat1) * std::cos(lon1)
-				,std::sin(lat1)
-				,std::cos(lat1) * std::sin(lon1),
-				1.0f };
-			// UV計算
-			float u0 = float(lonIndex) / float(kSubdivision_);
-			float u1 = float(lonIndex + 1) / float(kSubdivision_);
+	for (uint32_t lat = 0; lat <= kSubdivision_; lat++) {
+		for (uint32_t lon = 0; lon <= kSubdivision_; lon++) {
+			uint32_t index = lat * (kSubdivision_ + 1) + lon;
+			float latitude = -pi / 2.0f + kLatEvery * lat;
+			float longitude = kLonEvery * lon;
+			// データの書き込み
+			vertexData[index].pos = { cosf(latitude) * cosf(longitude),sinf(latitude),cosf(latitude) * sinf(longitude),1.0f };
+			vertexData[index].texcoord = { float(lon) / float(kSubdivision_),1.0f - float(lat) / float(kSubdivision_) };
+			vertexData[index].normal = { vertexData[index].pos.x,vertexData[index].pos.y,vertexData[index].pos.z };
+		}
+	}
+}
 
-			float v0 = 1.0f - float(latIndex) / float(kSubdivision_);
-			float v1 = 1.0f - float(latIndex + 1) / float(kSubdivision_);
-			// 6頂点書き込み
-			// triangle 1
-			vertexData[start].pos = p0;
-			vertexData[start].texcoord = { u0, v0 };
-			vertexData[start].normal.x = vertexData[start].pos.x;
-			vertexData[start].normal.y = vertexData[start].pos.y;
-			vertexData[start].normal.z = vertexData[start].pos.z;
-			vertexData[start + 1].pos = p1;
-			vertexData[start + 1].texcoord = { u0, v1 };
-			vertexData[start + 1].normal.x = vertexData[start + 1].pos.x;
-			vertexData[start + 1].normal.y = vertexData[start + 1].pos.y;
-			vertexData[start + 1].normal.z = vertexData[start + 1].pos.z;
-			vertexData[start + 2].pos = p2;
-			vertexData[start + 2].texcoord = { u1, v0 };
-			vertexData[start + 2].normal.x = vertexData[start + 2].pos.x;
-			vertexData[start + 2].normal.y = vertexData[start + 2].pos.y;
-			vertexData[start + 2].normal.z = vertexData[start + 2].pos.z;
-			// triangle 2
-			vertexData[start + 3].pos = p2;
-			vertexData[start + 3].texcoord = { u1, v0 };
-			vertexData[start + 3].normal.x = vertexData[start + 3].pos.x;
-			vertexData[start + 3].normal.y = vertexData[start + 3].pos.y;
-			vertexData[start + 3].normal.z = vertexData[start + 3].pos.z;
-			vertexData[start + 4].pos = p1;
-			vertexData[start + 4].texcoord = { u0, v1 };
-			vertexData[start + 4].normal.x = vertexData[start + 4].pos.x;
-			vertexData[start + 4].normal.y = vertexData[start + 4].pos.y;
-			vertexData[start + 4].normal.z = vertexData[start + 4].pos.z;
-			vertexData[start + 5].pos = p3;
-			vertexData[start + 5].texcoord = { u1, v1 };
-			vertexData[start + 5].normal.x = vertexData[start + 5].pos.x;
-			vertexData[start + 5].normal.y = vertexData[start + 5].pos.y;
-			vertexData[start + 5].normal.z = vertexData[start + 5].pos.z;
+/*-------------------- IndexResourceの生成 --------------------*/
+void Sphere::CreateIndexResource() {
+	indexCount_ = kSubdivision_ * kSubdivision_ * 6;
+	indexResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(uint32_t) * indexCount_);
+}
+
+/*-------------------- IndexBufferViewの作成 --------------------*/
+void Sphere::CreateIndexBufferView() {
+	// リソースの先頭のアドレスから使う
+	indexBufferView_.BufferLocation = indexResource_->GetGPUVirtualAddress();
+	// 使用するリソースのサイズはVector4を球の頂点数分
+	indexBufferView_.SizeInBytes = sizeof(uint32_t) * indexCount_;
+	// 1頂点あたりのサイズ
+	indexBufferView_.Format = DXGI_FORMAT_R32_UINT;
+}
+
+/*-------------------- IndexResourceにデータを書き込む --------------------*/
+void Sphere::MapIndexData() {
+	// 書き込むためのアドレスを取得
+	indexResource_->Map(0, nullptr, reinterpret_cast<void**>(&indexData_));
+	uint32_t i = 0;
+	// 球(大量の三角形)のデータを設定
+	for (uint32_t lat = 0; lat < kSubdivision_; lat++) {
+		for (uint32_t lon = 0; lon < kSubdivision_; lon++) {
+			uint32_t current = lat * (kSubdivision_ + 1) + lon;
+			uint32_t next = current + 1;
+			uint32_t down = current + (kSubdivision_ + 1);
+			uint32_t downNext = down + 1;
+			// データを設定
+			indexData_[i++] = current;
+			indexData_[i++] = down;
+			indexData_[i++] = next;
+			indexData_[i++] = next;
+			indexData_[i++] = down;
+			indexData_[i++] = downNext;
 		}
 	}
 }
@@ -199,6 +184,7 @@ void Sphere::Draw(uint32_t textureIndex) {
 	commandList->SetGraphicsRootSignature(spherePSO_->GetRootSignature());
 	commandList->SetPipelineState(spherePSO_->GetPipelineState());	// PSOを設定
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);		// VertexBufferViewを設定
+	commandList->IASetIndexBuffer(&indexBufferView_);				// IndexBufferViewを設定
 	// 形状を設定
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());				// マテリアルCBufferの場所を設定
@@ -207,5 +193,5 @@ void Sphere::Draw(uint32_t textureIndex) {
 	commandList->SetGraphicsRootDescriptorTable(2, textureManager_->GetTextureSrvHandleGPU(textureIndex - 1));
 	commandList->SetGraphicsRootConstantBufferView(3, directionalLight_->GetResource()->GetGPUVirtualAddress());	// 平行光源を適用
 	// 描画！(DrawCall)
-	commandList->DrawInstanced(vertexCount_, 1, 0, 0);
+	commandList->DrawIndexedInstanced(indexCount_, 1, 0, 0, 0);
 }
