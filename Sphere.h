@@ -69,7 +69,6 @@ private:
 	struct Material {
 		Vector4 color;
 		int32_t enableLighting;
-		float padding[3];
 	};
 	// マテリアルリソース
 	ID3D12Resource* materialResource_ = nullptr;
