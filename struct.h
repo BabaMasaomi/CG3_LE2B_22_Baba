@@ -22,6 +22,11 @@ struct Transform {
     Vector3 translate;
 };
 
+// 3x3行列の構造体
+struct Matrix3x3{
+    float m[3][3];
+};
+
 // 4x4行列の構造体
 struct Matrix4x4{
     float m[4][4];

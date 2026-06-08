@@ -122,6 +122,7 @@ void Sprite::MapMaterial() {
 	// ここで色を弄れる
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	materialData_->enableLighting = false;
+	materialData_->uvTransform = MakeIdentity4x4();
 }
 
 /*-------------------- 変換行列用のResourceの生成 --------------------*/
