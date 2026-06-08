@@ -139,9 +139,19 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 				sphereTextureIndex = 2;
 			}
 		}
-		ImGui::ColorEdit4("LightColor", &directionalLight.GetColor().x);							// 色を変更
-		ImGui::DragFloat3("LightDirection", &directionalLight.GetDirection().x, 0.01f);				// 向きを変更
-		ImGui::DragFloat("LightIntensity", &directionalLight.GetIntensity(), 0.01f, 0.0f, 10.0f);	// 輝度を変更
+		// Lightを調整
+		if (ImGui::CollapsingHeader("Light"),ImGuiTreeNodeFlags_DefaultOpen) {
+			ImGui::ColorEdit4("Color", &directionalLight.GetColor().x);							// 色を変更
+			ImGui::DragFloat3("Direction", &directionalLight.GetDirection().x, 0.01f);				// 向きを変更
+			ImGui::DragFloat("Intensity", &directionalLight.GetIntensity(), 0.01f, 0.0f, 10.0f);	// 輝度を変更
+		}
+		// SpriteのUVTransformを調整
+		if (ImGui::CollapsingHeader("UVTransform"), ImGuiTreeNodeFlags_DefaultOpen) {
+			ImGui::DragFloat2("Scale", &sprite.GetUVTransformScale().x, 0.01f, -10.0f, 10.0f);
+			ImGui::DragFloat2("Translate", &sprite.GetUVTransformTranslate().x, 0.01f, -10.0f, 10.0f);
+			ImGui::SliderAngle("Rotate", &sprite.GetUVTransformRotate().z);
+		}
+
 		imguiManager.End();		// 以上でImGuiの内容を終える
 #endif
 

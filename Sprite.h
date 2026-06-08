@@ -16,6 +16,11 @@ public:
 	void Update();
 	void Draw(uint32_t textureIndex);
 
+	// ゲッター
+	Vector3& GetUVTransformScale() { return uvTransform_.scale; }
+	Vector3& GetUVTransformRotate() { return uvTransform_.rotate; }
+	Vector3& GetUVTransformTranslate() { return uvTransform_.translate; }
+
 private:
 	// VertexResourceとVertexBufferViewの作成関数
 	void CreateVertexResource();
