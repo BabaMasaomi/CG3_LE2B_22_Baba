@@ -2,6 +2,7 @@
 #include <d3d12.h>
 #include <cstdint>
 #include"struct.h"
+#include "Model.h"
 
 // 前方宣言
 class DirectXCommon;
@@ -42,6 +43,10 @@ private:
 	SpherePSO* spherePSO_ = nullptr;
 	TextureManager* textureManager_ = nullptr;
 	DirectionalLight* directionalLight_ = nullptr;
+	Model* model_ = nullptr;
+
+	// モデルデータ
+	ModelData modelData_ = {};
 
 	// 図形の変換を管理するためのTransformとワールド行列
 	Transform transform_;

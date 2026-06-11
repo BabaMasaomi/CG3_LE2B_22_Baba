@@ -58,6 +58,12 @@
     <Filter Include="Utility">
       <UniqueIdentifier>{de929029-07c9-418c-9e98-bfcb998f6f7c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Object3D">
+      <UniqueIdentifier>{61cf35a1-8637-44ac-94d7-b3d5b5c84531}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ModePlane">
+      <UniqueIdentifier>{508af41b-f1ef-4b35-a9a2-c9b233938d6b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -125,6 +131,12 @@
     </ClCompile>
     <ClCompile Include="Utility.cpp">
       <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Object3D.cpp">
+      <Filter>Object3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>ModePlane</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -196,6 +208,12 @@
     </ClInclude>
     <ClInclude Include="Utility.h">
       <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Object3D.h">
+      <Filter>Object3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>ModePlane</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

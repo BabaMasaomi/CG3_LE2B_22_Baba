@@ -33,6 +33,9 @@ void Sphere::Initialize(DirectXCommon* dxCommon, SpherePSO* spherePSO, TextureMa
 	// CPUで動かす用のTransformを作る
 	transform_ = { {1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };
 
+	// モデル読み込み
+	modelData_ = model_->LoadObjFile("resources", "plane.obj");
+
 	// VertexResourceとVertexBufferViewを用意
 	CreateVertexResource();
 	CreateVertexBufferView();
@@ -54,7 +57,7 @@ void Sphere::Initialize(DirectXCommon* dxCommon, SpherePSO* spherePSO, TextureMa
 
 /*-------------------- VertexResourceの生成 --------------------*/
 void Sphere::CreateVertexResource() {
-	vertexResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(VertexData) * vertexCount_);
+	vertexResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(VertexData) * modelData_.vertices.size());
 }
 
 /*-------------------- VertexBufferViewの作成 --------------------*/
@@ -62,7 +65,7 @@ void Sphere::CreateVertexBufferView() {
 	// リソースの先頭のアドレスから使う
 	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	// 使用するリソースのサイズはVector4を球の頂点数分
-	vertexBufferView_.SizeInBytes = sizeof(VertexData) * vertexCount_;
+	vertexBufferView_.SizeInBytes = UINT(sizeof(VertexData) * modelData_.vertices.size());
 	// 1頂点あたりのサイズ
 	vertexBufferView_.StrideInBytes = sizeof(VertexData);
 }
@@ -73,24 +76,8 @@ void Sphere::MapVertexData() {
 	VertexData* vertexData = nullptr;
 	// 書き込むためのアドレスを取得
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
-
-	const float pi = std::acos(-1.0f);
-	// 経度1つ分の角度
-	const float kLonEvery = pi * 2.0f / float(kSubdivision_);
-	// 緯度1つ分の角度
-	const float kLatEvery = pi / float(kSubdivision_);
-	// 球(大量の三角形)のデータを設定
-	for (uint32_t lat = 0; lat <= kSubdivision_; lat++) {
-		for (uint32_t lon = 0; lon <= kSubdivision_; lon++) {
-			uint32_t index = lat * (kSubdivision_ + 1) + lon;
-			float latitude = -pi / 2.0f + kLatEvery * lat;
-			float longitude = kLonEvery * lon;
-			// データの書き込み
-			vertexData[index].pos = { cosf(latitude) * cosf(longitude),sinf(latitude),cosf(latitude) * sinf(longitude),1.0f };
-			vertexData[index].texcoord = { float(lon) / float(kSubdivision_),1.0f - float(lat) / float(kSubdivision_) };
-			vertexData[index].normal = { vertexData[index].pos.x,vertexData[index].pos.y,vertexData[index].pos.z };
-		}
-	}
+	// 頂点データをリソースにコピー
+	std::memcpy(vertexData, modelData_.vertices.data(), sizeof(VertexData) * modelData_.vertices.size());
 }
 
 /*-------------------- IndexResourceの生成 --------------------*/
@@ -203,5 +190,6 @@ void Sphere::Draw(uint32_t textureIndex) {
 	commandList->SetGraphicsRootDescriptorTable(2, textureManager_->GetTextureSrvHandleGPU(textureIndex - 1));
 	commandList->SetGraphicsRootConstantBufferView(3, directionalLight_->GetResource()->GetGPUVirtualAddress());	// 平行光源を適用
 	// 描画！(DrawCall)
-	commandList->DrawIndexedInstanced(indexCount_, 1, 0, 0, 0);
+	//commandList->DrawIndexedInstanced(indexCount_, 1, 0, 0, 0);
+	commandList->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
 }
