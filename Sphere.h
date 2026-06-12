@@ -6,7 +6,7 @@
 
 // 前方宣言
 class DirectXCommon;
-class SpherePSO;
+class ModelPSO;
 class TextureManager;
 class DirectionalLight;
 class Camera;
@@ -15,7 +15,7 @@ class Sphere {
 public:
 	~Sphere();
 
-	void Initialize(DirectXCommon* dxCommon, SpherePSO* spherePSO, TextureManager* textureManager, DirectionalLight* directionalLight);
+	void Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, TextureManager* textureManager, DirectionalLight* directionalLight);
 	void Update(const Camera& camera);
 	void Draw(uint32_t textureIndex);
 
@@ -40,7 +40,7 @@ private:
 
 	// ポインタを用意しておく
 	DirectXCommon* dxCommon_ = nullptr;
-	SpherePSO* spherePSO_ = nullptr;
+	ModelPSO* modelPSO_ = nullptr;
 	TextureManager* textureManager_ = nullptr;
 	DirectionalLight* directionalLight_ = nullptr;
 	Model* model_;

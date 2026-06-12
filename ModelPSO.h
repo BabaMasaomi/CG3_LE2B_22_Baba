@@ -4,9 +4,9 @@
 class DirectXCommon;
 class DXCManager;
 
-class SpherePSO {
+class ModelPSO {
 public:
-	~SpherePSO();
+	~ModelPSO();
 
 	void Initialize(DirectXCommon* dxCommon, DXCManager* dxcManager);
 

@@ -1,16 +1,16 @@
-#include "SpherePSO.h"
+#include "ModelPSO.h"
 #include "DirectXCommon.h"
 #include "DXCManager.h"
 #include "Logger.h"
 #include <cassert>
 
-SpherePSO::~SpherePSO() {
+ModelPSO::~ModelPSO() {
 	if (pipelineState_) pipelineState_->Release();
 	if (rootSignature_) rootSignature_->Release();
 }
 
 /*-------------------- 初期化 --------------------*/
-void SpherePSO::Initialize(DirectXCommon* dxCommon, DXCManager* dxcManager) {
+void ModelPSO::Initialize(DirectXCommon* dxCommon, DXCManager* dxcManager) {
 	dxCommon_ = dxCommon;
 	dxcManager_ = dxcManager;
 	CreateRootSignature();
@@ -18,7 +18,7 @@ void SpherePSO::Initialize(DirectXCommon* dxCommon, DXCManager* dxcManager) {
 }
 
 /* -------------------- - グラフィックスパイプラインの生成-------------------- */
-void SpherePSO::CreateGraphicsPipeline() {
+void ModelPSO::CreateGraphicsPipeline() {
 	HRESULT hr;
 
 	// InputLayoutの設定
@@ -102,7 +102,7 @@ void SpherePSO::CreateGraphicsPipeline() {
 }
 
 // -------------------- - ルートシグネチャの生成-------------------- * //	
-void SpherePSO::CreateRootSignature() {
+void ModelPSO::CreateRootSignature() {
 	HRESULT hr;
 
 	// RootSignatureの設定

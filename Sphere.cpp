@@ -1,6 +1,6 @@
 #include "Sphere.h"
 #include "DirectXCommon.h"
-#include "SpherePSO.h"
+#include "ModelPSO.h"
 #include "TextureManager.h"
 #include "DirectionalLight.h"
 #include "Camera.h"
@@ -22,11 +22,11 @@ Sphere::~Sphere() {
 }
 
 /*-------------------- 初期化 --------------------*/
-void Sphere::Initialize(DirectXCommon* dxCommon, SpherePSO* spherePSO, TextureManager* textureManager, DirectionalLight* directionalLight) {
+void Sphere::Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, TextureManager* textureManager, DirectionalLight* directionalLight) {
 
 	// ポインタを保存しておく
 	dxCommon_ = dxCommon;
-	spherePSO_ = spherePSO;
+	modelPSO_ = modelPSO;
 	textureManager_ = textureManager;
 	directionalLight_ = directionalLight;
 
@@ -180,8 +180,8 @@ void Sphere::Draw(uint32_t textureIndex) {
 	// コマンドリストを取得
 	auto* commandList = dxCommon_->GetCommandList();
 	// RootSignature設定
-	commandList->SetGraphicsRootSignature(spherePSO_->GetRootSignature());
-	commandList->SetPipelineState(spherePSO_->GetPipelineState());	// PSOを設定
+	commandList->SetGraphicsRootSignature(modelPSO_->GetRootSignature());
+	commandList->SetPipelineState(modelPSO_->GetPipelineState());	// PSOを設定
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);		// VertexBufferViewを設定
 	commandList->IASetIndexBuffer(&indexBufferView_);				// IndexBufferViewを設定
 	// 形状を設定

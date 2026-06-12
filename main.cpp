@@ -8,7 +8,7 @@
 #include "DirectionalLight.h"
 #include "Sprite.h"
 #include "Sphere.h"
-#include "SpherePSO.h"
+#include "ModelPSO.h"
 // Debug用のあれこれを使える様にする
 #include <dbghelp.h>
 #include <strsafe.h>
@@ -93,13 +93,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	DirectionalLight directionalLight;
 	directionalLight.Initialize(&dxCommon);
 
-	// SpherePSOの初期化
-	SpherePSO spherePSO;
-	spherePSO.Initialize(&dxCommon, &dxcManager);
+	// ModelPSOの初期化
+	ModelPSO modelPSO;
+	modelPSO.Initialize(&dxCommon, &dxcManager);
 
 	// Sphereの初期化
 	Sphere sphere;
-	sphere.Initialize(&dxCommon, &spherePSO, &textureManager, &directionalLight);
+	sphere.Initialize(&dxCommon, &modelPSO, &textureManager, &directionalLight);
 
 	// Spriteの初期化
 	Sprite sprite;

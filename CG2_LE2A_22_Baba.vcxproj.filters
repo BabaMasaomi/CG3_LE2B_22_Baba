@@ -37,9 +37,6 @@
     <Filter Include="Sphere">
       <UniqueIdentifier>{cc949d5a-6595-4600-8ce9-31b017177d43}</UniqueIdentifier>
     </Filter>
-    <Filter Include="SpherePSO">
-      <UniqueIdentifier>{68748b77-9520-4912-8020-f3b0bdf9c83b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sprite">
       <UniqueIdentifier>{63e7ad60-6f1e-4f8e-99e2-22b8c9eccf38}</UniqueIdentifier>
     </Filter>
@@ -57,6 +54,9 @@
     </Filter>
     <Filter Include="Model">
       <UniqueIdentifier>{508af41b-f1ef-4b35-a9a2-c9b233938d6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ModelPSO">
+      <UniqueIdentifier>{e184cdbe-51f5-4373-8a3e-c583437a8f34}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -105,9 +105,6 @@
     <ClCompile Include="Sphere.cpp">
       <Filter>Sphere</Filter>
     </ClCompile>
-    <ClCompile Include="SpherePSO.cpp">
-      <Filter>SpherePSO</Filter>
-    </ClCompile>
     <ClCompile Include="Sprite.cpp">
       <Filter>Sprite</Filter>
     </ClCompile>
@@ -125,6 +122,9 @@
     </ClCompile>
     <ClCompile Include="Model.cpp">
       <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelPSO.cpp">
+      <Filter>ModelPSO</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -176,9 +176,6 @@
     <ClInclude Include="Sphere.h">
       <Filter>Sphere</Filter>
     </ClInclude>
-    <ClInclude Include="SpherePSO.h">
-      <Filter>SpherePSO</Filter>
-    </ClInclude>
     <ClInclude Include="Sprite.h">
       <Filter>Sprite</Filter>
     </ClInclude>
@@ -196,6 +193,9 @@
     </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelPSO.h">
+      <Filter>ModelPSO</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
