@@ -135,16 +135,20 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		}
 		// Modelを調整
 		if (ImGui::CollapsingHeader("Model")) {
-			ImGui::DragFloat3("Scale", &object3d.GetScale().x, 0.01f);
-			ImGui::DragFloat3("Rotate", &object3d.GetRotate().x, 0.01f);
+			ImGui::PushID(1);
+			ImGui::DragFloat3("Scale", &object3d.GetScale().x, 0.01f, -10.0f, 10.0f);
+			ImGui::DragFloat3("Rotate", &object3d.GetRotate().x, 0.01f, -10.0f, 10.0f);
 			ImGui::DragFloat3("Translate", &object3d.GetTranslate().x, 0.01f);
+			ImGui::PopID();
 		}
 		// SpriteのUVTransformを調整
 		if (ImGui::CollapsingHeader("UVTransform")) {
+			ImGui::PushID(2);
 			ImGui::Checkbox("Sprite", &showSprite);
 			ImGui::DragFloat2("Scale", &sprite.GetUVTransformScale().x, 0.01f, -10.0f, 10.0f);
 			ImGui::DragFloat2("Translate", &sprite.GetUVTransformTranslate().x, 0.01f, -10.0f, 10.0f);
 			ImGui::SliderAngle("Rotate", &sprite.GetUVTransformRotate().z);
+			ImGui::PopID();
 		}
 
 		imguiManager.End();		// 以上でImGuiの内容を終える
