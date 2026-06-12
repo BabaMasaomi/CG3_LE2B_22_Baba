@@ -26,6 +26,10 @@ void Sprite::Initialize(DirectXCommon* dxCommon, TextureManager* textureManager,
 	// CPUで動かす用のTransformを作る
 	transform_ = { {1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };
 
+	// テクスチャの読み込み(uvChecker、Index = 1 で固定しておく)
+	textureIndex_ = 1;
+	textureManager_->LoadTexture("resources/uvChecker.png", textureIndex_);
+
 	// VertexResourceとVertexBufferViewを用意
 	CreateVertexResource();
 	CreateVertexBufferView();
@@ -157,7 +161,7 @@ void Sprite::Update() {
 }
 
 /*-------------------- 描画 --------------------*/
-void Sprite::Draw(uint32_t textureIndex) {
+void Sprite::Draw() {
 	auto* commandList = dxCommon_->GetCommandList();
 	// 形状を設定
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -170,7 +174,7 @@ void Sprite::Draw(uint32_t textureIndex) {
 	// TransformationMatrixCBufferの場所を指定
 	commandList->SetGraphicsRootConstantBufferView(1, transformationMatrixResource_->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	commandList->SetGraphicsRootDescriptorTable(2, textureManager_->GetTextureSrvHandleGPU(textureIndex - 1));
+	commandList->SetGraphicsRootDescriptorTable(2, textureManager_->GetTextureSrvHandleGPU(textureIndex_ - 1));
 	// 描画！(DrawCall)
 	commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 }

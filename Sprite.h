@@ -14,7 +14,7 @@ public:
 
 	void Initialize(DirectXCommon* dxCommon, TextureManager* textureManager, WinApp* winApp);
 	void Update();
-	void Draw(uint32_t textureIndex);
+	void Draw();
 
 	// ゲッター
 	Vector3& GetUVTransformScale() { return uvTransform_.scale; }
@@ -44,6 +44,9 @@ private:
 	DirectXCommon* dxCommon_ = nullptr;
 	TextureManager* textureManager_ = nullptr;
 	WinApp* winApp_ = nullptr;
+
+	// テクスチャのインデックス
+	uint32_t textureIndex_ = 0;
 
 	// 図形の変換を管理するためのTransform
 	Transform transform_;

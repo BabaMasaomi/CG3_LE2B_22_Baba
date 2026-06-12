@@ -71,9 +71,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// TextureManagerの初期化
 	TextureManager textureManager;
 	textureManager.Initialize(&dxCommon);
-	// テクスチャの読み込み
-	textureManager.LoadTexture("resources/uvChecker.png", 1);
-	//textureManager.LoadTexture("resources/monsterBall.png", 2);
 
 	dxCommon.ExecuteCommandList();	// コマンドを実行
 	dxCommon.WaitForGPU();			// GPUを待機
@@ -149,7 +146,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		object3d.Draw();
 
 		// スプライトの描画
-		//sprite.Draw(1);
+		//sprite.Draw();
 
 		// ImGuiの描画
 #ifdef USE_IMGUI

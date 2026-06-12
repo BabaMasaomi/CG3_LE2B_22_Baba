@@ -35,8 +35,9 @@ void Object3d::Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, TextureMa
 
 	// モデル読み込み
 	modelData_ = model_->LoadObjFile("resources", "axis.obj");
+	
+	// テクスチャの読み込み
 	textureIndex_ = 2;
-
 	textureManager_->LoadTexture(modelData_.material.textureFilePath, textureIndex_);
 
 	// VertexResourceとVertexBufferViewを用意
