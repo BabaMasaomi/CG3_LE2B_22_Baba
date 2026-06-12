@@ -128,8 +128,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="SpherePSO.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="TextureManager.cpp" />
-    <ClCompile Include="Triangle.cpp" />
-    <ClCompile Include="TrianglePSO.cpp" />
     <ClCompile Include="Utility.cpp" />
     <ClCompile Include="WinApp.cpp" />
   </ItemGroup>
@@ -155,8 +153,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="struct.h" />
     <ClInclude Include="TextureManager.h" />
-    <ClInclude Include="Triangle.h" />
-    <ClInclude Include="TrianglePSO.h" />
     <ClInclude Include="Utility.h" />
     <ClInclude Include="WinApp.h" />
   </ItemGroup>

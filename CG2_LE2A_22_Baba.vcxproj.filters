@@ -46,12 +46,6 @@
     <Filter Include="TextureManager">
       <UniqueIdentifier>{04aaf4cf-85af-42b7-95b2-ec5b1bb62fae}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Triangle">
-      <UniqueIdentifier>{cc087743-728d-46c3-87c0-6185797f292f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="TrianglePSO">
-      <UniqueIdentifier>{91bd7c7f-e5d1-439f-b6da-a639fe5c48d2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="WinApp">
       <UniqueIdentifier>{6ea4220e-fe8d-46cd-bbbf-e3282d9251fc}</UniqueIdentifier>
     </Filter>
@@ -119,12 +113,6 @@
     </ClCompile>
     <ClCompile Include="TextureManager.cpp">
       <Filter>TextureManager</Filter>
-    </ClCompile>
-    <ClCompile Include="Triangle.cpp">
-      <Filter>Triangle</Filter>
-    </ClCompile>
-    <ClCompile Include="TrianglePSO.cpp">
-      <Filter>TrianglePSO</Filter>
     </ClCompile>
     <ClCompile Include="WinApp.cpp">
       <Filter>WinApp</Filter>
@@ -196,12 +184,6 @@
     </ClInclude>
     <ClInclude Include="TextureManager.h">
       <Filter>TextureManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Triangle.h">
-      <Filter>Triangle</Filter>
-    </ClInclude>
-    <ClInclude Include="TrianglePSO.h">
-      <Filter>TrianglePSO</Filter>
     </ClInclude>
     <ClInclude Include="WinApp.h">
       <Filter>WinApp</Filter>
