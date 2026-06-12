@@ -60,9 +60,9 @@ ModelData Model::LoadObjFile(const std::string& directryPath, const std::string&
 				Vector2 texcoord = texcoords[elementIndices[1] - 1];
 				Vector3 normal = normals[elementIndices[2] - 1];
 				VertexData vertex = { position,texcoord,normal };
-				position.z *= -1.0f;
+				position.x *= -1.0f;
 				texcoord.y = 1.0f - texcoord.y;
-				normal.z *= -1.0f;
+				normal.x *= -1.0f;
 				triangle[faceVertex] = { position,texcoord,normal };
 			}
 			modelData.vertices.push_back(triangle[2]);
@@ -104,6 +104,16 @@ MaterialData Model::LoadMaterialTemplateFile(const std::string& directoryPath, c
 			s >> textureFilename;
 			// 連結してファイルパスにする
 			materialData.textureFilePath = directoryPath + "/" + textureFilename;
+
+		} else if (identifier == "Kd") {
+			s >> materialData.diffuseColor.x >> materialData.diffuseColor.y >> materialData.diffuseColor.z;
+
+		} else if (identifier == "Ks") {
+			s >> materialData.specularColor.x >> materialData.specularColor.y >> materialData.specularColor.z;
+
+		} else if (identifier == "Ns") {
+			s >> materialData.shininess;
+
 		}
 	}
 

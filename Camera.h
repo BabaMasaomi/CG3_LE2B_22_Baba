@@ -25,6 +25,5 @@ private:
 	// ImGuiで弄る用
 	Vector3 rotate_;
 	Vector3 translate_;
-
 };
 

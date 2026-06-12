@@ -149,7 +149,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		object3d.Draw();
 
 		// スプライトの描画
-		sprite.Draw(1);
+		//sprite.Draw(1);
 
 		// ImGuiの描画
 #ifdef USE_IMGUI

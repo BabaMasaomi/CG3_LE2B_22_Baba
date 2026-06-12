@@ -11,6 +11,9 @@ struct VertexData {
 
 struct MaterialData {
 	std::string textureFilePath;
+	Vector3 diffuseColor;
+	Vector3 specularColor;
+	float shininess;
 };
 
 struct ModelData {
@@ -24,7 +27,7 @@ public:
 	ModelData LoadObjFile(const std::string& directryPath, const std::string& filename);
 
 	// mtlファイルを読み込む
-	MaterialData LoadMaterialTemplateFile(const std::string& directoryPath,const std::string& filename);
+	MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 
 	// ゲッター
 	const std::vector<VertexData>& GetVertices() { return vertices_; };

@@ -34,7 +34,7 @@ void Object3d::Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, TextureMa
 	transform_ = { {1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };
 
 	// モデル読み込み
-	modelData_ = model_->LoadObjFile("resources", "plane.obj");
+	modelData_ = model_->LoadObjFile("resources", "axis.obj");
 	textureIndex_ = 2;
 
 	textureManager_->LoadTexture(modelData_.material.textureFilePath, textureIndex_);
@@ -133,7 +133,7 @@ void Object3d::MapMaterial() {
 	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
 	std::memset(materialData_, 0, sizeof(Material));
 	// ここで色を弄れる
-	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	materialData_->color = { modelData_.material.diffuseColor.x, modelData_.material.diffuseColor.y, modelData_.material.diffuseColor.z, 1.0f };
 	materialData_->enableLighting = true;
 	materialData_->uvTransform = MakeIdentity4x4();
 }
@@ -161,9 +161,7 @@ void Object3d::Update(const Camera& camera) {
 	uvTransformMatrix = Multiply(uvTransformMatrix, MakeTranslateMatrix(uvTransform_.translate));
 	materialData_->uvTransform = uvTransformMatrix;
 
-	// 回転させる
-	transform_.rotate.y += 0.02f;
-
+	// ワールド行列を作成
 	worldMatrix_ = MakeAffineMatrix(
 		transform_.scale,
 		transform_.rotate,
