@@ -61,7 +61,7 @@
     <Filter Include="Object3D">
       <UniqueIdentifier>{61cf35a1-8637-44ac-94d7-b3d5b5c84531}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ModePlane">
+    <Filter Include="Model">
       <UniqueIdentifier>{508af41b-f1ef-4b35-a9a2-c9b233938d6b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -136,7 +136,7 @@
       <Filter>Object3D</Filter>
     </ClCompile>
     <ClCompile Include="Model.cpp">
-      <Filter>ModePlane</Filter>
+      <Filter>Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -213,7 +213,7 @@
       <Filter>Object3D</Filter>
     </ClInclude>
     <ClInclude Include="Model.h">
-      <Filter>ModePlane</Filter>
+      <Filter>Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
