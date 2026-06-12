@@ -121,7 +121,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		camera.Update();
 		directionalLight.Update();
 		object3d.Update(camera);
-		//triangle.Update(camera);
 		sprite.Update();
 
 		/*-------------------- 描画処理 --------------------*/
@@ -147,7 +146,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 #endif
 
 		// モデルの描画
-		object3d.Draw(2);
+		object3d.Draw();
 
 		// スプライトの描画
 		sprite.Draw(1);

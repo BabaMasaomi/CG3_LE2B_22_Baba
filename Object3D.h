@@ -17,7 +17,7 @@ public:
 
 	void Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, TextureManager* textureManager, DirectionalLight* directionalLight);
 	void Update(const Camera& camera);
-	void Draw(uint32_t textureIndex);
+	void Draw();
 
 private:
 	// VertexResourceとVertexBufferViewの作成関数
@@ -44,6 +44,9 @@ private:
 	TextureManager* textureManager_ = nullptr;
 	DirectionalLight* directionalLight_ = nullptr;
 	Model* model_;
+
+	// テクスチャのインデックス
+	uint32_t textureIndex_ = 0;
 
 	// モデルデータ
 	ModelData modelData_ = {};

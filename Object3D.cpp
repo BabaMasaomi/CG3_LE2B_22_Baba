@@ -35,8 +35,9 @@ void Object3d::Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, TextureMa
 
 	// モデル読み込み
 	modelData_ = model_->LoadObjFile("resources", "plane.obj");
+	textureIndex_ = 2;
 
-	textureManager_->LoadTexture(modelData_.material.textureFilePath, 2);
+	textureManager_->LoadTexture(modelData_.material.textureFilePath, textureIndex_);
 
 	// VertexResourceとVertexBufferViewを用意
 	CreateVertexResource();
@@ -176,7 +177,7 @@ void Object3d::Update(const Camera& camera) {
 }
 
 /*-------------------- 描画 --------------------*/
-void Object3d::Draw(uint32_t textureIndex) {
+void Object3d::Draw() {
 	// コマンドリストを取得
 	auto* commandList = dxCommon_->GetCommandList();
 	// RootSignature設定
@@ -189,7 +190,7 @@ void Object3d::Draw(uint32_t textureIndex) {
 	commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());				// マテリアルCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(1, transformationMatrixResource_->GetGPUVirtualAddress());	// wvp用のCBufferの場所を設定
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	commandList->SetGraphicsRootDescriptorTable(2, textureManager_->GetTextureSrvHandleGPU(textureIndex - 1));
+	commandList->SetGraphicsRootDescriptorTable(2, textureManager_->GetTextureSrvHandleGPU(textureIndex_ - 1));
 	commandList->SetGraphicsRootConstantBufferView(3, directionalLight_->GetResource()->GetGPUVirtualAddress());	// 平行光源を適用
 	// 描画！(DrawCall)
 	commandList->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
