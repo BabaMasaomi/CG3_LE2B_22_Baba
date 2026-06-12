@@ -146,7 +146,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		imguiManager.End();		// 以上でImGuiの内容を終える
 #endif
 
-		// 球の描画
+		// モデルの描画
 		object3d.Draw(2);
 
 		// スプライトの描画

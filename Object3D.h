@@ -52,7 +52,7 @@ private:
 	Transform transform_;
 	Matrix4x4 worldMatrix_{};
 
-	// 球用頂点構造体
+	// 頂点構造体
 	struct VertexData {
 		Vector4 pos;
 		Vector2 texcoord;
@@ -93,7 +93,7 @@ private:
 	ID3D12Resource* transformationMatrixResource_ = nullptr;
 	TransformationMatrix* transformationMatrixData_ = nullptr;
 
-	// 球の分割数
+	// 分割数
 	static const uint32_t kSubdivision_ = 16;
 	const uint32_t vertexCount_ = (kSubdivision_ + 1) * (kSubdivision_ + 1);
 };

@@ -66,7 +66,7 @@ void Object3d::CreateVertexResource() {
 void Object3d::CreateVertexBufferView() {
 	// リソースの先頭のアドレスから使う
 	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
-	// 使用するリソースのサイズはVector4を球の頂点数分
+	// 使用するリソースのサイズはモデルデータに依存
 	vertexBufferView_.SizeInBytes = UINT(sizeof(VertexData) * modelData_.vertices.size());
 	// 1頂点あたりのサイズ
 	vertexBufferView_.StrideInBytes = sizeof(VertexData);
@@ -92,7 +92,7 @@ void Object3d::CreateIndexResource() {
 void Object3d::CreateIndexBufferView() {
 	// リソースの先頭のアドレスから使う
 	indexBufferView_.BufferLocation = indexResource_->GetGPUVirtualAddress();
-	// 使用するリソースのサイズはVector4を球の頂点数分
+	// 使用するリソースのサイズはインデックスの数に依存
 	indexBufferView_.SizeInBytes = sizeof(uint32_t) * indexCount_;
 	// 1頂点あたりのサイズ
 	indexBufferView_.Format = DXGI_FORMAT_R32_UINT;
@@ -103,7 +103,7 @@ void Object3d::MapIndexData() {
 	// 書き込むためのアドレスを取得
 	indexResource_->Map(0, nullptr, reinterpret_cast<void**>(&indexData_));
 	uint32_t i = 0;
-	// 球(大量の三角形)のデータを設定
+	// 緯度と経度のループ
 	for (uint32_t lat = 0; lat < kSubdivision_; lat++) {
 		for (uint32_t lon = 0; lon < kSubdivision_; lon++) {
 			uint32_t current = lat * (kSubdivision_ + 1) + lon;
@@ -192,6 +192,5 @@ void Object3d::Draw(uint32_t textureIndex) {
 	commandList->SetGraphicsRootDescriptorTable(2, textureManager_->GetTextureSrvHandleGPU(textureIndex - 1));
 	commandList->SetGraphicsRootConstantBufferView(3, directionalLight_->GetResource()->GetGPUVirtualAddress());	// 平行光源を適用
 	// 描画！(DrawCall)
-	//commandList->DrawIndexedInstanced(indexCount_, 1, 0, 0, 0);
 	commandList->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
 }
