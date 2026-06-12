@@ -7,7 +7,7 @@
 #include "Camera.h"
 #include "DirectionalLight.h"
 #include "Sprite.h"
-#include "Sphere.h"
+#include "Object3d.h"
 #include "ModelPSO.h"
 // Debug用のあれこれを使える様にする
 #include <dbghelp.h>
@@ -97,9 +97,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	ModelPSO modelPSO;
 	modelPSO.Initialize(&dxCommon, &dxcManager);
 
-	// Sphereの初期化
-	Sphere sphere;
-	sphere.Initialize(&dxCommon, &modelPSO, &textureManager, &directionalLight);
+	// Object3dの初期化
+	Object3d object3d;
+	object3d.Initialize(&dxCommon, &modelPSO, &textureManager, &directionalLight);
 
 	// Spriteの初期化
 	Sprite sprite;
@@ -120,7 +120,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		/*-------------------- 更新処理 --------------------*/
 		camera.Update();
 		directionalLight.Update();
-		sphere.Update(camera);
+		object3d.Update(camera);
 		//triangle.Update(camera);
 		sprite.Update();
 
@@ -147,7 +147,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 #endif
 
 		// 球の描画
-		sphere.Draw(2);
+		object3d.Draw(2);
 
 		// スプライトの描画
 		sprite.Draw(1);

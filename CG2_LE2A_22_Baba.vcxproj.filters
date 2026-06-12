@@ -34,9 +34,6 @@
     <Filter Include="Logger">
       <UniqueIdentifier>{87146f68-29e4-4cf8-b82c-6400e62630e3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sphere">
-      <UniqueIdentifier>{cc949d5a-6595-4600-8ce9-31b017177d43}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sprite">
       <UniqueIdentifier>{63e7ad60-6f1e-4f8e-99e2-22b8c9eccf38}</UniqueIdentifier>
     </Filter>
@@ -101,9 +98,6 @@
     </ClCompile>
     <ClCompile Include="Logger.cpp">
       <Filter>Logger</Filter>
-    </ClCompile>
-    <ClCompile Include="Sphere.cpp">
-      <Filter>Sphere</Filter>
     </ClCompile>
     <ClCompile Include="Sprite.cpp">
       <Filter>Sprite</Filter>
@@ -172,9 +166,6 @@
     </ClInclude>
     <ClInclude Include="Logger.h">
       <Filter>Logger</Filter>
-    </ClInclude>
-    <ClInclude Include="Sphere.h">
-      <Filter>Sphere</Filter>
     </ClInclude>
     <ClInclude Include="Sprite.h">
       <Filter>Sprite</Filter>
