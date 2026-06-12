@@ -43,7 +43,7 @@ private:
 	SpherePSO* spherePSO_ = nullptr;
 	TextureManager* textureManager_ = nullptr;
 	DirectionalLight* directionalLight_ = nullptr;
-	Model* model_ = nullptr;
+	Model* model_;
 
 	// モデルデータ
 	ModelData modelData_ = {};

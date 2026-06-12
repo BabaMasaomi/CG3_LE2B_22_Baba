@@ -36,6 +36,8 @@ void Sphere::Initialize(DirectXCommon* dxCommon, SpherePSO* spherePSO, TextureMa
 	// モデル読み込み
 	modelData_ = model_->LoadObjFile("resources", "plane.obj");
 
+	textureManager_->LoadTexture(modelData_.material.textureFilePath, 2);
+
 	// VertexResourceとVertexBufferViewを用意
 	CreateVertexResource();
 	CreateVertexBufferView();

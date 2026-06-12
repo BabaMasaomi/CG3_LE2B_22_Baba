@@ -73,7 +73,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	textureManager.Initialize(&dxCommon);
 	// テクスチャの読み込み
 	textureManager.LoadTexture("resources/uvChecker.png", 1);
-	textureManager.LoadTexture("resources/monsterBall.png", 2);
+	//textureManager.LoadTexture("resources/monsterBall.png", 2);
 
 	dxCommon.ExecuteCommandList();	// コマンドを実行
 	dxCommon.WaitForGPU();			// GPUを待機
@@ -110,8 +110,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	/*-------------------- 変数 --------------------*/
 	// ImGui用に変数を用意
-	uint32_t sphereTextureIndex = 1;
-	bool useMonsterBall = false;
 
 	/*-------------------- ゲームループの処理 --------------------*/
 	MSG msg{};
@@ -132,15 +130,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// ImGui
 #ifdef USE_IMGUI
 		imguiManager.Begin();	// 以下にImGuiの内容を記述
-		if (ImGui::CollapsingHeader("Sphere")) {
-			// 球のテクスチャを変更
-			if (ImGui::Checkbox("useMonsterBall", &useMonsterBall)) {
-				sphereTextureIndex = 1;
-				if (useMonsterBall) {
-					sphereTextureIndex = 2;
-				}
-			}
-		}
 		// Lightを調整
 		if (ImGui::CollapsingHeader("Light")) {
 			ImGui::ColorEdit4("Color", &directionalLight.GetColor().x);							// 色を変更
@@ -158,7 +147,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 #endif
 
 		// 球の描画
-		sphere.Draw(sphereTextureIndex);
+		sphere.Draw(2);
 
 		// スプライトの描画
 		sprite.Draw(1);

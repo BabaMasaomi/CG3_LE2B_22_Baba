@@ -18,29 +18,29 @@ ModelData Model::LoadObjFile(const std::string& directryPath, const std::string&
 
 	// 3.実際にファイルを読み、ModelDataを構築していく
 	while (std::getline(file, line)) {
-		std::string identfier;
+		std::string identifier;
 		std::istringstream s(line);
-		s >> identfier;	// 先頭の識別子を読む
+		s >> identifier;	// 先頭の識別子を読む
 
-		// identfierに応じた処理
+		// identifierに応じた処理
 		// 頂点情報を読む
-		if (identfier == "v") {
+		if (identifier == "v") {
 			Vector4 position;
 			s >> position.x >> position.y >> position.z;
 			position.w = 1.0f;
 			positions.push_back(position);
 
-		} else if (identfier == "vt") {
+		} else if (identifier == "vt") {
 			Vector2 texcoord;
 			s >> texcoord.x >> texcoord.y;
 			texcoords.push_back(texcoord);
 
-		} else if (identfier == "vn") {
+		} else if (identifier == "vn") {
 			Vector3 normal;
 			s >> normal.x >> normal.y >> normal.z;
 			normals.push_back(normal);
 
-		} else if (identfier == "f") {
+		} else if (identifier == "f") {
 			// 三角形を作る
 			VertexData triangle[3];
 			// 面は三角形限定、その他は未対応
@@ -68,9 +68,45 @@ ModelData Model::LoadObjFile(const std::string& directryPath, const std::string&
 			modelData.vertices.push_back(triangle[2]);
 			modelData.vertices.push_back(triangle[1]);
 			modelData.vertices.push_back(triangle[0]);
+
+		} else if (identifier == "mtllib") {
+			// materialTemplateLibraryファイルの名前を取得する
+			std::string materialFilename;
+			s >> materialFilename;
+			// 基本的にobjファイルと同一階層にmtlは存在させるので、ディレクトリ名とファイル名を渡す
+			modelData.material = LoadMaterialTemplateFile(directryPath, materialFilename);
 		}
 	}
 
 	// 4.ModelDataを返す
 	return modelData;
+}
+
+/*-------------------- mtlファイルを読み込む --------------------*/
+MaterialData Model::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename) {
+	// 1.中で必要となる変数の宣言
+	MaterialData materialData;	// 構築するMaterialData
+	std::string line;			// ファイルから読んだ1行を格納するもの
+
+	// 2.ファイルを開く
+	std::ifstream file(directoryPath + "/" + filename);	// ファイルを開く
+	assert(file.is_open());								// 開けなかったら止める
+
+	// 3.実際にファイルを読み、MaterialDataを構築していく
+	while (std::getline(file, line)) {
+		std::string identifier;
+		std::istringstream s(line);
+		s >> identifier;
+
+		// identifierに応じた処理
+		if (identifier == "map_Kd") {
+			std::string textureFilename;
+			s >> textureFilename;
+			// 連結してファイルパスにする
+			materialData.textureFilePath = directoryPath + "/" + textureFilename;
+		}
+	}
+
+	// 4.MaterialDataを返す
+	return materialData;
 }
