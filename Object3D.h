@@ -19,6 +19,11 @@ public:
 	void Update(const Camera& camera);
 	void Draw();
 
+	// ゲッター
+	Vector3& GetScale() { return scale_; }
+	Vector3& GetRotate() { return rotate_; }
+	Vector3& GetTranslate() { return translate_; }
+
 private:
 	// VertexResourceとVertexBufferViewの作成関数
 	void CreateVertexResource();
@@ -99,4 +104,9 @@ private:
 	// 分割数
 	static const uint32_t kSubdivision_ = 16;
 	const uint32_t vertexCount_ = (kSubdivision_ + 1) * (kSubdivision_ + 1);
+
+	// ImGuiで弄る用
+	Vector3 scale_;
+	Vector3 rotate_;
+	Vector3 translate_;
 };

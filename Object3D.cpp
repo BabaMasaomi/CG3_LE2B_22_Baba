@@ -40,6 +40,11 @@ void Object3d::Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, TextureMa
 	textureIndex_ = 2;
 	textureManager_->LoadTexture(modelData_.material.textureFilePath, textureIndex_);
 
+	// ImGui用
+	scale_ = transform_.scale;
+	rotate_ = transform_.rotate;
+	translate_ = transform_.translate;
+
 	// VertexResourceとVertexBufferViewを用意
 	CreateVertexResource();
 	CreateVertexBufferView();
@@ -157,10 +162,15 @@ void Object3d::MapTransformationMatrix() {
 /*-------------------- 更新 --------------------*/
 void Object3d::Update(const Camera& camera) {
 	// UVTransform用の行列を作成
-	Matrix4x4 uvTransformMatrix = MakeScaleMatrix(uvTransform_.scale);
-	uvTransformMatrix = Multiply(uvTransformMatrix, MakeRotateZMatrix(uvTransform_.rotate.z));
-	uvTransformMatrix = Multiply(uvTransformMatrix, MakeTranslateMatrix(uvTransform_.translate));
-	materialData_->uvTransform = uvTransformMatrix;
+	//Matrix4x4 uvTransformMatrix = MakeScaleMatrix(uvTransform_.scale);
+	//uvTransformMatrix = Multiply(uvTransformMatrix, MakeRotateZMatrix(uvTransform_.rotate.z));
+	//uvTransformMatrix = Multiply(uvTransformMatrix, MakeTranslateMatrix(uvTransform_.translate));
+	//materialData_->uvTransform = uvTransformMatrix;
+
+	// ImGuiの変更を反映する
+	transform_.scale = scale_;
+	transform_.rotate = rotate_;
+	transform_.translate = translate_;
 
 	// ワールド行列を作成
 	worldMatrix_ = MakeAffineMatrix(

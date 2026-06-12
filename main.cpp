@@ -107,6 +107,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	/*-------------------- 変数 --------------------*/
 	// ImGui用に変数を用意
+	bool showSprite = false;
 
 	/*-------------------- ゲームループの処理 --------------------*/
 	MSG msg{};
@@ -132,8 +133,15 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			ImGui::DragFloat3("Direction", &directionalLight.GetDirection().x, 0.01f);				// 向きを変更
 			ImGui::DragFloat("Intensity", &directionalLight.GetIntensity(), 0.01f, 0.0f, 10.0f);	// 輝度を変更
 		}
+		// Modelを調整
+		if (ImGui::CollapsingHeader("Model")) {
+			ImGui::DragFloat3("Scale", &object3d.GetScale().x, 0.01f);
+			ImGui::DragFloat3("Rotate", &object3d.GetRotate().x, 0.01f);
+			ImGui::DragFloat3("Translate", &object3d.GetTranslate().x, 0.01f);
+		}
 		// SpriteのUVTransformを調整
 		if (ImGui::CollapsingHeader("UVTransform")) {
+			ImGui::Checkbox("Sprite", &showSprite);
 			ImGui::DragFloat2("Scale", &sprite.GetUVTransformScale().x, 0.01f, -10.0f, 10.0f);
 			ImGui::DragFloat2("Translate", &sprite.GetUVTransformTranslate().x, 0.01f, -10.0f, 10.0f);
 			ImGui::SliderAngle("Rotate", &sprite.GetUVTransformRotate().z);
@@ -146,7 +154,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		object3d.Draw();
 
 		// スプライトの描画
-		//sprite.Draw();
+		if (showSprite) {
+			sprite.Draw();
+		}
 
 		// ImGuiの描画
 #ifdef USE_IMGUI
