@@ -42,6 +42,7 @@ ModelData Model::LoadObjFile(const std::string& directryPath, const std::string&
 
 		} else if (identfier == "f") {
 			// 三角形を作る
+			VertexData triangle[3];
 			// 面は三角形限定、その他は未対応
 			for (int32_t faceVertex = 0; faceVertex < 3; ++faceVertex) {
 				std::string vertexDefinition;
@@ -59,8 +60,14 @@ ModelData Model::LoadObjFile(const std::string& directryPath, const std::string&
 				Vector2 texcoord = texcoords[elementIndices[1] - 1];
 				Vector3 normal = normals[elementIndices[2] - 1];
 				VertexData vertex = { position,texcoord,normal };
-				modelData.vertices.push_back(vertex);
+				position.z *= -1.0f;
+				texcoord.y = 1.0f - texcoord.y;
+				normal.z *= -1.0f;
+				triangle[faceVertex] = { position,texcoord,normal };
 			}
+			modelData.vertices.push_back(triangle[2]);
+			modelData.vertices.push_back(triangle[1]);
+			modelData.vertices.push_back(triangle[0]);
 		}
 	}
 
