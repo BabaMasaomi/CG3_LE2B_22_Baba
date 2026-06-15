@@ -48,7 +48,7 @@ private:
 	ModelPSO* modelPSO_ = nullptr;
 	TextureManager* textureManager_ = nullptr;
 	DirectionalLight* directionalLight_ = nullptr;
-	Model* model_;
+	Model* model_ = nullptr;
 
 	// テクスチャのインデックス
 	uint32_t textureIndex_ = 0;
