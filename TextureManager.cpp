@@ -7,17 +7,7 @@
 
 // デストラクタ
 TextureManager::~TextureManager() {
-	for (uint32_t i = 0; i < kTextureCount; ++i) {
-		if (textureResources_[i]) {
-			textureResources_[i]->Release();
-			textureResources_[i] = nullptr;
-		}
-
-		if (intermediateResources_[i]) {
-			intermediateResources_[i]->Release();
-			intermediateResources_[i] = nullptr;
-		}
-	}
+	OutputDebugStringA("~TextureManager\n");
 }
 
 /*-------------------- 初期化 --------------------*/
@@ -47,14 +37,14 @@ void TextureManager::LoadTexture(const std::string& filePath, uint32_t index) {
 	textureResources_[index-1] = CreateTextureResource(dxCommon_->GetDevice(), metaData_[index-1]);
 
 	// 5.転送
-	intermediateResources_[index-1] = UploadTextureData(textureResources_[index-1], mipImages, dxCommon_->GetDevice(), dxCommon_->GetCommandList());
+	intermediateResources_[index-1] = UploadTextureData(textureResources_[index-1].Get(), mipImages, dxCommon_->GetDevice(), dxCommon_->GetCommandList());
 
 	// 6. SRV生成
-	CreateSRV(textureResources_[index-1], index);
+	CreateSRV(textureResources_[index-1].Get(), index);
 }
 
 /*-------------------- 2.DirectX12のTextureResourceを作る --------------------*/
-ID3D12Resource* TextureManager::CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata) {
+Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata) {
 	// 1.metadataを基にResourceの設定
 	D3D12_RESOURCE_DESC resourceDesc{};
 	resourceDesc.Width = UINT(metadata.width);								// Textureの幅
@@ -70,7 +60,7 @@ ID3D12Resource* TextureManager::CreateTextureResource(ID3D12Device* device, cons
 	heapPropaties.Type = D3D12_HEAP_TYPE_DEFAULT;							// 細かい設定を行う
 
 	// 3.Resourceを生成する
-	ID3D12Resource* resource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> resource = nullptr;
 	HRESULT hr = device->CreateCommittedResource(
 		&heapPropaties,														// Heap設定
 		D3D12_HEAP_FLAG_NONE,												// Heapの特殊な設定。特に無し
@@ -85,16 +75,16 @@ ID3D12Resource* TextureManager::CreateTextureResource(ID3D12Device* device, cons
 
 /*-------------------- 3.4.5.を一括で行う --------------------*/
 [[nodiscard]]
-ID3D12Resource* TextureManager::UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages, ID3D12Device* device,
+Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages, ID3D12Device* device,
 	ID3D12GraphicsCommandList* commandList) {
 	// 3.CPUで書きこむ用にUploadHeapのResourceを作る
 	std::vector<D3D12_SUBRESOURCE_DATA> subresource;
 	DirectX::PrepareUpload(device, mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subresource);
 	uint64_t intermediateSize = GetRequiredIntermediateSize(texture, 0, UINT(subresource.size()));
-	ID3D12Resource* intermediateResource = CreateBufferResource(device, intermediateSize);
+	Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource = CreateBufferResource(device, intermediateSize);
 
 	// 4.UploadHeapのResourceに対してCPUでデータを書きこむ
-	UpdateSubresources(commandList, texture, intermediateResource, 0, 0, UINT(subresource.size()), subresource.data());
+	UpdateSubresources(commandList, texture, intermediateResource.Get(), 0, 0, UINT(subresource.size()), subresource.data());
 
 	// 5.CommandListにUploadHeapのResource(3.)をTextureResource(2.)に転送するコマンドを積む
 	D3D12_RESOURCE_BARRIER barrier{};

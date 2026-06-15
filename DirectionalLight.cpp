@@ -4,7 +4,7 @@
 
 // デストラクタ
 DirectionalLight::~DirectionalLight() {
-	if (resource_) resource_->Release();
+	OutputDebugStringA("~DirectionalLight\n");
 }
 
 /*-------------------- 初期化 --------------------*/

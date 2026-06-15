@@ -7,9 +7,7 @@
 
 // デストラクタ
 DXCManager::~DXCManager() {
-	if (includeHandler_) includeHandler_->Release();
-	if (dxcCompiler_) dxcCompiler_->Release();
-	if (dxcUtils_) dxcUtils_->Release();
+
 }
 
 /*-------------------- 初期化 --------------------*/
@@ -27,7 +25,7 @@ void DXCManager::Initialize() {
 }
 
 /*-------------------- シェーダーのコンパイル --------------------*/
-IDxcBlob* DXCManager::CompileShader(
+Microsoft::WRL::ComPtr<IDxcBlob> DXCManager::CompileShader(
 	// CompilerするShaderファイルへのパス
 	const std::wstring& filePath,
 	// CompilerするShaderのprofile
@@ -40,7 +38,7 @@ IDxcBlob* DXCManager::CompileShader(
 	// これからシェーダーをコンパイルすることをログに出す
 	Log(ConvertString(std::format(L"Begin Compiling, path:{}, profile:{}", filePath, profile)));
 	// hlslファイルを読む
-	IDxcBlobEncoding* shaderSource = nullptr;
+	Microsoft::WRL::ComPtr<IDxcBlobEncoding> shaderSource = nullptr;
 	HRESULT hr = dxcUtils_->LoadFile(filePath.c_str(), nullptr, &shaderSource);
 	//読めなかったら止める
 	assert(SUCCEEDED(hr));
@@ -61,7 +59,7 @@ IDxcBlob* DXCManager::CompileShader(
 	};
 
 	// 実際にShaderをコンパイルする
-	IDxcResult* shaderResult = nullptr;
+	Microsoft::WRL::ComPtr<IDxcResult> shaderResult = nullptr;
 	hr = dxcCompiler->Compile(
 		&shaderSourceBuffer,			// 読み込んだファイル
 		arguments,						// コンパイルオプション
@@ -73,7 +71,7 @@ IDxcBlob* DXCManager::CompileShader(
 	assert(SUCCEEDED(hr));
 
 	/// 3.警告・エラーが出ていないか確認する
-	IDxcBlobUtf8* shaderError = nullptr;
+	Microsoft::WRL::ComPtr<IDxcBlobUtf8> shaderError = nullptr;
 	shaderResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&shaderError), nullptr);
 	if (shaderError != nullptr && shaderError->GetStringLength() != 0) {
 		Log(shaderError->GetStringPointer());
@@ -83,14 +81,11 @@ IDxcBlob* DXCManager::CompileShader(
 
 	/// 4.Compile結果を受け取って返す
 	// コンパイル結果から実用用のバイナリ部分を取得
-	IDxcBlob* shaderBlob = nullptr;
+	Microsoft::WRL::ComPtr<IDxcBlob> shaderBlob = nullptr;
 	hr = shaderResult->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&shaderBlob), nullptr);
 	assert(SUCCEEDED(hr));
 	// 成功したログを出す
 	Log(ConvertString(std::format(L"Compile Succeded, path:{}, profile:{}\n", filePath, profile)));
-	// もう使わないリソースを解放
-	if (shaderSource) shaderSource->Release();
-	if (shaderResult) shaderResult->Release();
 	// 実行用バイナリを返却
 	return shaderBlob;
 }

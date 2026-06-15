@@ -5,8 +5,7 @@
 #include <cassert>
 
 ModelPSO::~ModelPSO() {
-	if (pipelineState_) pipelineState_->Release();
-	if (rootSignature_) rootSignature_->Release();
+	OutputDebugStringA("~ModelPSO\n");
 }
 
 /*-------------------- 初期化 --------------------*/
@@ -53,13 +52,13 @@ void ModelPSO::CreateGraphicsPipeline() {
 
 	// Shaderのコンパイル
 	// vertexShader
-	IDxcBlob* vertexShaderBlob = dxcManager_->CompileShader(L"Object3D.VS.hlsl",
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = dxcManager_->CompileShader(L"Object3D.VS.hlsl",
 		L"vs_6_0", dxcManager_->GetDxcUtils(), dxcManager_->GetDxcCompiler(), dxcManager_->GetIncludeHandler()
 	);
 	assert(vertexShaderBlob != nullptr);
 
 	// pixelShader
-	IDxcBlob* pixelShaderBlob = dxcManager_->CompileShader(L"Object3D.PS.hlsl",
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = dxcManager_->CompileShader(L"Object3D.PS.hlsl",
 		L"ps_6_0", dxcManager_->GetDxcUtils(), dxcManager_->GetDxcCompiler(), dxcManager_->GetIncludeHandler()
 	);
 	assert(pixelShaderBlob != nullptr);
@@ -75,7 +74,7 @@ void ModelPSO::CreateGraphicsPipeline() {
 
 	// PSOの生成
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
-	graphicsPipelineStateDesc.pRootSignature = rootSignature_;													// RootSignature
+	graphicsPipelineStateDesc.pRootSignature = rootSignature_.Get();													// RootSignature
 	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;													// InputLayout
 	graphicsPipelineStateDesc.VS = { vertexShaderBlob->GetBufferPointer(), vertexShaderBlob->GetBufferSize() };	// VertexShader
 	graphicsPipelineStateDesc.PS = { pixelShaderBlob->GetBufferPointer(), pixelShaderBlob->GetBufferSize() };	// PixelShader
@@ -95,10 +94,6 @@ void ModelPSO::CreateGraphicsPipeline() {
 	// 実際に生成
 	hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&pipelineState_));
 	assert(SUCCEEDED(hr));
-
-	// 解放
-	if (vertexShaderBlob) vertexShaderBlob->Release();
-	if (pixelShaderBlob) pixelShaderBlob->Release();
 }
 
 // -------------------- - ルートシグネチャの生成-------------------- * //	
@@ -152,8 +147,8 @@ void ModelPSO::CreateRootSignature() {
 	descriptionRootSignature.NumStaticSamplers = _countof(staticSamplers);
 
 	// シリアライズしてバイナリにする
-	ID3DBlob* signatureBlob = nullptr;
-	ID3DBlob* errorBlob = nullptr;
+	Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob = nullptr;
+	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;
 	hr = D3D12SerializeRootSignature(&descriptionRootSignature,
 		D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
 	if (FAILED(hr)) {
@@ -165,7 +160,4 @@ void ModelPSO::CreateRootSignature() {
 		signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(),
 		IID_PPV_ARGS(&rootSignature_));
 	assert(SUCCEEDED(hr));
-	// 解放
-	if (signatureBlob) signatureBlob->Release();
-	if (errorBlob) errorBlob->Release();
 }

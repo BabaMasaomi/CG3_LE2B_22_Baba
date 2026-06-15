@@ -1,13 +1,14 @@
 #pragma once
 #include <d3d12.h>
 #include <string>
+#include <wrl.h>
 #include"struct.h"
 
 // BufferResourceの作成関数
-ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);
+Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);
 
 // DescriptorHeapの作成関数
-ID3D12DescriptorHeap* CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
+Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
 
 // DescriptorHandleの取得
 // CPU

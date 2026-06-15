@@ -1,5 +1,6 @@
 #pragma once
 #include <d3d12.h>
+#include <wrl.h>
 #include"struct.h"
 
 struct DirectionalLightData {
@@ -18,7 +19,7 @@ public:
 	void Update();
 
 	// ゲッター
-	ID3D12Resource* GetResource() const { return resource_; }
+	ID3D12Resource* GetResource() const { return resource_.Get(); }
 	Vector4& GetColor() { return color_; }
 	Vector3& GetDirection() { return direction_; }
 	float& GetIntensity() { return intensity_; }
@@ -27,7 +28,7 @@ private:
 	// ポインタを用意
 	DirectXCommon* dxCommon_ = nullptr;
 
-	ID3D12Resource* resource_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> resource_ = nullptr;
 	DirectionalLightData* data_ = nullptr;
 
 	// ImGuiで弄る用

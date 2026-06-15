@@ -1,5 +1,6 @@
 #pragma once
 #include <d3d12.h>
+#include <wrl.h>
 
 class DirectXCommon;
 class DXCManager;
@@ -11,8 +12,8 @@ public:
 	void Initialize(DirectXCommon* dxCommon, DXCManager* dxcManager);
 
 	// ゲッター
-	ID3D12RootSignature* GetRootSignature() const { return rootSignature_; }
-	ID3D12PipelineState* GetPipelineState() const { return pipelineState_; }
+	ID3D12RootSignature* GetRootSignature() const { return rootSignature_.Get(); }
+	ID3D12PipelineState* GetPipelineState() const { return pipelineState_.Get(); }
 
 private:
 	// RootSignatureとGraphicsPipelineの生成関数
@@ -24,6 +25,6 @@ private:
 	DXCManager* dxcManager_ = nullptr;
 
 	// PSOを生成するために必要なRootSignatureとPipelineStateを用意しておく
-	ID3D12RootSignature* rootSignature_ = nullptr;
-	ID3D12PipelineState* pipelineState_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> pipelineState_ = nullptr;
 };

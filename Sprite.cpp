@@ -7,12 +7,7 @@
 
 // デストラクタ
 Sprite::~Sprite() {
-	if (vertexResource_) vertexResource_->Release();
-	if (indexResource_) indexResource_->Release();
-	if (materialResource_) materialResource_->Release();
-	if (transformationMatrixResource_) {
-		transformationMatrixResource_->Release();
-	}
+	OutputDebugStringA("~Sprite\n");
 }
 
 /*-------------------- 初期化 --------------------*/

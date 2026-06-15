@@ -12,6 +12,7 @@
 // Debug用のあれこれを使える様にする
 #include <dbghelp.h>
 #include <strsafe.h>
+#include <dxgidebug.h>
 // ImGui
 #ifdef USE_IMGUI
 #include "ImGuiManager.h"
@@ -19,6 +20,18 @@
 
 // libのリンク
 #pragma comment(lib, "Dbghelp.lib")
+
+struct D3D12ResourceLeakChecker {
+	~D3D12ResourceLeakChecker() {
+		// リソースリークチェック
+		Microsoft::WRL::ComPtr<IDXGIDebug1> debug;
+		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
+			debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
+			debug->ReportLiveObjects(DXGI_DEBUG_APP, DXGI_DEBUG_RLO_ALL);
+			debug->ReportLiveObjects(DXGI_DEBUG_D3D12,DXGI_DEBUG_RLO_ALL);
+		}
+	}
+};
 
 /*-------------------- 関数 --------------------*/
 // クラッシュしたときにDumpファイルを出力する関数
@@ -49,6 +62,9 @@ static LONG WINAPI ExportDump(EXCEPTION_POINTERS* exceptionPointers) {
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// COM初期化
 	CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+
+	// WinMainの頭に呼んで、正しくリークチェックする
+	D3D12ResourceLeakChecker leakCheck;
 
 	// 誰も捕捉しなかった場合に、捕捉する関数を登録
 	SetUnhandledExceptionFilter(ExportDump);
@@ -175,7 +191,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 #ifdef USE_IMGUI
 	imguiManager.Finalize();
 #endif
+
+	dxCommon.WaitForGPU();
+
 	// COMの終了処理
 	CoUninitialize();
+
 	return 0;
 }

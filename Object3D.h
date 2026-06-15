@@ -3,6 +3,7 @@
 #include <cstdint>
 #include"struct.h"
 #include "Model.h"
+#include <wrl.h>
 
 // 前方宣言
 class DirectXCommon;
@@ -68,12 +69,12 @@ private:
 	};
 
 	// 頂点リソースと頂点バッファビュー
-	ID3D12Resource* vertexResource_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_ = nullptr;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 	VertexData* vertexData = nullptr;
 
 	// Index用のリソースとバッファビュー
-	ID3D12Resource* indexResource_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_ = nullptr;
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
 	uint32_t* indexData_ = nullptr;
 	uint32_t indexCount_ = 0;
@@ -93,12 +94,12 @@ private:
 	};
 
 	// マテリアルリソース
-	ID3D12Resource* materialResource_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_ = nullptr;
 	// マテリアルデータ
 	Material* materialData_ = nullptr;
 
 	// 変換行列リソースと変換行列データ
-	ID3D12Resource* transformationMatrixResource_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource_ = nullptr;
 	TransformationMatrix* transformationMatrixData_ = nullptr;
 
 	// 分割数

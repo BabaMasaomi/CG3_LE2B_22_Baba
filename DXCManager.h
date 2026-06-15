@@ -1,6 +1,7 @@
 #pragma once
 #include <dxcapi.h>
 #include <string>
+#include <wrl.h>
 
 #pragma comment(lib,"dxcompiler.lib")
 
@@ -11,7 +12,7 @@ public:
 	void Initialize();
 
 	// シェーダーのコンパイル
-	IDxcBlob* CompileShader(
+	Microsoft::WRL::ComPtr<IDxcBlob> CompileShader(
 		const std::wstring& filePath,
 		const wchar_t* profile,
 		IDxcUtils* dxcUtils,
@@ -20,13 +21,13 @@ public:
 	);
 
 	// ゲッター
-	IDxcUtils* GetDxcUtils() const { return dxcUtils_; }
-	IDxcCompiler3* GetDxcCompiler() const { return dxcCompiler_; }
-	IDxcIncludeHandler* GetIncludeHandler() const { return includeHandler_; }
+	IDxcUtils* GetDxcUtils() const { return dxcUtils_.Get(); }
+	IDxcCompiler3* GetDxcCompiler() const { return dxcCompiler_.Get(); }
+	IDxcIncludeHandler* GetIncludeHandler() const { return includeHandler_.Get(); }
 
 private:
 	// dxCompilerの初期化
-	IDxcUtils* dxcUtils_ = nullptr;
-	IDxcCompiler3* dxcCompiler_ = nullptr;
-	IDxcIncludeHandler* includeHandler_ = nullptr;
+	Microsoft::WRL::ComPtr<IDxcUtils> dxcUtils_ = nullptr;
+	Microsoft::WRL::ComPtr<IDxcCompiler3> dxcCompiler_ = nullptr;
+	Microsoft::WRL::ComPtr<IDxcIncludeHandler> includeHandler_ = nullptr;
 };

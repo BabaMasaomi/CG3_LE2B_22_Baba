@@ -13,12 +13,7 @@
 
 // デストラクタ
 Object3d::~Object3d() {
-	if (vertexResource_) vertexResource_->Release();
-	if (indexResource_) indexResource_->Release();
-	if (materialResource_) materialResource_->Release();
-	if (transformationMatrixResource_) {
-		transformationMatrixResource_->Release();
-	}
+	OutputDebugStringA("~Object3d\n");
 }
 
 /*-------------------- 初期化 --------------------*/
