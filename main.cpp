@@ -9,6 +9,7 @@
 #include "Sprite.h"
 #include "Object3d.h"
 #include "ModelPSO.h"
+#include "Sound.h"
 // Debug用のあれこれを使える様にする
 #include <dbghelp.h>
 #include <strsafe.h>
@@ -28,7 +29,7 @@ struct D3D12ResourceLeakChecker {
 		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
 			debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
 			debug->ReportLiveObjects(DXGI_DEBUG_APP, DXGI_DEBUG_RLO_ALL);
-			debug->ReportLiveObjects(DXGI_DEBUG_D3D12,DXGI_DEBUG_RLO_ALL);
+			debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
 		}
 	}
 };
@@ -118,6 +119,14 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	Sprite sprite;
 	sprite.Initialize(&dxCommon, &textureManager, &winApp);
 
+	// Soundの初期化
+	Sound sound;
+	sound.Initialize();
+	// 音声読み込み
+	SoundData soundData1 = sound.SoundLoadWave("resources/fanfare.wav");
+	// サウンド再生
+	sound.SoundPlayeWave(soundData1);
+
 	// ログ出力
 	Log(logStream, "Start logging!");
 
@@ -191,6 +200,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 #ifdef USE_IMGUI
 	imguiManager.Finalize();
 #endif
+
+	// 音声データ解放
+	sound.SoundUnload(&soundData1);
+	sound.Finalize();
 
 	dxCommon.WaitForGPU();
 
