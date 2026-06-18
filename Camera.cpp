@@ -21,9 +21,9 @@ void Camera::Initialize(float width, float height) {
 
 /*-------------------- 更新処理 --------------------*/
 void Camera::Update() {
-	// ImGuiの変更を反映する
-	transform_.rotate = rotate_;
-	transform_.translate = translate_;
+	//// ImGuiの変更を反映する
+	//transform_.rotate = rotate_;
+	//transform_.translate = translate_;
 
 	// カメラの行列を作成
 	Matrix4x4 cameraMatrix = MakeAffineMatrix(
@@ -31,10 +31,28 @@ void Camera::Update() {
 		transform_.rotate,
 		transform_.translate
 	);
+
+	// モード毎に処理を切り替え
+	if (isDebugMode_) {
+		UpdateDebugCamera();
+	} else{
+		UpdateGameCamera();
+	}
+
 	// ビュー行列(カメラ行列の逆行列)
 	viewMatrix_ = Inverse(cameraMatrix);
 	// 透視投影行列を
 	projectionMatrix_ = MakePerspectiveFovMatrix(0.45f, aspectRatio_, 0.1f, 100.0f);
 	// ビュープロジェクション行列まで作成、world行列は描画する図形で作り、計算する
 	viewProjectionMatrix_ = Multiply(viewMatrix_, projectionMatrix_);
+}
+
+/*-------------------- ゲーム中のカメラ更新 --------------------*/
+void Camera::UpdateGameCamera() {
+
+}
+
+/*-------------------- デバッグカメラのカメラ更新 --------------------*/
+void Camera::UpdateDebugCamera() {
+
 }
