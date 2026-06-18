@@ -157,10 +157,10 @@ void Object3d::MapTransformationMatrix() {
 /*-------------------- 更新 --------------------*/
 void Object3d::Update(const Camera& camera) {
 	// UVTransform用の行列を作成
-	//Matrix4x4 uvTransformMatrix = MakeScaleMatrix(uvTransform_.scale);
-	//uvTransformMatrix = Multiply(uvTransformMatrix, MakeRotateZMatrix(uvTransform_.rotate.z));
-	//uvTransformMatrix = Multiply(uvTransformMatrix, MakeTranslateMatrix(uvTransform_.translate));
-	//materialData_->uvTransform = uvTransformMatrix;
+	Matrix4x4 uvTransformMatrix = MakeScaleMatrix(uvTransform_.scale);
+	uvTransformMatrix = Multiply(uvTransformMatrix, MakeRotateZMatrix(uvTransform_.rotate.z));
+	uvTransformMatrix = Multiply(uvTransformMatrix, MakeTranslateMatrix(uvTransform_.translate));
+	materialData_->uvTransform = uvTransformMatrix;
 
 	// ImGuiの変更を反映する
 	transform_.scale = scale_;
