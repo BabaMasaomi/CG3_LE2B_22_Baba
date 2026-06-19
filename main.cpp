@@ -122,7 +122,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 
 	// Spriteの初期化
 	Sprite sprite;
-	sprite.Initialize(&dxCommon, &textureManager, &winApp);
+	sprite.Initialize(&dxCommon, &modelPSO, &textureManager, &winApp);
 
 	// Soundの初期化
 	Sound sound;
@@ -146,13 +146,13 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		winApp.ProcessMessage();
 
 		/*-------------------- 更新処理 --------------------*/
-		input.Update();	
+		input.Update();
 		camera.Update();
 		directionalLight.Update();
 		object3d.Update(camera);
 		sprite.Update();
 
-		if (input.PushKey(DIK_0)){
+		if (input.PushKey(DIK_0)) {
 			OutputDebugStringA("PushKey: 0\n");
 		}
 

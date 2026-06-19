@@ -1,5 +1,6 @@
 #include "Sprite.h"
 #include "DirectXCommon.h"
+#include "ModelPSO.h"
 #include "WinApp.h"
 #include "TextureManager.h"
 #include "Utility.h"
@@ -11,10 +12,11 @@ Sprite::~Sprite() {
 }
 
 /*-------------------- 初期化 --------------------*/
-void Sprite::Initialize(DirectXCommon* dxCommon, TextureManager* textureManager, WinApp* winApp) {
+void Sprite::Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, TextureManager* textureManager, WinApp* winApp) {
 
 	// DirectXCommonのポインタを保存しておく
 	dxCommon_ = dxCommon;
+	modelPSO_ = modelPSO;
 	textureManager_ = textureManager;
 	winApp_ = winApp;
 
@@ -158,6 +160,9 @@ void Sprite::Update() {
 /*-------------------- 描画 --------------------*/
 void Sprite::Draw() {
 	auto* commandList = dxCommon_->GetCommandList();
+	// RootSignature設定
+	commandList->SetGraphicsRootSignature(modelPSO_->GetRootSignature());
+	commandList->SetPipelineState(modelPSO_->GetSpritePipelineState());
 	// 形状を設定
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// VertexBufferViewを設定

@@ -6,6 +6,7 @@
 
 // 前方宣言
 class DirectXCommon;
+class ModelPSO;
 class TextureManager;
 class WinApp;
 
@@ -13,7 +14,7 @@ class Sprite {
 public:
 	~Sprite();
 
-	void Initialize(DirectXCommon* dxCommon, TextureManager* textureManager, WinApp* winApp);
+	void Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, TextureManager* textureManager, WinApp* winApp);
 	void Update();
 	void Draw();
 
@@ -43,6 +44,7 @@ private:
 
 	// ポインタを用意しておく
 	DirectXCommon* dxCommon_ = nullptr;
+	ModelPSO* modelPSO_ = nullptr;
 	TextureManager* textureManager_ = nullptr;
 	WinApp* winApp_ = nullptr;
 
