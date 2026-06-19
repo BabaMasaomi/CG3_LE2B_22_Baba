@@ -1,11 +1,13 @@
 #pragma once
 #include "struct.h"
 
+class Input;
+
 class Camera {
 public:
 	~Camera();
 
-	void Initialize(float width, float height);
+	void Initialize(float width, float height, Input* input);
 	void Update();
 
 	// ゲッター
@@ -21,7 +23,7 @@ private:
 	// モード別のカメラの更新
 	void UpdateGameCamera();
 	void UpdateDebugCamera();
-
+	// カメラの変換情報
 	Transform transform_;
 
 	Matrix4x4 viewMatrix_;				// ビュー行列(カメラ行列の逆行列)
@@ -34,7 +36,16 @@ private:
 	Vector3 rotate_;
 	Vector3 translate_;
 
+	// デバッグカメラ用の変数
+	// ターゲットの座標
+	Vector3 target_ = { 0.0f,0.0f,0.0f };
+	// カメラとターゲットの距離
+	float distance_ = 10.0f;
+	// カメラの角度
+	float yaw_ = 0.0f;		// Y軸回転
+	float pitch_ = 0.3f;	// X軸回転
 	// デバッグカメラに切り替えているか
 	bool isDebugMode_ = false;
-};
 
+	Input* input_ = nullptr;
+};
