@@ -153,22 +153,24 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		object3d.Update(camera);
 		sprite.Update();
 
-		if (input.TriggerKey(DIK_F1)) {
-			camera.SetDebugMode(!camera.GetDebugMode());
-			char buffer[128];
-			sprintf_s(buffer, "current mode: %d\n", camera.GetDebugMode());
-			OutputDebugStringA(buffer);
-		}
-
 		/*-------------------- 描画処理 --------------------*/
 		dxCommon.PreDraw();		// 描画前の処理
 
 		// ImGui
 #ifdef USE_IMGUI
 		imguiManager.Begin();	// 以下にImGuiの内容を記述
+		// cameraの位置をリセット
+		if (ImGui::CollapsingHeader("DebugCamera")) {
+			if (ImGui::Checkbox("Enable", &camera.GetDebugMode())) {
+				camera.SetDebugMode(camera.GetDebugMode());
+			}
+			if (ImGui::Button("Reset")) {
+				camera.Initialize(WinApp::kClientWidth_, WinApp::kClientHeight_, &input);
+			}
+		}
 		// Lightを調整
 		if (ImGui::CollapsingHeader("Light")) {
-			ImGui::ColorEdit4("Color", &directionalLight.GetColor().x);							// 色を変更
+			ImGui::ColorEdit4("Color", &directionalLight.GetColor().x);								// 色を変更
 			ImGui::DragFloat3("Direction", &directionalLight.GetDirection().x, 0.01f);				// 向きを変更
 			ImGui::DragFloat("Intensity", &directionalLight.GetIntensity(), 0.01f, 0.0f, 10.0f);	// 輝度を変更
 		}

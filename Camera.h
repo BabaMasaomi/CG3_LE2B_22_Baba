@@ -17,7 +17,7 @@ public:
 	bool& GetDebugMode() { return isDebugMode_; }
 
 	// セッター
-	void SetDebugMode(bool enable) { isDebugMode_=enable; }
+	void SetDebugMode(bool enable) { isDebugMode_ = enable; }
 
 private:
 	// モード別のカメラの更新
@@ -37,15 +37,22 @@ private:
 	Vector3 translate_;
 
 	// デバッグカメラ用の変数
+	// 入力クラスのポインタ
+	Input* input_ = nullptr;
+
 	// ターゲットの座標
 	Vector3 target_ = { 0.0f,0.0f,0.0f };
 	// カメラとターゲットの距離
 	float distance_ = 10.0f;
 	// カメラの角度
-	float yaw_ = 0.0f;		// Y軸回転
-	float pitch_ = 0.3f;	// X軸回転
+	float orbitYaw_ = 0.0f;		// Y軸回転
+	float orbitPitch_ = 0.3f;	// X軸回転
 	// デバッグカメラに切り替えているか
 	bool isDebugMode_ = false;
 
-	Input* input_ = nullptr;
+	// LookAround用の変数
+	float lookYaw_ = 0.0f;		// Y軸回転
+	float lookPitch_ = 0.0f;	// X軸回転
+	// 視点変更中かどうか
+	bool isLookAround_ = false;
 };

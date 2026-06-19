@@ -2,7 +2,6 @@
 #include "Input.h"
 #include "Utility.h"
 #include <algorithm>
-#include <Windows.h>
 
 // デストラクタ
 Camera::~Camera() {
@@ -11,17 +10,25 @@ Camera::~Camera() {
 
 /*-------------------- 初期化 --------------------*/
 void Camera::Initialize(float width, float height, Input* input) {
+	// カメラの変換情報を初期化
 	transform_.scale = { 1.0f,1.0f,1.0f };
 	transform_.rotate = { 0.3f,0.0f,0.0f };
 	transform_.translate = { 0.0f,4.0f,-10.0f };
+	// デバッグカメラ用の変数を初期化
+	orbitYaw_ = 0.0f;
+	orbitPitch_ = 0.3f;
+	lookYaw_ = 0.0f;
+	lookPitch_ = 0.0f;
+
+	// 入力クラスのポインタを保存
+	input_ = input;
+
 	// 透視投影行列を作るために、アスペクト比を計算しておく
 	aspectRatio_ = width / height;
 
-	// ImGui用
+	// ImGui等で弄る用の変数に初期値を入れておく
 	rotate_ = transform_.rotate;
 	translate_ = transform_.translate;
-
-	input_ = input;
 }
 
 /*-------------------- 更新処理 --------------------*/
@@ -58,8 +65,8 @@ void Camera::UpdateGameCamera() {
 /*-------------------- デバッグカメラのカメラ更新 --------------------*/
 void Camera::UpdateDebugCamera() {
 	// 回転行列を作成
-	Matrix4x4 rotateY = MakeRotateYMatrix(yaw_);
-	Matrix4x4 rotateX = MakeRotateXMatrix(pitch_);
+	Matrix4x4 rotateY = MakeRotateYMatrix(orbitYaw_);
+	Matrix4x4 rotateX = MakeRotateXMatrix(orbitPitch_);
 	Matrix4x4 rotateMatrix = Multiply(rotateX, rotateY);
 
 	// マウスの中ボタンが押されているとき
@@ -69,9 +76,9 @@ void Camera::UpdateDebugCamera() {
 		// Shiftキーが押されているとき
 		if (input_->PushKey(DIK_LSHIFT)) {
 			/*--------------- targetを平行移動(Pan) ---------------*/
+			// 回転行列から右方向と上方向のベクトルを取得
 			Vector3 right = { rotateMatrix.m[0][0],rotateMatrix.m[0][1],rotateMatrix.m[0][2] };
 			Vector3 up = { rotateMatrix.m[1][0],rotateMatrix.m[1][1],rotateMatrix.m[1][2] };
-
 			// 距離に応じて速度を調整
 			float panSpeed = distance_ * 0.001f;
 			// targetを平行移動
@@ -80,11 +87,11 @@ void Camera::UpdateDebugCamera() {
 		} else {
 			/*--------------- targetを中心に回転(Orbit) ---------------*/
 			// マウスの移動量から回転角度を計算
-			yaw_ += delta.x * 0.01f;
-			pitch_ += delta.y * 0.01f;
+			orbitYaw_ += delta.x * 0.01f;
+			orbitPitch_ += delta.y * 0.01f;
 			// pitchの角度に制限をかける
 			const float limit = 1.55f;
-			pitch_ = std::clamp(pitch_, -limit, limit);
+			orbitPitch_ = std::clamp(orbitPitch_, -limit, limit);
 		}
 	}
 
@@ -96,21 +103,40 @@ void Camera::UpdateDebugCamera() {
 	distance_ = (std::max)(distance_, 0.1f);			// 下限
 
 	/*--------------- Camera自身を回転(LookAround) ---------------*/
+	if (input_->PushMouseRight()) {
+		isLookAround_ = true;
+		// マウスの移動量を取得
+		Vector2 delta = input_->GetMouseDelta();
+		// マウスの移動量から回転角度を計算
+		lookYaw_ += delta.x * 0.005f;
+		lookPitch_ += delta.y * 0.005f;
+		// pitchの角度に制限をかける
+		const float limit = 1.55f;
+		lookPitch_ = std::clamp(lookPitch_, -limit, limit);
+
+	} else {
+		isLookAround_ = false;
+	}
 
 	/*--------------- 最後に変更を反映させる ---------------*/
-	rotateY = MakeRotateYMatrix(yaw_);
-	rotateX = MakeRotateXMatrix(pitch_);
+	// 回転行列を作成
+	rotateY = MakeRotateYMatrix(orbitYaw_);
+	rotateX = MakeRotateXMatrix(orbitPitch_);
 	rotateMatrix = Multiply(rotateX, rotateY);
-	// カメラの位置を計算
-	Vector3 offset = { 0.0f,0.0f,-distance_ };
-	// 回転行列を使ってカメラの位置を回転させる
-	offset = TransformNormal(offset, rotateMatrix);
-	// ターゲットの位置にオフセットを足してカメラの位置を決定
-	transform_.translate = {
-		target_.x + offset.x,
-		target_.y + offset.y,
-		target_.z + offset.z };
+	if (!isLookAround_) {
+		// LookAround中でなければ、ターゲットを中心にカメラの位置を計算
+		// カメラの位置を計算
+		Vector3 offset = { 0.0f,0.0f,-distance_ };
+		// 回転行列を使ってカメラの位置を回転させる
+		offset = TransformNormal(offset, rotateMatrix);
+		// ターゲットの位置にオフセットを足してカメラの位置を決定
+		transform_.translate = {
+			target_.x + offset.x,
+			target_.y + offset.y,
+			target_.z + offset.z
+		};
+	}
 	// 回転角度をtransformに反映
-	transform_.rotate.x = pitch_;
-	transform_.rotate.y = yaw_;
+	transform_.rotate.x = orbitPitch_ + lookPitch_;
+	transform_.rotate.y = orbitYaw_ + lookYaw_;
 }
