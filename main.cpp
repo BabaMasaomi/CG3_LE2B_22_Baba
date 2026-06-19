@@ -1,5 +1,6 @@
 #include <Windows.h>
 #include "logger.h"
+#include <format>			// フォーマットの自動指定をしてくれる(+安全策)
 #include "WinApp.h"
 #include "DirectXCommon.h"
 #include "DXCManager.h"
@@ -154,6 +155,23 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 
 		if (input.TriggerKey(DIK_F1)) {
 			camera.SetDebugMode(!camera.GetDebugMode());
+		}
+
+		if (input.TriggerMouseLeft()) {
+			OutputDebugStringA("TriggerMouseLeft\n");
+			Log(std::format("mousePos.x :{}\n",input.GetMousePos().x ));
+		}
+
+		if (input.TriggerMouseRight()) {
+			OutputDebugStringA("TriggerMouseRight\n");
+			Log(std::format("mousePos.y :{}\n", input.GetMousePos().y));
+		}
+
+		int wheel = input.GetWheelDelta();
+		if (wheel != 0) {
+			char buffer[128];
+			sprintf_s(buffer, "Wheel : %d\n", wheel);
+			OutputDebugStringA(buffer);
 		}
 
 		/*-------------------- 描画処理 --------------------*/
