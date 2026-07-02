@@ -1,5 +1,6 @@
 #include <Windows.h>
 #include "logger.h"
+#include <format>			// フォーマットの自動指定をしてくれる(+安全策)
 #include "WinApp.h"
 #include "DirectXCommon.h"
 #include "DXCManager.h"
@@ -106,7 +107,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 
 	// カメラの初期化
 	Camera camera;
-	camera.Initialize(WinApp::kClientWidth_, WinApp::kClientHeight_);
+	camera.Initialize(WinApp::kClientWidth_, WinApp::kClientHeight_, &input);
 
 	// 平行光源の初期化
 	DirectionalLight directionalLight;
@@ -170,9 +171,18 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		// ImGui
 #ifdef USE_IMGUI
 		imguiManager.Begin();	// 以下にImGuiの内容を記述
+		// cameraの位置をリセット
+		if (ImGui::CollapsingHeader("DebugCamera")) {
+			if (ImGui::Checkbox("Enable", &camera.GetDebugMode())) {
+				camera.SetDebugMode(camera.GetDebugMode());
+			}
+			if (ImGui::Button("Reset")) {
+				camera.Initialize(WinApp::kClientWidth_, WinApp::kClientHeight_, &input);
+			}
+		}
 		// Lightを調整
 		if (ImGui::CollapsingHeader("Light")) {
-			ImGui::ColorEdit4("Color", &directionalLight.GetColor().x);							// 色を変更
+			ImGui::ColorEdit4("Color", &directionalLight.GetColor().x);								// 色を変更
 			ImGui::DragFloat3("Direction", &directionalLight.GetDirection().x, 0.01f);				// 向きを変更
 			ImGui::DragFloat("Intensity", &directionalLight.GetIntensity(), 0.01f, 0.0f, 10.0f);	// 輝度を変更
 		}

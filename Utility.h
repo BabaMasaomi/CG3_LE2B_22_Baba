@@ -56,3 +56,6 @@ Matrix4x4 Transpose(const Matrix4x4& m);
 
 // 座標変換行列
 Vector3 CoordinateTransform(const Vector3& vector, const Matrix4x4& matrix);
+
+// 法線変換行列
+Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m);
