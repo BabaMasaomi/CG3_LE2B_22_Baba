@@ -25,18 +25,21 @@ public:
 	Vector3& GetRotate() { return rotate_; }
 	Vector3& GetTranslate() { return translate_; }
 
+	// セッター
+	//void SetModel(Model* model) { model_ = model; }
+
 private:
-	// VertexResourceとVertexBufferViewの作成関数
+	// VertexResourceとVertexBufferViewの作成関数　消す
 	void CreateVertexResource();
 	void CreateVertexBufferView();
 	void MapVertexData();
 
-	// IndexResourceとIndexBufferViewの作成関数
+	// IndexResourceとIndexBufferViewの作成関数　消す
 	void CreateIndexResource();
 	void CreateIndexBufferView();
 	void MapIndexData();
 
-	// マテリアル用のResourceとデータの作成関数
+	// マテリアル用のResourceとデータの作成関数　消す
 	void CreateMaterialResource();
 	void MapMaterial();
 
@@ -49,17 +52,14 @@ private:
 	ModelPSO* modelPSO_ = nullptr;
 	TextureManager* textureManager_ = nullptr;
 	DirectionalLight* directionalLight_ = nullptr;
-	Model* model_ = nullptr;
+	Model model_;
 
 	// テクスチャのインデックス
 	uint32_t textureIndex_ = 0;
 
-	// モデルデータ
-	ModelData modelData_ = {};
-
 	// 図形の変換を管理するためのTransformとワールド行列
-	Transform transform_;
-	Matrix4x4 worldMatrix_{};
+	Transform transform_;		// 残す
+	Matrix4x4 worldMatrix_{};	// 残す
 
 	// 頂点構造体
 	struct VertexData {
@@ -68,12 +68,12 @@ private:
 		Vector3 normal;
 	};
 
-	// 頂点リソースと頂点バッファビュー
+	// 頂点リソースと頂点バッファビュー　多分消す
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_ = nullptr;
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
 	VertexData* vertexData = nullptr;
 
-	// Index用のリソースとバッファビュー
+	// Index用のリソースとバッファビュー　多分消す
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_ = nullptr;
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
 	uint32_t* indexData_ = nullptr;
@@ -93,13 +93,13 @@ private:
 		{0.0f,0.0f,0.0f},
 	};
 
-	// マテリアルリソース
+	// マテリアルリソース　多分消す
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_ = nullptr;
 	// マテリアルデータ
 	Material* materialData_ = nullptr;
 
 	// 変換行列リソースと変換行列データ
-	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource_ = nullptr;	// 残す
 	TransformationMatrix* transformationMatrixData_ = nullptr;
 
 	// 分割数

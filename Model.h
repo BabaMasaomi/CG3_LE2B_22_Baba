@@ -24,14 +24,15 @@ struct ModelData {
 class Model {
 public:
 	// objファイルを読み込む
-	ModelData LoadObjFile(const std::string& directryPath, const std::string& filename);
+	void LoadObjFile(const std::string& directryPath, const std::string& filename);
 
 	// mtlファイルを読み込む
 	MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 
 	// ゲッター
-	const std::vector<VertexData>& GetVertices() { return vertices_; };
+	const ModelData& GetModelData() const { return modelData_; }
 
 private:
-	std::vector<VertexData> vertices_ = {};
+
+	ModelData modelData_ = {};
 };

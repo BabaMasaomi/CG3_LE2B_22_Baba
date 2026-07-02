@@ -4,7 +4,7 @@
 #include <cassert>
 
 /*-------------------- objファイルを読み込む --------------------*/
-ModelData Model::LoadObjFile(const std::string& directryPath, const std::string& filename) {
+void Model::LoadObjFile(const std::string& directryPath, const std::string& filename) {
 	// 1.中で必要となる変数の宣言
 	ModelData modelData;			// 構築するModelData
 	std::vector<Vector4> positions;	// 位置
@@ -65,21 +65,18 @@ ModelData Model::LoadObjFile(const std::string& directryPath, const std::string&
 				normal.x *= -1.0f;
 				triangle[faceVertex] = { position,texcoord,normal };
 			}
-			modelData.vertices.push_back(triangle[2]);
-			modelData.vertices.push_back(triangle[1]);
-			modelData.vertices.push_back(triangle[0]);
+			modelData_.vertices.push_back(triangle[2]);
+			modelData_.vertices.push_back(triangle[1]);
+			modelData_.vertices.push_back(triangle[0]);
 
 		} else if (identifier == "mtllib") {
 			// materialTemplateLibraryファイルの名前を取得する
 			std::string materialFilename;
 			s >> materialFilename;
 			// 基本的にobjファイルと同一階層にmtlは存在させるので、ディレクトリ名とファイル名を渡す
-			modelData.material = LoadMaterialTemplateFile(directryPath, materialFilename);
+			modelData_.material = LoadMaterialTemplateFile(directryPath, materialFilename);
 		}
 	}
-
-	// 4.ModelDataを返す
-	return modelData;
 }
 
 /*-------------------- mtlファイルを読み込む --------------------*/

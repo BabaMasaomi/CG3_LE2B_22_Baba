@@ -25,15 +25,16 @@ void Object3d::Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, TextureMa
 	textureManager_ = textureManager;
 	directionalLight_ = directionalLight;
 
+
 	// CPUで動かす用のTransformを作る
 	transform_ = { {1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };
 
 	// モデル読み込み
-	modelData_ = model_->LoadObjFile("resources", "axis.obj");
+	model_.LoadObjFile("resources", "axis.obj");
 	
 	// テクスチャの読み込み
 	textureIndex_ = 2;
-	textureManager_->LoadTexture(modelData_.material.textureFilePath, textureIndex_);
+	textureManager_->LoadTexture(model_.GetModelData().material.textureFilePath, textureIndex_);
 
 	// ImGui用
 	scale_ = transform_.scale;
@@ -61,7 +62,7 @@ void Object3d::Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, TextureMa
 
 /*-------------------- VertexResourceの生成 --------------------*/
 void Object3d::CreateVertexResource() {
-	vertexResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(VertexData) * modelData_.vertices.size());
+	vertexResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(VertexData) * model_.GetModelData().vertices.size());
 }
 
 /*-------------------- VertexBufferViewの作成 --------------------*/
@@ -69,7 +70,7 @@ void Object3d::CreateVertexBufferView() {
 	// リソースの先頭のアドレスから使う
 	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
 	// 使用するリソースのサイズはモデルデータに依存
-	vertexBufferView_.SizeInBytes = UINT(sizeof(VertexData) * modelData_.vertices.size());
+	vertexBufferView_.SizeInBytes = UINT(sizeof(VertexData) * model_.GetModelData().vertices.size());
 	// 1頂点あたりのサイズ
 	vertexBufferView_.StrideInBytes = sizeof(VertexData);
 }
@@ -81,7 +82,7 @@ void Object3d::MapVertexData() {
 	// 書き込むためのアドレスを取得
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
 	// 頂点データをリソースにコピー
-	std::memcpy(vertexData, modelData_.vertices.data(), sizeof(VertexData) * modelData_.vertices.size());
+	std::memcpy(vertexData, model_.GetModelData().vertices.data(), sizeof(VertexData) * model_.GetModelData().vertices.size());
 }
 
 /*-------------------- IndexResourceの生成 --------------------*/
@@ -134,7 +135,7 @@ void Object3d::MapMaterial() {
 	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
 	std::memset(materialData_, 0, sizeof(Material));
 	// ここで色を弄れる
-	materialData_->color = { modelData_.material.diffuseColor.x, modelData_.material.diffuseColor.y, modelData_.material.diffuseColor.z, 1.0f };
+	materialData_->color = { model_.GetModelData().material.diffuseColor.x, model_.GetModelData().material.diffuseColor.y, model_.GetModelData().material.diffuseColor.z, 1.0f };
 	materialData_->enableLighting = true;
 	materialData_->uvTransform = MakeIdentity4x4();
 }
@@ -197,5 +198,5 @@ void Object3d::Draw() {
 	commandList->SetGraphicsRootDescriptorTable(2, textureManager_->GetTextureSrvHandleGPU(textureIndex_ - 1));
 	commandList->SetGraphicsRootConstantBufferView(3, directionalLight_->GetResource()->GetGPUVirtualAddress());	// 平行光源を適用
 	// 描画！(DrawCall)
-	commandList->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
+	commandList->DrawInstanced(UINT(model_.GetModelData().vertices.size()), 1, 0, 0);
 }
