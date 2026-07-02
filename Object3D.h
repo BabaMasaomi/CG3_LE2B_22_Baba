@@ -25,19 +25,7 @@ public:
 	Vector3& GetRotate() { return rotate_; }
 	Vector3& GetTranslate() { return translate_; }
 
-	// セッター
-	//void SetModel(Model* model) { model_ = model; }
-
 private:
-	// VertexResourceとVertexBufferViewの作成関数　消す
-	void CreateVertexResource();
-	void CreateVertexBufferView();
-	void MapVertexData();
-
-	// IndexResourceとIndexBufferViewの作成関数　消す
-	void CreateIndexResource();
-	void CreateIndexBufferView();
-	void MapIndexData();
 
 	// マテリアル用のResourceとデータの作成関数　消す
 	void CreateMaterialResource();
@@ -67,17 +55,6 @@ private:
 		Vector2 texcoord;
 		Vector3 normal;
 	};
-
-	// 頂点リソースと頂点バッファビュー　多分消す
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_ = nullptr;
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
-	VertexData* vertexData = nullptr;
-
-	// Index用のリソースとバッファビュー　多分消す
-	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_ = nullptr;
-	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
-	uint32_t* indexData_ = nullptr;
-	uint32_t indexCount_ = 0;
 
 	// マテリアルデータの構造体
 	struct Material {

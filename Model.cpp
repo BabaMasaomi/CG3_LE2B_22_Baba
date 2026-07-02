@@ -1,7 +1,27 @@
 #include "Model.h"
+#include "DirectXCommon.h"
+#include "TextureManager.h"
+#include "Utility.h"
 #include <fstream>
 #include <sstream>
 #include <cassert>
+
+void Model::Initialize(DirectXCommon* dxCommon, TextureManager* textureManager) {
+	// ポインタを保存しておく
+	dxCommon_ = dxCommon;
+	textureManager_ = textureManager;
+
+	// モデル読み込み
+	LoadObjFile("resources", "axis.obj");
+	// VertexResourceとVertexBufferViewを用意
+	CreateVertexResource();
+	CreateVertexBufferView();
+	MapVertexData();
+	// IndexResourceとIndexBufferViewの作成関数
+	CreateIndexResource();
+	CreateIndexBufferView();
+	MapIndexData();
+}
 
 /*-------------------- objファイルを読み込む --------------------*/
 void Model::LoadObjFile(const std::string& directryPath, const std::string& filename) {
@@ -116,4 +136,69 @@ MaterialData Model::LoadMaterialTemplateFile(const std::string& directoryPath, c
 
 	// 4.MaterialDataを返す
 	return materialData;
+}
+
+
+/*-------------------- VertexResourceの生成 --------------------*/
+void Model::CreateVertexResource() {
+	vertexResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(VertexData) * modelData_.vertices.size());
+}
+
+/*-------------------- VertexBufferViewの作成 --------------------*/
+void Model::CreateVertexBufferView() {
+	// リソースの先頭のアドレスから使う
+	vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
+	// 使用するリソースのサイズはモデルデータに依存
+	vertexBufferView_.SizeInBytes = UINT(sizeof(VertexData) * modelData_.vertices.size());
+	// 1頂点あたりのサイズ
+	vertexBufferView_.StrideInBytes = sizeof(VertexData);
+}
+
+/*-------------------- VertexResourceにデータを書き込む --------------------*/
+void Model::MapVertexData() {
+	// 頂点リソースにデータを書きこむ
+	VertexData* vertexData = nullptr;
+	// 書き込むためのアドレスを取得
+	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+	// 頂点データをリソースにコピー
+	std::memcpy(vertexData, modelData_.vertices.data(), sizeof(VertexData) * modelData_.vertices.size());
+}
+
+/*-------------------- IndexResourceの生成 --------------------*/
+void Model::CreateIndexResource() {
+	indexCount_ = kSubdivision_ * kSubdivision_ * 6;
+	indexResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(uint32_t) * indexCount_);
+}
+
+/*-------------------- IndexBufferViewの作成 --------------------*/
+void Model::CreateIndexBufferView() {
+	// リソースの先頭のアドレスから使う
+	indexBufferView_.BufferLocation = indexResource_->GetGPUVirtualAddress();
+	// 使用するリソースのサイズはインデックスの数に依存
+	indexBufferView_.SizeInBytes = sizeof(uint32_t) * indexCount_;
+	// 1頂点あたりのサイズ
+	indexBufferView_.Format = DXGI_FORMAT_R32_UINT;
+}
+
+/*-------------------- IndexResourceにデータを書き込む --------------------*/
+void Model::MapIndexData() {
+	// 書き込むためのアドレスを取得
+	indexResource_->Map(0, nullptr, reinterpret_cast<void**>(&indexData_));
+	uint32_t i = 0;
+	// 緯度と経度のループ
+	for (uint32_t lat = 0; lat < kSubdivision_; lat++) {
+		for (uint32_t lon = 0; lon < kSubdivision_; lon++) {
+			uint32_t current = lat * (kSubdivision_ + 1) + lon;
+			uint32_t next = current + 1;
+			uint32_t down = current + (kSubdivision_ + 1);
+			uint32_t downNext = down + 1;
+			// データを設定
+			indexData_[i++] = current;
+			indexData_[i++] = down;
+			indexData_[i++] = next;
+			indexData_[i++] = next;
+			indexData_[i++] = down;
+			indexData_[i++] = downNext;
+		}
+	}
 }
