@@ -8,7 +8,6 @@
 // 前方宣言
 class DirectXCommon;
 class ModelPSO;
-class TextureManager;
 class DirectionalLight;
 class Camera;
 
@@ -16,9 +15,12 @@ class Object3d {
 public:
 	~Object3d();
 
-	void Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, TextureManager* textureManager, DirectionalLight* directionalLight);
+	void Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, DirectionalLight* directionalLight);
 	void Update(const Camera& camera);
 	void Draw();
+
+	// モデルを設定
+	void SetModel(Model* model);
 
 	// ゲッター
 	Vector3& GetScale() { return scale_; }
@@ -38,9 +40,8 @@ private:
 	// ポインタを用意しておく
 	DirectXCommon* dxCommon_ = nullptr;
 	ModelPSO* modelPSO_ = nullptr;
-	TextureManager* textureManager_ = nullptr;
 	DirectionalLight* directionalLight_ = nullptr;
-	Model model_;
+	Model* model_ = nullptr;
 
 	// テクスチャのインデックス
 	uint32_t textureIndex_ = 0;

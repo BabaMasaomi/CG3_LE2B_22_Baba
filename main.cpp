@@ -9,8 +9,9 @@
 #include "Camera.h"
 #include "DirectionalLight.h"
 #include "Sprite.h"
-#include "Object3d.h"
 #include "ModelPSO.h"
+#include "Model.h"
+#include "Object3d.h"
 #include "Sound.h"
 // Debug用のあれこれを使える様にする
 #include <dbghelp.h>
@@ -117,9 +118,15 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	ModelPSO modelPSO;
 	modelPSO.Initialize(&dxCommon, &dxcManager);
 
+	// モデルの初期化
+	Model model;
+	model.Initialize(&dxCommon, &textureManager, "resources", "axis.obj");
+
 	// Object3dの初期化
 	Object3d object3d;
-	object3d.Initialize(&dxCommon, &modelPSO, &textureManager, &directionalLight);
+	object3d.Initialize(&dxCommon, &modelPSO, &directionalLight);
+
+	object3d.SetModel(&model);
 
 	// Spriteの初期化
 	Sprite sprite;

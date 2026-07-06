@@ -30,7 +30,8 @@ struct ModelData {
 
 class Model {
 public:
-	void Initialize(DirectXCommon* dxCommon, TextureManager* textureManager);
+	void Initialize(DirectXCommon* dxCommon, TextureManager* textureManager,
+		const std::string& directory, const std::string& filename);
 
 	// objファイルを読み込む
 	void LoadObjFile(const std::string& directryPath, const std::string& filename);
@@ -39,6 +40,7 @@ public:
 	MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 
 	// ゲッター
+	D3D12_GPU_DESCRIPTOR_HANDLE GetTextureHandle() const;
 	const ModelData& GetModelData() const { return modelData_; }
 	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const { return vertexBufferView_; }
 	const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() const { return indexBufferView_; }
@@ -50,14 +52,12 @@ private:
 	void CreateVertexBufferView();
 	void MapVertexData();
 
-	// IndexResourceとIndexBufferViewの作成関数
-	void CreateIndexResource();
-	void CreateIndexBufferView();
-	void MapIndexData();
-
 	// ポインタを用意
 	DirectXCommon* dxCommon_ = nullptr;
 	TextureManager* textureManager_ = nullptr;
+
+	// テクスチャのインデックス
+	uint32_t textureIndex_ = 0;
 
 	// ModelDataを保持する
 	ModelData modelData_ = {};

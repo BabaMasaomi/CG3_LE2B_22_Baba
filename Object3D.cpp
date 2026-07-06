@@ -17,32 +17,20 @@ Object3d::~Object3d() {
 }
 
 /*-------------------- 初期化 --------------------*/
-void Object3d::Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, TextureManager* textureManager, DirectionalLight* directionalLight) {
+void Object3d::Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, DirectionalLight* directionalLight) {
 
 	// ポインタを保存しておく
 	dxCommon_ = dxCommon;
 	modelPSO_ = modelPSO;
-	textureManager_ = textureManager;
 	directionalLight_ = directionalLight;
-
-	// モデルの初期化
-	model_.Initialize(dxCommon_,textureManager_);
 
 	// CPUで動かす用のTransformを作る
 	transform_ = { {1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };
-	
-	// テクスチャの読み込み
-	textureIndex_ = 2;
-	textureManager_->LoadTexture(model_.GetModelData().material.textureFilePath, textureIndex_);
 
 	// ImGui用
 	scale_ = transform_.scale;
 	rotate_ = transform_.rotate;
-	translate_ = transform_.translate;
-
-	// 色付けのためのMaterialResourceも作る
-	CreateMaterialResource();
-	MapMaterial();
+	translate_ = transform_.translate;	
 
 	// 変換行列用のResourceとデータの作成関数
 	CreateTransformationMatrixResource();
@@ -60,7 +48,7 @@ void Object3d::MapMaterial() {
 	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
 	std::memset(materialData_, 0, sizeof(Material));
 	// ここで色を弄れる
-	materialData_->color = { model_.GetModelData().material.diffuseColor.x, model_.GetModelData().material.diffuseColor.y, model_.GetModelData().material.diffuseColor.z, 1.0f };
+	materialData_->color = { model_->GetModelData().material.diffuseColor.x, model_->GetModelData().material.diffuseColor.y, model_->GetModelData().material.diffuseColor.z, 1.0f };
 	materialData_->enableLighting = true;
 	materialData_->uvTransform = MakeIdentity4x4();
 }
@@ -113,15 +101,24 @@ void Object3d::Draw() {
 	// RootSignature設定
 	commandList->SetGraphicsRootSignature(modelPSO_->GetRootSignature());
 	commandList->SetPipelineState(modelPSO_->GetPipelineState());	// PSOを設定
-	commandList->IASetVertexBuffers(0, 1, &model_.GetVertexBufferView());		// VertexBufferViewを設定
-	commandList->IASetIndexBuffer(&model_.GetIndexBufferView());				// IndexBufferViewを設定
+	commandList->IASetVertexBuffers(0, 1, &model_->GetVertexBufferView());		// VertexBufferViewを設定
+	commandList->IASetIndexBuffer(&model_->GetIndexBufferView());				// IndexBufferViewを設定
 	// 形状を設定
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());				// マテリアルCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(1, transformationMatrixResource_->GetGPUVirtualAddress());	// wvp用のCBufferの場所を設定
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-	commandList->SetGraphicsRootDescriptorTable(2, textureManager_->GetTextureSrvHandleGPU(textureIndex_ - 1));
+	commandList->SetGraphicsRootDescriptorTable(2, model_->GetTextureHandle());
 	commandList->SetGraphicsRootConstantBufferView(3, directionalLight_->GetResource()->GetGPUVirtualAddress());	// 平行光源を適用
 	// 描画！(DrawCall)
-	commandList->DrawInstanced(UINT(model_.GetModelData().vertices.size()), 1, 0, 0);
+	commandList->DrawInstanced(UINT(model_->GetModelData().vertices.size()), 1, 0, 0);
+}
+
+/*-------------------- モデルを設定 --------------------*/
+void Object3d::SetModel(Model* model){
+	// モデルを設定
+	model_ = model;
+	// 色付けのためのMaterialResourceも作る
+	CreateMaterialResource();
+	MapMaterial();
 }

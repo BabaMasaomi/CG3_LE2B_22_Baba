@@ -6,27 +6,26 @@
 #include <sstream>
 #include <cassert>
 
-void Model::Initialize(DirectXCommon* dxCommon, TextureManager* textureManager) {
+void Model::Initialize(DirectXCommon* dxCommon, TextureManager* textureManager,
+	const std::string& directory, const std::string& filename) {
 	// ポインタを保存しておく
 	dxCommon_ = dxCommon;
 	textureManager_ = textureManager;
 
 	// モデル読み込み
-	LoadObjFile("resources", "axis.obj");
+	LoadObjFile(directory, filename);
 	// VertexResourceとVertexBufferViewを用意
 	CreateVertexResource();
 	CreateVertexBufferView();
 	MapVertexData();
-	// IndexResourceとIndexBufferViewの作成関数
-	CreateIndexResource();
-	CreateIndexBufferView();
-	MapIndexData();
+	// テクスチャの読み込み
+	textureIndex_ = 2;
+	textureManager_->LoadTexture(modelData_.material.textureFilePath, textureIndex_);
 }
 
 /*-------------------- objファイルを読み込む --------------------*/
 void Model::LoadObjFile(const std::string& directryPath, const std::string& filename) {
 	// 1.中で必要となる変数の宣言
-	ModelData modelData;			// 構築するModelData
 	std::vector<Vector4> positions;	// 位置
 	std::vector<Vector3> normals;	// 法線
 	std::vector<Vector2> texcoords;	// テクスチャ座標
@@ -164,41 +163,7 @@ void Model::MapVertexData() {
 	std::memcpy(vertexData, modelData_.vertices.data(), sizeof(VertexData) * modelData_.vertices.size());
 }
 
-/*-------------------- IndexResourceの生成 --------------------*/
-void Model::CreateIndexResource() {
-	indexCount_ = kSubdivision_ * kSubdivision_ * 6;
-	indexResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(uint32_t) * indexCount_);
-}
-
-/*-------------------- IndexBufferViewの作成 --------------------*/
-void Model::CreateIndexBufferView() {
-	// リソースの先頭のアドレスから使う
-	indexBufferView_.BufferLocation = indexResource_->GetGPUVirtualAddress();
-	// 使用するリソースのサイズはインデックスの数に依存
-	indexBufferView_.SizeInBytes = sizeof(uint32_t) * indexCount_;
-	// 1頂点あたりのサイズ
-	indexBufferView_.Format = DXGI_FORMAT_R32_UINT;
-}
-
-/*-------------------- IndexResourceにデータを書き込む --------------------*/
-void Model::MapIndexData() {
-	// 書き込むためのアドレスを取得
-	indexResource_->Map(0, nullptr, reinterpret_cast<void**>(&indexData_));
-	uint32_t i = 0;
-	// 緯度と経度のループ
-	for (uint32_t lat = 0; lat < kSubdivision_; lat++) {
-		for (uint32_t lon = 0; lon < kSubdivision_; lon++) {
-			uint32_t current = lat * (kSubdivision_ + 1) + lon;
-			uint32_t next = current + 1;
-			uint32_t down = current + (kSubdivision_ + 1);
-			uint32_t downNext = down + 1;
-			// データを設定
-			indexData_[i++] = current;
-			indexData_[i++] = down;
-			indexData_[i++] = next;
-			indexData_[i++] = next;
-			indexData_[i++] = down;
-			indexData_[i++] = downNext;
-		}
-	}
+// ゲッターを定義(ヘッダー側だとTextureManagerを含む定義ができない)
+D3D12_GPU_DESCRIPTOR_HANDLE Model::GetTextureHandle() const {
+	return textureManager_->GetTextureSrvHandleGPU(textureIndex_ - 1);
 }
