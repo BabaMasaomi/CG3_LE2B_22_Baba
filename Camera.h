@@ -14,6 +14,7 @@ public:
 	Matrix4x4 GetViewProjectionMatrix() const { return viewProjectionMatrix_; }
 	Vector3& GetRotate() { return rotate_; }
 	Vector3& GetTranslate() { return translate_; }
+	float& GetDistance() { return distance_; }
 	bool& GetDebugMode() { return isDebugMode_; }
 
 	// セッター

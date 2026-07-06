@@ -14,6 +14,7 @@ void Camera::Initialize(float width, float height, Input* input) {
 	transform_.scale = { 1.0f,1.0f,1.0f };
 	transform_.rotate = { 0.3f,0.0f,0.0f };
 	transform_.translate = { 0.0f,4.0f,-10.0f };
+	distance_ = 10.0f;				// カメラとターゲットの距離を初期化(実数値を入れるのは良くないので、後で変更)
 	// デバッグカメラ用の変数を初期化
 	orbitYaw_ = 0.0f;
 	orbitPitch_ = 0.3f;
