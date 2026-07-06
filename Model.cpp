@@ -7,7 +7,7 @@
 #include <cassert>
 
 void Model::Initialize(DirectXCommon* dxCommon, TextureManager* textureManager,
-	const std::string& directory, const std::string& filename) {
+	const std::string& directory, const std::string& filename, uint32_t textureIndex) {
 	// ポインタを保存しておく
 	dxCommon_ = dxCommon;
 	textureManager_ = textureManager;
@@ -17,14 +17,15 @@ void Model::Initialize(DirectXCommon* dxCommon, TextureManager* textureManager,
 	// VertexResourceとVertexBufferViewを用意
 	CreateVertexResource();
 	CreateVertexBufferView();
-	MapVertexData();
-	// テクスチャの読み込み
-	textureIndex_ = 2;
-	textureManager_->LoadTexture(modelData_.material.textureFilePath, textureIndex_);
+	MapVertexData();	
 
 	// 色付けのためのMaterialResourceも作る
 	CreateMaterialResource();
 	MapMaterial();
+
+	// テクスチャの読み込み
+	textureIndex_ = textureIndex;
+	textureManager_->LoadTexture(modelData_.material.textureFilePath, textureIndex_);
 }
 
 /*-------------------- objファイルを読み込む --------------------*/
@@ -145,7 +146,6 @@ MaterialData Model::LoadMaterialTemplateFile(const std::string& directoryPath, c
 void Model::UpdateUVTransform(const Matrix4x4& uvTransform) {
 	materialData_->uvTransform = uvTransform;
 }
-
 
 /*-------------------- VertexResourceの生成 --------------------*/
 void Model::CreateVertexResource() {

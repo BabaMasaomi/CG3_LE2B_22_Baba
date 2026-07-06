@@ -39,7 +39,7 @@ struct ModelData {
 class Model {
 public:
 	void Initialize(DirectXCommon* dxCommon, TextureManager* textureManager,
-		const std::string& directory, const std::string& filename);
+		const std::string& directory, const std::string& filename, uint32_t textureIndex);
 
 	// objファイルを読み込む
 	void LoadObjFile(const std::string& directryPath, const std::string& filename);

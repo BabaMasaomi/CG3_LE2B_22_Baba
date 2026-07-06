@@ -7,13 +7,13 @@
 // 前方宣言
 class DirectXCommon;
 class ModelPSO;
-class Model;
 class DirectionalLight;
+class Model;
 class Camera;
 
-class Object3d {
+class Object3D {
 public:
-	~Object3d();
+	~Object3D();
 
 	void Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, DirectionalLight* directionalLight);
 	void Update(const Camera& camera);

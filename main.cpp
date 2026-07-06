@@ -11,7 +11,7 @@
 #include "Sprite.h"
 #include "ModelPSO.h"
 #include "Model.h"
-#include "Object3d.h"
+#include "Object3D.h"
 #include "Sound.h"
 // Debug用のあれこれを使える様にする
 #include <dbghelp.h>
@@ -120,10 +120,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 
 	// モデルの初期化
 	Model model;
-	model.Initialize(&dxCommon, &textureManager, "resources", "axis.obj");
+	model.Initialize(&dxCommon, &textureManager, "resources", "axis.obj", 2);
 
-	// Object3dの初期化
-	Object3d object3d;
+	// Object3Dの初期化
+	Object3D object3d;
 	object3d.Initialize(&dxCommon, &modelPSO, &directionalLight);
 
 	object3d.SetModel(&model);
