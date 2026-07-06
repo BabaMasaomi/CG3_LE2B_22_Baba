@@ -21,6 +21,10 @@ void Model::Initialize(DirectXCommon* dxCommon, TextureManager* textureManager,
 	// テクスチャの読み込み
 	textureIndex_ = 2;
 	textureManager_->LoadTexture(modelData_.material.textureFilePath, textureIndex_);
+
+	// 色付けのためのMaterialResourceも作る
+	CreateMaterialResource();
+	MapMaterial();
 }
 
 /*-------------------- objファイルを読み込む --------------------*/
@@ -137,6 +141,11 @@ MaterialData Model::LoadMaterialTemplateFile(const std::string& directoryPath, c
 	return materialData;
 }
 
+/*-------------------- UV変換行列の更新 --------------------*/
+void Model::UpdateUVTransform(const Matrix4x4& uvTransform) {
+	materialData_->uvTransform = uvTransform;
+}
+
 
 /*-------------------- VertexResourceの生成 --------------------*/
 void Model::CreateVertexResource() {
@@ -161,6 +170,22 @@ void Model::MapVertexData() {
 	vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
 	// 頂点データをリソースにコピー
 	std::memcpy(vertexData, modelData_.vertices.data(), sizeof(VertexData) * modelData_.vertices.size());
+}
+
+/*-------------------- MaterialResourceの生成 --------------------*/
+void Model::CreateMaterialResource() {
+	materialResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(Material));
+}
+
+/*-------------------- MaterialResourceにデータを書き込む --------------------*/
+void Model::MapMaterial() {
+	// Mapする
+	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
+	std::memset(materialData_, 0, sizeof(Material));
+	// ここで色を弄れる
+	materialData_->color = { modelData_.material.diffuseColor.x, modelData_.material.diffuseColor.y, modelData_.material.diffuseColor.z, 1.0f };
+	materialData_->enableLighting = true;
+	materialData_->uvTransform = MakeIdentity4x4();
 }
 
 // ゲッターを定義(ヘッダー側だとTextureManagerを含む定義ができない)

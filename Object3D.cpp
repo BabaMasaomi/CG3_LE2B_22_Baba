@@ -1,7 +1,7 @@
 #include "Object3d.h"
 #include "DirectXCommon.h"
 #include "ModelPSO.h"
-#include "TextureManager.h"
+#include "Model.h"
 #include "DirectionalLight.h"
 #include "Camera.h"
 #include "Utility.h"
@@ -30,27 +30,11 @@ void Object3d::Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, Direction
 	// ImGui用
 	scale_ = transform_.scale;
 	rotate_ = transform_.rotate;
-	translate_ = transform_.translate;	
+	translate_ = transform_.translate;
 
 	// 変換行列用のResourceとデータの作成関数
 	CreateTransformationMatrixResource();
 	MapTransformationMatrix();
-}
-
-/*-------------------- MaterialResourceの生成 --------------------*/
-void Object3d::CreateMaterialResource() {
-	materialResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(Material));
-}
-
-/*-------------------- MaterialResourceにデータを書き込む --------------------*/
-void Object3d::MapMaterial() {
-	// Mapする
-	materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
-	std::memset(materialData_, 0, sizeof(Material));
-	// ここで色を弄れる
-	materialData_->color = { model_->GetModelData().material.diffuseColor.x, model_->GetModelData().material.diffuseColor.y, model_->GetModelData().material.diffuseColor.z, 1.0f };
-	materialData_->enableLighting = true;
-	materialData_->uvTransform = MakeIdentity4x4();
 }
 
 /*-------------------- 変換行列用のResourceの生成 --------------------*/
@@ -74,7 +58,7 @@ void Object3d::Update(const Camera& camera) {
 	Matrix4x4 uvTransformMatrix = MakeScaleMatrix(uvTransform_.scale);
 	uvTransformMatrix = Multiply(uvTransformMatrix, MakeRotateZMatrix(uvTransform_.rotate.z));
 	uvTransformMatrix = Multiply(uvTransformMatrix, MakeTranslateMatrix(uvTransform_.translate));
-	materialData_->uvTransform = uvTransformMatrix;
+	model_->UpdateUVTransform(uvTransformMatrix);
 
 	// ImGuiの変更を反映する
 	transform_.scale = scale_;
@@ -105,7 +89,7 @@ void Object3d::Draw() {
 	commandList->IASetIndexBuffer(&model_->GetIndexBufferView());				// IndexBufferViewを設定
 	// 形状を設定
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());				// マテリアルCBufferの場所を設定
+	commandList->SetGraphicsRootConstantBufferView(0, model_->GetMaterialResource()->GetGPUVirtualAddress());	// マテリアルCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(1, transformationMatrixResource_->GetGPUVirtualAddress());	// wvp用のCBufferの場所を設定
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
 	commandList->SetGraphicsRootDescriptorTable(2, model_->GetTextureHandle());
@@ -115,10 +99,7 @@ void Object3d::Draw() {
 }
 
 /*-------------------- モデルを設定 --------------------*/
-void Object3d::SetModel(Model* model){
+void Object3d::SetModel(Model* model) {
 	// モデルを設定
 	model_ = model;
-	// 色付けのためのMaterialResourceも作る
-	CreateMaterialResource();
-	MapMaterial();
 }

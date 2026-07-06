@@ -16,6 +16,14 @@ struct VertexData {
 	Vector3 normal;
 };
 
+// マテリアルデータの構造体
+struct Material {
+	Vector4 color;
+	int32_t enableLighting;
+	float padding[3];
+	Matrix4x4 uvTransform;
+};
+
 struct MaterialData {
 	std::string textureFilePath;
 	Vector3 diffuseColor;
@@ -39,18 +47,26 @@ public:
 	// mtlファイルを読み込む
 	MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 
+	// UV変換行列の更新
+	void UpdateUVTransform(const Matrix4x4& uvTransform);
+
 	// ゲッター
 	D3D12_GPU_DESCRIPTOR_HANDLE GetTextureHandle() const;
 	const ModelData& GetModelData() const { return modelData_; }
 	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const { return vertexBufferView_; }
 	const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() const { return indexBufferView_; }
 	uint32_t GetIndexCount() const { return indexCount_; }
+	ID3D12Resource* GetMaterialResource() const { return materialResource_.Get(); }
 
 private:
 	// VertexResourceとVertexBufferViewの作成関数
 	void CreateVertexResource();
 	void CreateVertexBufferView();
 	void MapVertexData();
+
+	// マテリアル用のResourceとデータの作成関数
+	void CreateMaterialResource();
+	void MapMaterial();
 
 	// ポインタを用意
 	DirectXCommon* dxCommon_ = nullptr;
@@ -73,7 +89,8 @@ private:
 	uint32_t* indexData_ = nullptr;
 	uint32_t indexCount_ = 0;
 
-	// 分割数
-	static const uint32_t kSubdivision_ = 16;
-	const uint32_t vertexCount_ = (kSubdivision_ + 1) * (kSubdivision_ + 1);
+	// マテリアルリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_ = nullptr;
+	// マテリアルデータ
+	Material* materialData_ = nullptr;
 };
