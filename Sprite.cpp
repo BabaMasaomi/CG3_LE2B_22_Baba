@@ -23,9 +23,9 @@ void Sprite::Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, TextureMana
 	// CPUで動かす用のTransformを作る
 	transform_ = { {1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };
 
-	// テクスチャの読み込み(uvChecker、Index = 1 で固定しておく)
+	// テクスチャの読み込み
 	textureIndex_ = 1;
-	textureManager_->LoadTexture("resources/uvChecker.png", textureIndex_);
+	textureManager_->LoadTexture("resources/uvChecker.png");
 
 	// VertexResourceとVertexBufferViewを用意
 	CreateVertexResource();

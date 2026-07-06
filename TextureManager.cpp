@@ -16,8 +16,14 @@ void TextureManager::Initialize(DirectXCommon* dxCommon) {
 }
 
 /*-------------------- 1.Textureデータを読み込む --------------------*/	// mainなどでtextureManager.LoadTexture("resources/uvChecker.png", 1);として呼び出す
-void TextureManager::LoadTexture(const std::string& filePath, uint32_t index) {
-	assert(index > 0);
+uint32_t TextureManager::LoadTexture(const std::string& filePath) {
+	// 読み込み済みならその番号を返す
+	auto it = textureMap_.find(filePath);
+	if (it != textureMap_.end()) {
+		return it->second;
+	}	
+	// 0.テクスチャインデックスを進める
+	uint32_t index = nextTextureIndex_++;
 	// 1.テクスチャファイルを読み込んでプログラムで扱えるようにする
 	DirectX::ScratchImage image{};
 	std::wstring filePathW = ConvertString(filePath);
@@ -39,8 +45,13 @@ void TextureManager::LoadTexture(const std::string& filePath, uint32_t index) {
 	// 5.転送
 	intermediateResources_[index-1] = UploadTextureData(textureResources_[index-1].Get(), mipImages, dxCommon_->GetDevice(), dxCommon_->GetCommandList());
 
-	// 6. SRV生成
+	// 6.SRV生成
 	CreateSRV(textureResources_[index-1].Get(), index);
+
+	// 7.番号を返す
+	// 読み込みに成功したので番号を登録
+	textureMap_[filePath] = index;
+	return index;
 }
 
 /*-------------------- 2.DirectX12のTextureResourceを作る --------------------*/

@@ -10,12 +10,12 @@ class TextureManager {
 public:
 	~TextureManager();
 
-	static const uint32_t kTextureCount = 2;
+	static const uint32_t kTextureCount = 256;
 
 	void Initialize(DirectXCommon* dxCommon);
 
 	// 1.Textureデータを読み込む(後でuint32_tを返す設計にしよう)
-	void LoadTexture(const std::string& filePath, uint32_t index);
+	uint32_t LoadTexture(const std::string& filePath);
 
 	// 2.DirectX12のTextureResourceを作る
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata);
@@ -31,7 +31,7 @@ public:
 
 	// ゲッター
 	D3D12_GPU_DESCRIPTOR_HANDLE GetTextureSrvHandleGPU(uint32_t index)const { return textureSrvHandleGPU_[index]; }
-
+	uint32_t GetNextIndex() { return nextTextureIndex_; }
 private:
 	DirectXCommon* dxCommon_ = nullptr;
 
@@ -44,4 +44,9 @@ private:
 
 	// SRVを作成するDescriptorHeapの場所を決める
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU_[kTextureCount]{};
+
+	// 次のテクスチャ番号を記録
+	uint32_t nextTextureIndex_ = 1;
+	// 読み込み済みのテクスチャのファイルパスとインデックスを記録するマップ
+	std::unordered_map<std::string, uint32_t> textureMap_;
 };
