@@ -12,7 +12,8 @@ class ModelManager {
 public:
 	void Initialize(DirectXCommon* dxCommon, TextureManager* textureManager);
 
-	//void LoadModel();
+	// モデル読み込み
+	Model* LoadModel(const std::string& directory, const std::string& filename);
 
 private:
 	// ポインタを用意しておく
