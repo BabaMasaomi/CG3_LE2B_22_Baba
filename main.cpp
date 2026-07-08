@@ -97,7 +97,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	TextureManager textureManager;
 	textureManager.Initialize(&dxCommon);
 
-	// モデルマネージャーの初期化
+	// ModelManagerの初期化
 	ModelManager modelManager;
 	modelManager.Initialize(&dxCommon, &textureManager);
 
