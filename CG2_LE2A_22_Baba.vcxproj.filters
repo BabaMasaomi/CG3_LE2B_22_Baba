@@ -90,57 +90,57 @@
     <ClCompile Include="externals\imgui\imgui_widgets.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
+    <ClCompile Include="Engine\Graphics\Camera.cpp">
       <Filter>Camera</Filter>
     </ClCompile>
-    <ClCompile Include="DirectionalLight.cpp">
+    <ClCompile Include="Engine\Graphics\DirectionalLight.cpp">
       <Filter>DirectionalLight</Filter>
     </ClCompile>
-    <ClCompile Include="DirectXCommon.cpp">
+    <ClCompile Include="Engine\Base\DirectXCommon.cpp">
       <Filter>DirectXCommon</Filter>
     </ClCompile>
-    <ClCompile Include="DXCManager.cpp">
+    <ClCompile Include="Engine\Base\DXCManager.cpp">
       <Filter>DXCManager</Filter>
     </ClCompile>
-    <ClCompile Include="ImGuiManager.cpp">
+    <ClCompile Include="Engine\Debug\ImGuiManager.cpp">
       <Filter>ImGuiManager</Filter>
     </ClCompile>
-    <ClCompile Include="Logger.cpp">
+    <ClCompile Include="Engine\Utility\Logger.cpp">
       <Filter>Logger</Filter>
     </ClCompile>
-    <ClCompile Include="Sprite.cpp">
+    <ClCompile Include="Engine\Graphics\Sprite.cpp">
       <Filter>Sprite</Filter>
     </ClCompile>
-    <ClCompile Include="TextureManager.cpp">
+    <ClCompile Include="Engine\Resource\TextureManager.cpp">
       <Filter>TextureManager</Filter>
     </ClCompile>
-    <ClCompile Include="WinApp.cpp">
+    <ClCompile Include="Engine\Base\WinApp.cpp">
       <Filter>WinApp</Filter>
     </ClCompile>
-    <ClCompile Include="Utility.cpp">
+    <ClCompile Include="Engine\Math\Utility.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
-    <ClCompile Include="Object3D.cpp">
+    <ClCompile Include="Engine\Graphics\Object3D.cpp">
       <Filter>Object3D</Filter>
     </ClCompile>
-    <ClCompile Include="Model.cpp">
+    <ClCompile Include="Engine\Resource\Model.cpp">
       <Filter>Model</Filter>
     </ClCompile>
-    <ClCompile Include="ModelPSO.cpp">
+    <ClCompile Include="Engine\Graphics\ModelPSO.cpp">
       <Filter>ModelPSO</Filter>
     </ClCompile>
-    <ClCompile Include="Sound.cpp">
+    <ClCompile Include="Engine\Audio\Sound.cpp">
       <Filter>Sound</Filter>
     </ClCompile>
-    <ClCompile Include="Input.cpp">
+    <ClCompile Include="Engine\Input\Input.cpp">
       <Filter>Input</Filter>
     </ClCompile>
-    <ClCompile Include="ModelManager.cpp">
+    <ClCompile Include="Engine\Resource\ModelManager.cpp">
       <Filter>ModelManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="struct.h">
+    <ClInclude Include="Engine\Math\struct.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -167,52 +167,52 @@
     <ClInclude Include="externals\imgui\imstb_truetype.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
+    <ClInclude Include="Engine\Graphics\Camera.h">
       <Filter>Camera</Filter>
     </ClInclude>
-    <ClInclude Include="DirectionalLight.h">
+    <ClInclude Include="Engine\Graphics\DirectionalLight.h">
       <Filter>DirectionalLight</Filter>
     </ClInclude>
-    <ClInclude Include="DirectXCommon.h">
+    <ClInclude Include="Engine\Base\DirectXCommon.h">
       <Filter>DirectXCommon</Filter>
     </ClInclude>
-    <ClInclude Include="DXCManager.h">
+    <ClInclude Include="Engine\Base\DXCManager.h">
       <Filter>DXCManager</Filter>
     </ClInclude>
-    <ClInclude Include="ImGuiManager.h">
+    <ClInclude Include="Engine\Debug\ImGuiManager.h">
       <Filter>ImGuiManager</Filter>
     </ClInclude>
-    <ClInclude Include="Logger.h">
+    <ClInclude Include="Engine\Utility\Logger.h">
       <Filter>Logger</Filter>
     </ClInclude>
-    <ClInclude Include="Sprite.h">
+    <ClInclude Include="Engine\Graphics\Sprite.h">
       <Filter>Sprite</Filter>
     </ClInclude>
-    <ClInclude Include="TextureManager.h">
+    <ClInclude Include="Engine\Resource\TextureManager.h">
       <Filter>TextureManager</Filter>
     </ClInclude>
-    <ClInclude Include="WinApp.h">
+    <ClInclude Include="Engine\Base\WinApp.h">
       <Filter>WinApp</Filter>
     </ClInclude>
-    <ClInclude Include="Utility.h">
+    <ClInclude Include="Engine\Math\Utility.h">
       <Filter>Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Object3D.h">
+    <ClInclude Include="Engine\Graphics\Object3D.h">
       <Filter>Object3D</Filter>
     </ClInclude>
-    <ClInclude Include="Model.h">
+    <ClInclude Include="Engine\Resource\Model.h">
       <Filter>Model</Filter>
     </ClInclude>
-    <ClInclude Include="ModelPSO.h">
+    <ClInclude Include="Engine\Graphics\ModelPSO.h">
       <Filter>ModelPSO</Filter>
     </ClInclude>
-    <ClInclude Include="Sound.h">
+    <ClInclude Include="Engine\Audio\Sound.h">
       <Filter>Sound</Filter>
     </ClInclude>
-    <ClInclude Include="Input.h">
+    <ClInclude Include="Engine\Input\Input.h">
       <Filter>Input</Filter>
     </ClInclude>
-    <ClInclude Include="ModelManager.h">
+    <ClInclude Include="Engine\Resource\ModelManager.h">
       <Filter>ModelManager</Filter>
     </ClInclude>
   </ItemGroup>

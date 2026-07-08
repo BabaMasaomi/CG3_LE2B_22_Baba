@@ -54,6 +54,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Engine/Audio;$(ProjectDir)Engine/Base;$(ProjectDir)Engine/Debug;$(ProjectDir)Engine/Graphics;$(ProjectDir)Engine/Input;$(ProjectDir)Engine/Math;$(ProjectDir)Engine/Resource;$(ProjectDir)Engine/Utility;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -80,6 +81,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Engine/Audio;$(ProjectDir)Engine/Base;$(ProjectDir)Engine/Debug;$(ProjectDir)Engine/Graphics;$(ProjectDir)Engine/Input;$(ProjectDir)Engine/Math;$(ProjectDir)Engine/Resource;$(ProjectDir)Engine/Utility;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -94,10 +96,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="DirectionalLight.cpp" />
-    <ClCompile Include="DirectXCommon.cpp" />
-    <ClCompile Include="DXCManager.cpp" />
+    <ClCompile Include="Engine\Graphics\Camera.cpp" />
+    <ClCompile Include="Engine\Graphics\DirectionalLight.cpp" />
+    <ClCompile Include="Engine\Base\DirectXCommon.cpp" />
+    <ClCompile Include="Engine\Base\DXCManager.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -119,25 +121,25 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="externals\imgui\imgui_widgets.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="ImGuiManager.cpp" />
-    <ClCompile Include="Input.cpp" />
-    <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="Engine\Debug\ImGuiManager.cpp" />
+    <ClCompile Include="Engine\Input\Input.cpp" />
+    <ClCompile Include="Engine\Utility\Logger.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Model.cpp" />
-    <ClCompile Include="ModelManager.cpp" />
-    <ClCompile Include="ModelPSO.cpp" />
-    <ClCompile Include="Object3D.cpp" />
-    <ClCompile Include="Sound.cpp" />
-    <ClCompile Include="Sprite.cpp" />
-    <ClCompile Include="TextureManager.cpp" />
-    <ClCompile Include="Utility.cpp" />
-    <ClCompile Include="WinApp.cpp" />
+    <ClCompile Include="Engine\Resource\Model.cpp" />
+    <ClCompile Include="Engine\Resource\ModelManager.cpp" />
+    <ClCompile Include="Engine\Graphics\ModelPSO.cpp" />
+    <ClCompile Include="Engine\Graphics\Object3D.cpp" />
+    <ClCompile Include="Engine\Audio\Sound.cpp" />
+    <ClCompile Include="Engine\Graphics\Sprite.cpp" />
+    <ClCompile Include="Engine\Resource\TextureManager.cpp" />
+    <ClCompile Include="Engine\Math\Utility.cpp" />
+    <ClCompile Include="Engine\Base\WinApp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="DirectionalLight.h" />
-    <ClInclude Include="DirectXCommon.h" />
-    <ClInclude Include="DXCManager.h" />
+    <ClInclude Include="Engine\Graphics\Camera.h" />
+    <ClInclude Include="Engine\Graphics\DirectionalLight.h" />
+    <ClInclude Include="Engine\Base\DirectXCommon.h" />
+    <ClInclude Include="Engine\Base\DXCManager.h" />
     <ClInclude Include="externals\imgui\imconfig.h" />
     <ClInclude Include="externals\imgui\imgui.h" />
     <ClInclude Include="externals\imgui\imgui_impl_dx12.h" />
@@ -146,19 +148,19 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\imgui\imstb_rectpack.h" />
     <ClInclude Include="externals\imgui\imstb_textedit.h" />
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
-    <ClInclude Include="ImGuiManager.h" />
-    <ClInclude Include="Input.h" />
-    <ClInclude Include="Logger.h" />
-    <ClInclude Include="Model.h" />
-    <ClInclude Include="ModelManager.h" />
-    <ClInclude Include="ModelPSO.h" />
-    <ClInclude Include="Object3D.h" />
-    <ClInclude Include="Sound.h" />
-    <ClInclude Include="Sprite.h" />
-    <ClInclude Include="struct.h" />
-    <ClInclude Include="TextureManager.h" />
-    <ClInclude Include="Utility.h" />
-    <ClInclude Include="WinApp.h" />
+    <ClInclude Include="Engine\Debug\ImGuiManager.h" />
+    <ClInclude Include="Engine\Input\Input.h" />
+    <ClInclude Include="Engine\Utility\Logger.h" />
+    <ClInclude Include="Engine\Resource\Model.h" />
+    <ClInclude Include="Engine\Resource\ModelManager.h" />
+    <ClInclude Include="Engine\Graphics\ModelPSO.h" />
+    <ClInclude Include="Engine\Graphics\Object3D.h" />
+    <ClInclude Include="Engine\Audio\Sound.h" />
+    <ClInclude Include="Engine\Graphics\Sprite.h" />
+    <ClInclude Include="Engine\Math\struct.h" />
+    <ClInclude Include="Engine\Resource\TextureManager.h" />
+    <ClInclude Include="Engine\Math\Utility.h" />
+    <ClInclude Include="Engine\Base\WinApp.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.VS.hlsl">
