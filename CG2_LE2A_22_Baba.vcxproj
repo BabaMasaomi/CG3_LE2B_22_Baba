@@ -124,6 +124,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ModelManager.cpp" />
     <ClCompile Include="ModelPSO.cpp" />
     <ClCompile Include="Object3D.cpp" />
     <ClCompile Include="Sound.cpp" />
@@ -149,6 +150,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Input.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="ModelManager.h" />
     <ClInclude Include="ModelPSO.h" />
     <ClInclude Include="Object3D.h" />
     <ClInclude Include="Sound.h" />

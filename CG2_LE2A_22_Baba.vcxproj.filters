@@ -61,6 +61,9 @@
     <Filter Include="Input">
       <UniqueIdentifier>{ac4f065c-e12d-4e24-8bc8-68e8196de0be}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ModelManager">
+      <UniqueIdentifier>{02941f61-ab5f-4f08-8e8b-e71c7f8d3711}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -131,6 +134,9 @@
     </ClCompile>
     <ClCompile Include="Input.cpp">
       <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelManager.cpp">
+      <Filter>ModelManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -205,6 +211,9 @@
     </ClInclude>
     <ClInclude Include="Input.h">
       <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelManager.h">
+      <Filter>ModelManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

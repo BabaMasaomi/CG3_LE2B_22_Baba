@@ -6,6 +6,7 @@
 #include "DXCManager.h"
 #include "Input.h"
 #include "TextureManager.h"
+#include "ModelManager.h"
 #include "Camera.h"
 #include "DirectionalLight.h"
 #include "Sprite.h"
@@ -95,6 +96,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	// TextureManagerの初期化
 	TextureManager textureManager;
 	textureManager.Initialize(&dxCommon);
+
+	// モデルマネージャーの初期化
+	ModelManager modelManager;
+	modelManager.Initialize(&dxCommon, &textureManager);
 
 	dxCommon.ExecuteCommandList();	// コマンドを実行
 	dxCommon.WaitForGPU();			// GPUを待機
