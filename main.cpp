@@ -123,22 +123,14 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	ModelPSO modelPSO;
 	modelPSO.Initialize(&dxCommon, &dxcManager);
 
-	uint32_t index = textureManager.GetNextIndex();
-
 	// Spriteの初期化(デバッグ用Spriteとして先頭で初期化し、uvCheckerを Index = 1 で固定しておく)
 	Sprite sprite;
 	sprite.Initialize(&dxCommon, &modelPSO, &textureManager, &winApp);
 
-	index = textureManager.GetNextIndex();
-
-	//// モデルの初期化
-	//Model model;
-	//model.Initialize(&dxCommon, &textureManager, "resources", "axis.obj");
-
 	// Object3Dの初期化
 	Object3D object3d;
 	object3d.Initialize(&dxCommon, &modelPSO, &directionalLight);
-
+	// モデルの読み込み
 	object3d.SetModel(modelManager.LoadModel("resources", "axis.obj"));
 
 	// Soundの初期化
