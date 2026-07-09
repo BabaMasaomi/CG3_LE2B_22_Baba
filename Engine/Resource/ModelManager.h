@@ -3,38 +3,40 @@
 #include <string>
 #include <unordered_map>
 
-// 前方宣言
-class DirectXCommon;
-class TextureManager;
-class Model;
+namespace Engine {
 
-class ModelManager {
-public:
-	/*==================== メンバ関数の宣言 ====================*/
-	/// <summary>
-	/// ModelManagerの初期化
-	/// </summary>
-	/// <param name="dxCommon">DirectXCommonのインスタンス</param>
-	/// <param name="textureManager">TextureManagerのインスタンス</param>
-	void Initialize(DirectXCommon* dxCommon, TextureManager* textureManager);
+	// 前方宣言
+	class DirectXCommon;
+	class TextureManager;
+	class Model;
 
-	/// <summary>
-	/// モデルを読み込む
-	/// </summary>
-	/// <param name="directory">ファイルディレクトリ</param>
-	/// <param name="filename">ファイル名</param>
-	/// <returns>読み込まれたモデルのポインタ</returns>
-	Model* LoadModel(const std::string& directory, const std::string& filename);
+	class ModelManager {
+	public:
+		/*==================== メンバ関数の宣言 ====================*/
+		/// <summary>
+		/// ModelManagerの初期化
+		/// </summary>
+		/// <param name="dxCommon">DirectXCommonのインスタンス</param>
+		/// <param name="textureManager">TextureManagerのインスタンス</param>
+		void Initialize(DirectXCommon* dxCommon, TextureManager* textureManager);
 
-private:
-	/*==================== メンバ変数 ====================*/
-	// DirectXCommonのインスタンス
-	DirectXCommon* dxCommon_ = nullptr;
-	// TextureManagerのインスタンス
-	TextureManager* textureManager_ = nullptr;
+		/// <summary>
+		/// モデルを読み込む
+		/// </summary>
+		/// <param name="directory">ファイルディレクトリ</param>
+		/// <param name="filename">ファイル名</param>
+		/// <returns>読み込まれたモデルのポインタ</returns>
+		Model* LoadModel(const std::string& directory, const std::string& filename);
 
-	// モデルのマップ
-	std::unordered_map<std::string, std::unique_ptr<Model>> models_;
+	private:
+		/*==================== メンバ変数 ====================*/
+		// DirectXCommonのインスタンス
+		DirectXCommon* dxCommon_ = nullptr;
+		// TextureManagerのインスタンス
+		TextureManager* textureManager_ = nullptr;
 
-};
+		// モデルのマップ
+		std::unordered_map<std::string, std::unique_ptr<Model>> models_;
 
+	};
+}

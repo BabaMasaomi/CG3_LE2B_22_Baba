@@ -3,50 +3,53 @@
 #include <wrl.h>
 #include"struct.h"
 
-struct DirectionalLightData {
-	Vector4 color;      // ライトの色
-	Vector3 direction;  // ライトの向き
-	float intensity;    // 輝度
-};
+namespace Engine {
 
-class DirectXCommon;
+	struct DirectionalLightData {
+		Vector4 color;      // ライトの色
+		Vector3 direction;  // ライトの向き
+		float intensity;    // 輝度
+	};
 
-class DirectionalLight {
-public:
-	/*==================== メンバ関数とデストラクタの宣言 ====================*/
-	// デストラクタ
-	~DirectionalLight();
+	class DirectXCommon;
 
-	/// <summary>
-	/// DirectionalLightの初期化
-	/// </summary>
-	/// <param name="dxCommon">DirectXCommonのインスタンス</param>
-	void Initialize(DirectXCommon* dxCommon);
-	/// <summary>
-	/// DirectionalLightの更新
-	/// </summary>
-	void Update();
+	class DirectionalLight {
+	public:
+		/*==================== メンバ関数とデストラクタの宣言 ====================*/
+		// デストラクタ
+		~DirectionalLight();
 
-	/*==================== アクセッサ ====================*/
-	// ゲッター
-	ID3D12Resource* GetResource() const { return resource_.Get(); }
-	Vector4& GetColor() { return color_; }
-	Vector3& GetDirection() { return direction_; }
-	float& GetIntensity() { return intensity_; }
+		/// <summary>
+		/// DirectionalLightの初期化
+		/// </summary>
+		/// <param name="dxCommon">DirectXCommonのインスタンス</param>
+		void Initialize(DirectXCommon* dxCommon);
+		/// <summary>
+		/// DirectionalLightの更新
+		/// </summary>
+		void Update();
 
-private:
-	/*==================== メンバ変数 ====================*/
-	// DirectXCommonのインスタンス
-	DirectXCommon* dxCommon_ = nullptr;
+		/*==================== アクセッサ ====================*/
+		// ゲッター
+		ID3D12Resource* GetResource() const { return resource_.Get(); }
+		Vector4& GetColor() { return color_; }
+		Vector3& GetDirection() { return direction_; }
+		float& GetIntensity() { return intensity_; }
 
-	// DirectionalLightDataのリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> resource_ = nullptr;
-	// DirectionalLightDataのポインタ
-	DirectionalLightData* data_ = nullptr;
+	private:
+		/*==================== メンバ変数 ====================*/
+		// DirectXCommonのインスタンス
+		DirectXCommon* dxCommon_ = nullptr;
 
-	// ImGuiで弄る用
-	Vector4 color_ = { 1.0f,1.0f,1.0f,1.0f };
-	Vector3 direction_ = { 0.0f,-1.0f,0.0f };
-	float intensity_ = 1.0f;
+		// DirectionalLightDataのリソース
+		Microsoft::WRL::ComPtr<ID3D12Resource> resource_ = nullptr;
+		// DirectionalLightDataのポインタ
+		DirectionalLightData* data_ = nullptr;
 
-};
+		// ImGuiで弄る用
+		Vector4 color_ = { 1.0f,1.0f,1.0f,1.0f };
+		Vector3 direction_ = { 0.0f,-1.0f,0.0f };
+		float intensity_ = 1.0f;
+
+	};
+}

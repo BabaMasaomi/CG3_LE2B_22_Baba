@@ -26,6 +26,8 @@
 // libのリンク
 #pragma comment(lib, "Dbghelp.lib")
 
+using namespace Engine;
+
 struct D3D12ResourceLeakChecker {
 	~D3D12ResourceLeakChecker() {
 		// リソースリークチェック

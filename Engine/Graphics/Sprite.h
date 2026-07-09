@@ -4,147 +4,150 @@
 #include"struct.h"
 #include <wrl.h>
 
-// 前方宣言
-class DirectXCommon;
-class ModelPSO;
-class TextureManager;
-class WinApp;
+namespace Engine {
 
-class Sprite {
-public:
-	/*==================== メンバ関数とデストラクタの宣言 ====================*/
-	// デストラクタ
-	~Sprite();
+	// 前方宣言
+	class DirectXCommon;
+	class ModelPSO;
+	class TextureManager;
+	class WinApp;
 
-	/// <summary>
-	/// Spriteの初期化
-	/// </summary>
-	/// <param name="dxCommon">DirectXCommonのインスタンス</param>
-	/// <param name="modelPSO">ModelPSOのインスタンス</param>
-	/// <param name="textureManager">TextureManagerのインスタンス</param>
-	/// <param name="winApp">WinAppのインスタンス</param>
-	void Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, TextureManager* textureManager, WinApp* winApp);
-	/// <summary>
-	/// Spriteの更新
-	/// </summary>
-	void Update();
-	/// <summary>
-	/// Spriteの描画
-	/// </summary>
-	void Draw();
+	class Sprite {
+	public:
+		/*==================== メンバ関数とデストラクタの宣言 ====================*/
+		// デストラクタ
+		~Sprite();
 
-	/*==================== アクセッサ ====================*/
-	// ゲッター
-	Vector3& GetUVTransformScale() { return uvTransform_.scale; }
-	Vector3& GetUVTransformRotate() { return uvTransform_.rotate; }
-	Vector3& GetUVTransformTranslate() { return uvTransform_.translate; }
+		/// <summary>
+		/// Spriteの初期化
+		/// </summary>
+		/// <param name="dxCommon">DirectXCommonのインスタンス</param>
+		/// <param name="modelPSO">ModelPSOのインスタンス</param>
+		/// <param name="textureManager">TextureManagerのインスタンス</param>
+		/// <param name="winApp">WinAppのインスタンス</param>
+		void Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, TextureManager* textureManager, WinApp* winApp);
+		/// <summary>
+		/// Spriteの更新
+		/// </summary>
+		void Update();
+		/// <summary>
+		/// Spriteの描画
+		/// </summary>
+		void Draw();
 
-private:
-	/*==================== メンバ関数の宣言 ====================*/
-	// VertexResourceとVertexBufferViewの作成関数
-	/// <summary>
-	/// 頂点リソースを作成する
-	/// </summary>
-	void CreateVertexResource();
-	/// <summary>
-	/// 頂点バッファビューを作成する
-	/// </summary>
-	void CreateVertexBufferView();
-	/// <summary>
-	/// 頂点データをマップする
-	/// </summary>
-	void MapVertexData();
+		/*==================== アクセッサ ====================*/
+		// ゲッター
+		Vector3& GetUVTransformScale() { return uvTransform_.scale; }
+		Vector3& GetUVTransformRotate() { return uvTransform_.rotate; }
+		Vector3& GetUVTransformTranslate() { return uvTransform_.translate; }
 
-	// IndexResourceとIndexBufferViewの作成関数
-	/// <summary>
-	/// Indexリソースを作成する
-	/// </summary>
-	void CreateIndexResource();
-	/// <summary>
-	/// Indexバッファビューを作成する
-	/// </summary>
-	void CreateIndexBufferView();
-	/// <summary>
-	/// Indexデータをマップする
-	/// </summary>
-	void MapIndexData();
+	private:
+		/*==================== メンバ関数の宣言 ====================*/
+		// VertexResourceとVertexBufferViewの作成関数
+		/// <summary>
+		/// 頂点リソースを作成する
+		/// </summary>
+		void CreateVertexResource();
+		/// <summary>
+		/// 頂点バッファビューを作成する
+		/// </summary>
+		void CreateVertexBufferView();
+		/// <summary>
+		/// 頂点データをマップする
+		/// </summary>
+		void MapVertexData();
 
-	// マテリアル用のResourceとデータの作成関数
-	/// <summary>
-	/// マテリアルリソースを作成する
-	/// </summary>
-	void CreateMaterialResource();
-	/// <summary>
-	/// マテリアルデータをマップする
-	/// </summary>
-	void MapMaterial();
+		// IndexResourceとIndexBufferViewの作成関数
+		/// <summary>
+		/// Indexリソースを作成する
+		/// </summary>
+		void CreateIndexResource();
+		/// <summary>
+		/// Indexバッファビューを作成する
+		/// </summary>
+		void CreateIndexBufferView();
+		/// <summary>
+		/// Indexデータをマップする
+		/// </summary>
+		void MapIndexData();
 
-	// 変換行列用のResourceとデータの作成関数
-	/// <summary>
-	/// 変換行列用のリソースを作成する
-	/// </summary>
-	void CreateTransformationMatrixResource();
-	/// <summary>
-	/// 変換行列データをマップする
-	/// </summary>
-	void MapTransformationMatrix();
+		// マテリアル用のResourceとデータの作成関数
+		/// <summary>
+		/// マテリアルリソースを作成する
+		/// </summary>
+		void CreateMaterialResource();
+		/// <summary>
+		/// マテリアルデータをマップする
+		/// </summary>
+		void MapMaterial();
 
-	/*==================== メンバ変数 ====================*/
-	// DirectXCommonのインスタンス
-	DirectXCommon* dxCommon_ = nullptr;
-	// ModelPSOのインスタンス
-	ModelPSO* modelPSO_ = nullptr;
-	// TextureManagerのインスタンス
-	TextureManager* textureManager_ = nullptr;
-	// WinAppのインスタンス
-	WinApp* winApp_ = nullptr;
+		// 変換行列用のResourceとデータの作成関数
+		/// <summary>
+		/// 変換行列用のリソースを作成する
+		/// </summary>
+		void CreateTransformationMatrixResource();
+		/// <summary>
+		/// 変換行列データをマップする
+		/// </summary>
+		void MapTransformationMatrix();
 
-	// テクスチャのインデックス
-	uint32_t textureIndex_ = 0;
+		/*==================== メンバ変数 ====================*/
+		// DirectXCommonのインスタンス
+		DirectXCommon* dxCommon_ = nullptr;
+		// ModelPSOのインスタンス
+		ModelPSO* modelPSO_ = nullptr;
+		// TextureManagerのインスタンス
+		TextureManager* textureManager_ = nullptr;
+		// WinAppのインスタンス
+		WinApp* winApp_ = nullptr;
 
-	// 図形の変換を管理するためのTransform
-	Transform transform_;
+		// テクスチャのインデックス
+		uint32_t textureIndex_ = 0;
 
-	// スプライト用頂点構造体
-	struct VertexData {
-		Vector4 pos;
-		Vector2 texcoord;
-		Vector3 normal;
+		// 図形の変換を管理するためのTransform
+		Transform transform_;
+
+		// スプライト用頂点構造体
+		struct VertexData {
+			Vector4 pos;
+			Vector2 texcoord;
+			Vector3 normal;
+		};
+
+		// 頂点リソース
+		Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_ = nullptr;
+		// 頂点バッファビュー
+		D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
+		// 頂点データ
+		VertexData* vertexData = nullptr;
+
+		// Indexリソース
+		Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_ = nullptr;
+		// Indexバッファビュー
+		D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
+
+		// マテリアルデータの構造体
+		struct Material {
+			Vector4 color;
+			int32_t enableLighting;
+			float padding[3];
+			Matrix4x4 uvTransform;
+		};
+		// UVTransform用の変数
+		Transform uvTransform_ = {
+			{1.0f,1.0f,1.0f},
+			{0.0f,0.0f,0.0f},
+			{0.0f,0.0f,0.0f},
+		};
+
+		// マテリアルリソース
+		Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_ = nullptr;
+		// マテリアルデータ
+		Material* materialData_ = nullptr;
+
+		// 変換行列リソース
+		Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource_ = nullptr;
+		// 変換行列データ
+		TransformationMatrix* transformationMatrixData_ = nullptr;
 	};
-
-	// 頂点リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_ = nullptr;
-	// 頂点バッファビュー
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
-	// 頂点データ
-	VertexData* vertexData = nullptr;
-
-	// Indexリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_ = nullptr;
-	// Indexバッファビュー
-	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
-
-	// マテリアルデータの構造体
-	struct Material {
-		Vector4 color;
-		int32_t enableLighting;
-		float padding[3];
-		Matrix4x4 uvTransform;
-	};
-	// UVTransform用の変数
-	Transform uvTransform_ = {
-		{1.0f,1.0f,1.0f},
-		{0.0f,0.0f,0.0f},
-		{0.0f,0.0f,0.0f},
-	};
-
-	// マテリアルリソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_ = nullptr;
-	// マテリアルデータ
-	Material* materialData_ = nullptr;
-
-	// 変換行列リソース
-	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource_ = nullptr;
-	// 変換行列データ
-	TransformationMatrix* transformationMatrixData_ = nullptr;
-};
+}
