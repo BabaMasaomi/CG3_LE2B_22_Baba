@@ -38,6 +38,6 @@ public:
 	void Finalize();
 
 private:
-	Microsoft::WRL::ComPtr<IXAudio2> xAoudio2_;
+	Microsoft::WRL::ComPtr<IXAudio2> xAudio2_;
 	IXAudio2MasteringVoice* masterVoice_;
 };

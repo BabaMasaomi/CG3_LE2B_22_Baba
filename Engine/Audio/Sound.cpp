@@ -6,11 +6,11 @@ void Sound::Initialize() {
 	HRESULT result;
 
 	// XAudioのインスタンスを生成
-	result = XAudio2Create(xAoudio2_.GetAddressOf(), 0, XAUDIO2_DEFAULT_PROCESSOR);
+	result = XAudio2Create(xAudio2_.GetAddressOf(), 0, XAUDIO2_DEFAULT_PROCESSOR);
 	assert(SUCCEEDED(result));
 
 	// マスターボイスを生成
-	result = xAoudio2_.Get()->CreateMasteringVoice(&masterVoice_);
+	result = xAudio2_.Get()->CreateMasteringVoice(&masterVoice_);
 	assert(SUCCEEDED(result));
 }
 
@@ -99,7 +99,7 @@ void Sound::SoundPlayeWave(const SoundData& soundData) {
 
 	// 波形フォーマットを元にSourceVoiceの生成
 	IXAudio2SourceVoice* pSourceVoice = nullptr;
-	result = xAoudio2_->CreateSourceVoice(&pSourceVoice, &soundData.wfex);
+	result = xAudio2_->CreateSourceVoice(&pSourceVoice, &soundData.wfex);
 	assert(SUCCEEDED(result));
 
 	// 再生する波形データの設定
