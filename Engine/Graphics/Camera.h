@@ -7,7 +7,16 @@ class Camera {
 public:
 	~Camera();
 
+	/// <summary>
+	/// Cameraの初期化
+	/// </summary>
+	/// <param name="width">ウィンドウの幅</param>
+	/// <param name="height">ウィンドウの高さ</param>
+	/// <param name="input">Inputクラスのインスタンス</param>
 	void Initialize(float width, float height, Input* input);
+	/// <summary>
+	/// Cameraの更新
+	/// </summary>
 	void Update();
 
 	// ゲッター
@@ -22,7 +31,9 @@ public:
 
 private:
 	// モード別のカメラの更新
+	// ゲーム中のカメラ更新
 	void UpdateGameCamera();
+	// デバッグカメラ更新
 	void UpdateDebugCamera();
 	// カメラの変換情報
 	Transform transform_;

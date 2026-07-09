@@ -139,7 +139,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	// 音声読み込み
 	SoundData soundData1 = sound.SoundLoadWave("resources/fanfare.wav");
 	// サウンド再生
-	sound.SoundPlayeWave(soundData1);
+	sound.SoundPlayWave(soundData1);
 
 	// ログ出力
 	Log(logStream, "Start logging!");

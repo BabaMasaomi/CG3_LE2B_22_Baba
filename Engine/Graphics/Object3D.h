@@ -13,13 +13,30 @@ class Camera;
 
 class Object3D {
 public:
+	// デストラクタ
 	~Object3D();
 
+	/// <summary>
+	/// Object3Dの初期化
+	/// </summary>
+	/// <param name="dxCommon">DirectXCommonのインスタンス</param>
+	/// <param name="modelPSO">ModelPSOのインスタンス</param>
+	/// <param name="directionalLight">DirectionalLightのインスタンス</param>
 	void Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, DirectionalLight* directionalLight);
+	/// <summary>
+	/// Object3Dの更新
+	/// </summary>
+	/// <param name="camera">カメラのインスタンス</param>
 	void Update(const Camera& camera);
+	/// <summary>
+	/// Object3Dの描画
+	/// </summary>
 	void Draw();
 
-	// モデルを設定
+	/// <summary>
+	/// モデルを設定
+	/// </summary>
+	/// <param name="model">設定するモデルのインスタンス</param>
 	void SetModel(Model* model);
 
 	// ゲッター
@@ -29,13 +46,22 @@ public:
 
 private:
 	// 変換行列用のResourceとデータの作成関数
+	/// <summary>
+	/// 変換行列用のリソースを作成する
+	/// </summary>
 	void CreateTransformationMatrixResource();
+	/// <summary>
+	/// 変換行列データをマップする
+	/// </summary>
 	void MapTransformationMatrix();
 
-	// ポインタを用意しておく
+	// DirectXCommonのインスタンス
 	DirectXCommon* dxCommon_ = nullptr;
+	// ModelPSOのインスタンス
 	ModelPSO* modelPSO_ = nullptr;
+	// DirectionalLightのインスタンス
 	DirectionalLight* directionalLight_ = nullptr;
+	// モデルのインスタンス
 	Model* model_ = nullptr;
 
 	// テクスチャのインデックス
@@ -59,8 +85,9 @@ private:
 		{0.0f,0.0f,0.0f},
 	};
 
-	// 変換行列リソースと変換行列データ
+	// 変換行列用のリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource_ = nullptr;
+	// 変換行列データ
 	TransformationMatrix* transformationMatrixData_ = nullptr;
 
 	// ImGuiで弄る用

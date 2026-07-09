@@ -7,8 +7,14 @@ class DXCManager;
 
 class ModelPSO {
 public:
+	// デストラクタ
 	~ModelPSO();
 
+	/// <summary>
+	/// ModelPSOの初期化
+	/// </summary>
+	/// <param name="dxCommon">DirectXCommonのインスタンス</param>
+	/// <param name="dxcManager">DXCManagerのインスタンス</param>
 	void Initialize(DirectXCommon* dxCommon, DXCManager* dxcManager);
 
 	// ゲッター
@@ -18,12 +24,22 @@ public:
 
 private:
 	// RootSignatureとGraphicsPipelineの生成関数
+	/// <summary>
+	/// RootSignatureの生成
+	/// </summary>
 	void CreateRootSignature();
+	/// <summary>
+	/// GraphicsPipelineの生成
+	/// </summary>
 	void CreateGraphicsPipeline();
+	/// <summary>
+	/// SpritePipelineの生成
+	/// </summary>
 	void CreateSpritePipeline();
 
-	// DirectXCommonとDXCManagerは、PSOの生成に必要な情報を持っているので、ポインタを用意しておく
+	// DirectXCommonのインスタンス
 	DirectXCommon* dxCommon_ = nullptr;
+	// DXCManagerのインスタンス
 	DXCManager* dxcManager_ = nullptr;
 
 	// PSOを生成するために必要なRootSignatureとPipelineStateを用意しておく

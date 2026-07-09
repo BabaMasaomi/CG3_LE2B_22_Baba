@@ -8,19 +8,40 @@ struct Vector2 {
 // 3頂点の構造体
 struct Vector3 {
 	float x, y, z;
-
+	// Vector3の演算子オーバーロード
+	
+	/// <summary>
+	/// 加算
+	/// </summary>
+	/// <param name="v">Vector3型変数</param>
+	/// <returns>加算結果</returns>
 	Vector3 operator+(const Vector3& v) const {
 		return { x + v.x, y + v.y, z + v.z };
 	}
-
+	
+	/// <summary>
+	/// 減算
+	/// </summary>
+	/// <param name="v">Vector3型変数</param>
+	/// <returns>減算結果</returns>
 	Vector3 operator-(const Vector3& v) const {
 		return { x - v.x, y - v.y, z - v.z };
 	}
-
+	
+	/// <summary>
+	/// スカラー倍
+	/// </summary>
+	/// <param name="s">スカラー値</param>
+	/// <returns>スカラー倍結果</returns>
 	Vector3 operator*(float s) const {
 		return { x * s, y * s, z * s };
 	}
 
+	/// <summary>
+	/// 加算代入演算子
+	/// </summary>
+	/// <param name="v">Vector3型変数</param>
+	/// <returns>加算代入結果</returns>
 	Vector3& operator+=(const Vector3& v) {
 		x += v.x;
 		y += v.y;
@@ -28,6 +49,11 @@ struct Vector3 {
 		return *this;
 	}
 
+	/// <summary>
+	/// 減算代入演算子
+	/// </summary>
+	/// <param name="v">Vector3型変数</param>
+	/// <returns>減算代入結果</returns>
 	Vector3& operator-=(const Vector3& v) {
 		x -= v.x;
 		y -= v.y;

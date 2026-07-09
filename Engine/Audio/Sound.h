@@ -29,15 +29,43 @@ struct SoundData {
 	uint32_t bufferSize = 0;	// バッファのサイズ
 };
 
+/// <summary>
+/// サウンドの管理クラス
+/// </summary>
 class Sound{
 public:
+	/// <summary>
+	/// サウンドの初期化
+	/// </summary>
 	void Initialize();
+
+	/// <summary>
+	/// WAVEファイルのロード
+	/// </summary>
+	/// <param name="filename">ファイル名</param>
+	/// <returns>ロードしたサウンドデータ</returns>
 	SoundData SoundLoadWave(const char* filename);
+
+	/// <summary>
+	/// サウンドデータのアンロード
+	/// </summary>
+	/// <param name="soundData">アンロードするサウンドデータ</param>
 	void SoundUnload(SoundData* soundData);
-	void SoundPlayeWave(const SoundData& soundData);
+
+	/// <summary>
+	/// WAVEファイルの再生
+	/// </summary>
+	/// <param name="soundData">再生するサウンドデータ</param>
+	void SoundPlayWave(const SoundData& soundData);
+
+	/// <summary>
+	/// サウンドの終了処理
+	/// </summary>
 	void Finalize();
 
 private:
+	// XAudio2のインスタンス
 	Microsoft::WRL::ComPtr<IXAudio2> xAudio2_;
+	// マスターボイス
 	IXAudio2MasteringVoice* masterVoice_;
 };

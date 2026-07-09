@@ -4,11 +4,27 @@
 #include <fstream>
 
 // 出力ウィンドウに文字列を表示できる様にする関数
+
+/// <summary>
+/// ログを出力する
+/// </summary>
+/// <param name="message">出力するメッセージ</param>
 void Log(const std::string& message);
+/// <summary>
+/// ワイド文字列のログを出力する
+/// </summary>
+/// <param name="message">出力するメッセージ</param>
 void Log(const std::wstring& message);
 
-// logファイル出力用
+/// <summary>
+/// 指定の出力ストリームにログを出力する
+/// </summary>
+/// <param name="os">出力ストリーム</param>
+/// <param name="message">出力するメッセージ</param>
 void Log(std::ostream& os, const std::string& message);
 
-// logファイル作成
+/// <summary>
+/// ログファイルを作成する
+/// </summary>
+/// <returns>作成されたログファイルのofstreamオブジェクト</returns>
 std::ofstream CreateLogFile();

@@ -94,7 +94,7 @@ void Sound::SoundUnload(SoundData* soundData) {
 }
 
 /*-------------------- サウンドの再生 --------------------*/
-void Sound::SoundPlayeWave(const SoundData& soundData) {
+void Sound::SoundPlayWave(const SoundData& soundData) {
 	HRESULT result;
 
 	// 波形フォーマットを元にSourceVoiceの生成

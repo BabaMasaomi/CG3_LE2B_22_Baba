@@ -12,10 +12,24 @@ class WinApp;
 
 class Sprite {
 public:
+	// デストラクタ
 	~Sprite();
 
+	/// <summary>
+	/// Spriteの初期化
+	/// </summary>
+	/// <param name="dxCommon">DirectXCommonのインスタンス</param>
+	/// <param name="modelPSO">ModelPSOのインスタンス</param>
+	/// <param name="textureManager">TextureManagerのインスタンス</param>
+	/// <param name="winApp">WinAppのインスタンス</param>
 	void Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, TextureManager* textureManager, WinApp* winApp);
+	/// <summary>
+	/// Spriteの更新
+	/// </summary>
 	void Update();
+	/// <summary>
+	/// Spriteの描画
+	/// </summary>
 	void Draw();
 
 	// ゲッター
@@ -25,27 +39,60 @@ public:
 
 private:
 	// VertexResourceとVertexBufferViewの作成関数
+	/// <summary>
+	/// 頂点リソースを作成する
+	/// </summary>
 	void CreateVertexResource();
+	/// <summary>
+	/// 頂点バッファビューを作成する
+	/// </summary>
 	void CreateVertexBufferView();
+	/// <summary>
+	/// 頂点データをマップする
+	/// </summary>
 	void MapVertexData();
 
 	// IndexResourceとIndexBufferViewの作成関数
+	/// <summary>
+	/// Indexリソースを作成する
+	/// </summary>
 	void CreateIndexResource();
+	/// <summary>
+	/// Indexバッファビューを作成する
+	/// </summary>
 	void CreateIndexBufferView();
+	/// <summary>
+	/// Indexデータをマップする
+	/// </summary>
 	void MapIndexData();
 
 	// マテリアル用のResourceとデータの作成関数
+	/// <summary>
+	/// マテリアルリソースを作成する
+	/// </summary>
 	void CreateMaterialResource();
+	/// <summary>
+	/// マテリアルデータをマップする
+	/// </summary>
 	void MapMaterial();
 
 	// 変換行列用のResourceとデータの作成関数
+	/// <summary>
+	/// 変換行列用のリソースを作成する
+	/// </summary>
 	void CreateTransformationMatrixResource();
+	/// <summary>
+	/// 変換行列データをマップする
+	/// </summary>
 	void MapTransformationMatrix();
 
-	// ポインタを用意しておく
+	// DirectXCommonのインスタンス
 	DirectXCommon* dxCommon_ = nullptr;
+	// ModelPSOのインスタンス
 	ModelPSO* modelPSO_ = nullptr;
+	// TextureManagerのインスタンス
 	TextureManager* textureManager_ = nullptr;
+	// WinAppのインスタンス
 	WinApp* winApp_ = nullptr;
 
 	// テクスチャのインデックス
@@ -61,13 +108,16 @@ private:
 		Vector3 normal;
 	};
 
-	// 頂点リソースと頂点バッファビュー
+	// 頂点リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_ = nullptr;
+	// 頂点バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};
+	// 頂点データ
 	VertexData* vertexData = nullptr;
 
-	// Index用のリソースとバッファビュー
+	// Indexリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource_ = nullptr;
+	// Indexバッファビュー
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_{};
 
 	// マテリアルデータの構造体
@@ -89,7 +139,8 @@ private:
 	// マテリアルデータ
 	Material* materialData_ = nullptr;
 
-	// 変換行列リソースと変換行列データ
+	// 変換行列リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource_ = nullptr;
+	// 変換行列データ
 	TransformationMatrix* transformationMatrixData_ = nullptr;
 };

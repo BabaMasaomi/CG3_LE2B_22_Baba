@@ -7,11 +7,23 @@
 
 class DXCManager {
 public:
+	// デストラクタ
 	~DXCManager();
 
+	/// <summary>
+	/// DXCManagerの初期化
+	/// </summary>
 	void Initialize();
 
-	// シェーダーのコンパイル
+	/// <summary>
+	/// シェーダーのコンパイル
+	/// </summary>
+	/// <param name="filePath">ファイルパス</param>
+	/// <param name="profile">プロファイル</param>
+	/// <param name="dxcUtils">DXCユーティリティ</param>
+	/// <param name="dxcCompiler">DXCコンパイラ</param>
+	/// <param name="includeHandler">インクルードハンドラ</param>
+	/// <returns>コンパイルされたシェーダーのblob</returns>
 	Microsoft::WRL::ComPtr<IDxcBlob> CompileShader(
 		const std::wstring& filePath,
 		const wchar_t* profile,

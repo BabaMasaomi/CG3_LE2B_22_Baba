@@ -38,16 +38,35 @@ struct ModelData {
 
 class Model {
 public:
+	/// <summary>
+	/// モデルの初期化
+	/// </summary>
+	/// <param name="dxCommon">DirectXCommonのインスタンス</param>
+	/// <param name="textureManager">TextureManagerのインスタンス</param>
+	/// <param name="directory">ファイルディレクトリ</param>
+	/// <param name="filename">ファイル名</param>
 	void Initialize(DirectXCommon* dxCommon, TextureManager* textureManager,
 		const std::string& directory, const std::string& filename);
 
-	// objファイルを読み込む
+	/// <summary>
+	/// OBJファイルを読み込む
+	/// </summary>
+	/// <param name="directryPath">ファイルディレクトリ</param>
+	/// <param name="filename">ファイル名</param>
 	void LoadObjFile(const std::string& directryPath, const std::string& filename);
 
-	// mtlファイルを読み込む
+	/// <summary>
+	/// マテリアルテンプレートファイルを読み込む
+	/// </summary>
+	/// <param name="directoryPath">ファイルディレクトリ</param>
+	/// <param name="filename">ファイル名</param>
+	/// <returns>読み込まれたマテリアルデータ</returns>
 	MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 
-	// UV変換行列の更新
+	/// <summary>
+	/// UV変換行列を更新する
+	/// </summary>
+	/// <param name="uvTransform">更新するUV変換行列</param>
 	void UpdateUVTransform(const Matrix4x4& uvTransform);
 
 	// ゲッター
@@ -59,17 +78,33 @@ public:
 	ID3D12Resource* GetMaterialResource() const { return materialResource_.Get(); }
 
 private:
-	// VertexResourceとVertexBufferViewの作成関数
+	// VertexResourceとVertexBufferViewの作成関数	
+	/// <summary>
+	/// 頂点リソースを作成する
+	/// </summary>
 	void CreateVertexResource();
+	/// <summary>
+	/// 頂点バッファビューを作成する
+	/// </summary>
 	void CreateVertexBufferView();
+	/// <summary>
+	/// 頂点データをマップする
+	/// </summary>
 	void MapVertexData();
 
 	// マテリアル用のResourceとデータの作成関数
+	/// <summary>
+	/// マテリアルリソースを作成する
+	/// </summary>
 	void CreateMaterialResource();
+	/// <summary>
+	/// マテリアルデータをマップする
+	/// </summary>
 	void MapMaterial();
 
-	// ポインタを用意
+	// DirectXCommonのインスタンス
 	DirectXCommon* dxCommon_ = nullptr;
+	// TextureManagerのインスタンス
 	TextureManager* textureManager_ = nullptr;
 
 	// テクスチャのインデックス

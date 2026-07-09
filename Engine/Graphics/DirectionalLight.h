@@ -13,9 +13,17 @@ class DirectXCommon;
 
 class DirectionalLight {
 public:
+	// デストラクタ
 	~DirectionalLight();
 
+	/// <summary>
+	/// DirectionalLightの初期化
+	/// </summary>
+	/// <param name="dxCommon">DirectXCommonのインスタンス</param>
 	void Initialize(DirectXCommon* dxCommon);
+	/// <summary>
+	/// DirectionalLightの更新
+	/// </summary>
 	void Update();
 
 	// ゲッター
@@ -25,10 +33,12 @@ public:
 	float& GetIntensity() { return intensity_; }
 
 private:
-	// ポインタを用意
+	// DirectXCommonのインスタンス
 	DirectXCommon* dxCommon_ = nullptr;
 
+	// DirectionalLightDataのリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> resource_ = nullptr;
+	// DirectionalLightDataのポインタ
 	DirectionalLightData* data_ = nullptr;
 
 	// ImGuiで弄る用

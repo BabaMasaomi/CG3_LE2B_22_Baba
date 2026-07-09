@@ -10,14 +10,25 @@ class Model;
 
 class ModelManager {
 public:
+	/// <summary>
+	/// ModelManagerの初期化
+	/// </summary>
+	/// <param name="dxCommon">DirectXCommonのインスタンス</param>
+	/// <param name="textureManager">TextureManagerのインスタンス</param>
 	void Initialize(DirectXCommon* dxCommon, TextureManager* textureManager);
 
-	// モデル読み込み
+	/// <summary>
+	/// モデルを読み込む
+	/// </summary>
+	/// <param name="directory">ファイルディレクトリ</param>
+	/// <param name="filename">ファイル名</param>
+	/// <returns>読み込まれたモデルのポインタ</returns>
 	Model* LoadModel(const std::string& directory, const std::string& filename);
 
 private:
-	// ポインタを用意しておく
+	// DirectXCommonのインスタンス
 	DirectXCommon* dxCommon_ = nullptr;
+	// TextureManagerのインスタンス
 	TextureManager* textureManager_ = nullptr;
 
 	// モデルのマップ

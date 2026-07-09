@@ -14,16 +14,38 @@ class WinApp;
 
 class DirectXCommon {
 public:
+	// デストラクタ
 	~DirectXCommon();
 
+	/// <summary>
+	/// DirectXの初期化
+	/// </summary>
+	/// <param name="hwnd">ウィンドウハンドル</param>
+	/// <param name="width">ウィンドウの幅</param>
+	/// <param name="height">ウィンドウの高さ</param>
 	void Initialize(HWND hwnd, int32_t width, int32_t height);
 
+	/// <summary>
+	/// 描画前の処理
+	/// </summary>
 	void PreDraw();
+	/// <summary>
+	/// 描画後の処理
+	/// </summary>
 	void PostDraw();
 
-	void ExecuteCommandList();	// コマンドを実行
-	void WaitForGPU();			// GPUを待機
-	void ResetCommandList();	// commandListのReset
+	/// <summary>
+	/// コマンドを実行
+	/// </summary>
+	void ExecuteCommandList();
+	/// <summary>
+	/// GPUを待機
+	/// </summary>
+	void WaitForGPU();
+	/// <summary>
+	/// コマンドリストをリセット
+	/// </summary>
+	void ResetCommandList();
 
 	// ゲッター
 	uint32_t GetDescriptorSizeSRV() const { return DescriptorSizeSRV_; }
@@ -38,19 +60,54 @@ public:
 	D3D12_RENDER_TARGET_VIEW_DESC GetrtvDesc() const { return rtvDesc_; }
 
 private:
+	// ウィンドウアプリケーションのポインタ
 	WinApp* winApp_ = nullptr;
 
-	void InitializeDebugLayer();		// デバッグレイヤーの初期化
-	void CreateDevice();				// 1. Factoryの生成、アダプタ選択、D3D12デバイス生成
-	void InitializeInfoQueue();			// Debug情報の初期化
-	void CreateCommand();				// 2. コマンドキュー、コマンドアロケータ、コマンドリストの生成
-	void CreateSwapChain(HWND hwnd);	// 3. SwapChainの生成
-	void CreateRenderTargetView();		// 4. レンダーターゲットビューの生成
-	// DepthStencilTextureResourceを作成
+	/// <summary>
+	/// デバッグレイヤーの初期化
+	/// </summary>
+	void InitializeDebugLayer();
+	/// <summary>
+	/// 1. D3D12デバイスの生成(Factoryの生成、アダプタ選択、D3D12デバイス生成)
+	/// </summary>
+	void CreateDevice();
+	/// <summary>
+	/// Debug情報の初期化
+	/// </summary>
+	void InitializeInfoQueue();
+	/// <summary>
+	/// 2. コマンドの生成(コマンドキュー、コマンドアロケータ、コマンドリスト)
+	/// </summary>
+	void CreateCommand();
+	/// <summary>
+	/// 3. SwapChainの生成
+	/// </summary>
+	/// <param name="hwnd">ウィンドウハンドル</param>
+	void CreateSwapChain(HWND hwnd);
+	/// <summary>
+	/// 4. レンダーターゲットビューの生成
+	/// </summary>
+	void CreateRenderTargetView();
+	/// <summary>
+	/// DepthStencilTextureResourceを作成
+	/// </summary>
+	/// <param name="device">D3D12デバイス</param>
+	/// <param name="width">テクスチャの幅</param>
+	/// <param name="height">テクスチャの高さ</param>
+	/// <returns>作成されたDepthStencilTextureResource</returns>
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height);
-	void DepthStencilView();	// DepthStencilViewを作成
-	void CreateFence();			// 5. Fenceの生成
-	void CreateViewport();		// 描画用のViewPortとScissorRectの生成
+	/// <summary>
+	/// DepthStencilViewを作成
+	/// </summary>
+	void DepthStencilView();
+	/// <summary>
+	/// 5. Fenceの生成
+	/// </summary>
+	void CreateFence();
+	/// <summary>
+	/// ViewPortとScissorRectの生成
+	/// </summary>
+	void CreateViewport();
 
 #ifdef _DEBUG
 	// デバッグレイヤーのコントローラー
@@ -59,6 +116,7 @@ private:
 
 	// DXGIファクトリーの生成
 	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_ = nullptr;
+	// D3D12デバイスの生成
 	Microsoft::WRL::ComPtr<ID3D12Device> device_ = nullptr;
 
 	// コマンドキューを作成
@@ -69,19 +127,25 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList_ = nullptr;
 
 	// ViewPortとScissorRectを準備(図形描画用)
+	// ViewPortは描画先の矩形領域を設定する構造体
 	D3D12_VIEWPORT viewPort_ = {};
+	// ScissorRectは描画先の矩形領域を設定する構造体
 	D3D12_RECT scissorRect_ = {};
 
 	// スワップチェーンを作成
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain_ = nullptr;
 
 	// ディスクリプタヒープを作成
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap_ = nullptr;     // RTV用
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap_ = nullptr;     // SRV用
+	// RTV用
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap_ = nullptr;
+	// SRV用
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap_ = nullptr;
 
-	// CreateDepthStencilTextureResource()用
+	// DepthStencilTextureResource
 	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource_ = nullptr;
+	// DepthStencilView
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandleCPU_{};
+	// DSV用のディスクリプタヒープ
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap_ = nullptr;
 
 	// スワップチェーンの設定
@@ -97,12 +161,18 @@ private:
 
 	// Fenceを作成
 	Microsoft::WRL::ComPtr<ID3D12Fence> fence_ = nullptr;
+	// Fenceの値を保持する変数
 	uint64_t fenceValue_ = 0;
+	// FenceのSignalを待つためのEventを作成
 	HANDLE fenceEvent_ = nullptr;
 
 	// descriptorSizeを取得
+	// SRV,RTV,DSVのDescriptorSizeを取得しておく
+	// DescriptorSizeは、DescriptorHeapの中の1つのDescriptorのサイズを表す
 	uint32_t DescriptorSizeSRV_ = 0;
+	// RTVとDSVはSRVと同じサイズなので、SRVのサイズを取得しておけば良い
 	uint32_t DescriptorSizeRTV_ = 0;
+	// DSVのサイズは、RTVと同じサイズなので、RTVのサイズを取得しておけば良い
 	uint32_t DescriptorSizeDSV_ = 0;
 
 };
