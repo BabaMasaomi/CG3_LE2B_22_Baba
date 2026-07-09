@@ -34,6 +34,7 @@ struct SoundData {
 /// </summary>
 class Sound{
 public:
+	/*==================== メンバ関数の宣言 ====================*/
 	/// <summary>
 	/// サウンドの初期化
 	/// </summary>
@@ -64,6 +65,7 @@ public:
 	void Finalize();
 
 private:
+	/*==================== メンバ変数 ====================*/
 	// XAudio2のインスタンス
 	Microsoft::WRL::ComPtr<IXAudio2> xAudio2_;
 	// マスターボイス

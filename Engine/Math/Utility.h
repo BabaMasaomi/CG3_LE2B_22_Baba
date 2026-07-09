@@ -4,6 +4,8 @@
 #include <wrl.h>
 #include"struct.h"
 
+
+/*==================== メンバ関数の宣言 ====================*/
 /// <summary>
 /// BufferResourceの作成関数
 /// </summary>

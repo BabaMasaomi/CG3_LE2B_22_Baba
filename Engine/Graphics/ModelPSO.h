@@ -7,6 +7,7 @@ class DXCManager;
 
 class ModelPSO {
 public:
+	/*==================== メンバ関数とデストラクタの宣言 ====================*/
 	// デストラクタ
 	~ModelPSO();
 
@@ -17,12 +18,14 @@ public:
 	/// <param name="dxcManager">DXCManagerのインスタンス</param>
 	void Initialize(DirectXCommon* dxCommon, DXCManager* dxcManager);
 
+	/*==================== アクセッサ ====================*/
 	// ゲッター
 	ID3D12RootSignature* GetRootSignature() const { return rootSignature_.Get(); }
 	ID3D12PipelineState* GetPipelineState() const { return pipelineState_.Get(); }
 	ID3D12PipelineState* GetSpritePipelineState() { return spritePipelineState_.Get(); }
 
 private:
+	/*==================== メンバ関数の宣言 ====================*/
 	// RootSignatureとGraphicsPipelineの生成関数
 	/// <summary>
 	/// RootSignatureの生成
@@ -37,6 +40,7 @@ private:
 	/// </summary>
 	void CreateSpritePipeline();
 
+	/*==================== メンバ変数 ====================*/
 	// DirectXCommonのインスタンス
 	DirectXCommon* dxCommon_ = nullptr;
 	// DXCManagerのインスタンス

@@ -12,6 +12,7 @@ class WinApp;
 
 class Sprite {
 public:
+	/*==================== メンバ関数とデストラクタの宣言 ====================*/
 	// デストラクタ
 	~Sprite();
 
@@ -32,12 +33,14 @@ public:
 	/// </summary>
 	void Draw();
 
+	/*==================== アクセッサ ====================*/
 	// ゲッター
 	Vector3& GetUVTransformScale() { return uvTransform_.scale; }
 	Vector3& GetUVTransformRotate() { return uvTransform_.rotate; }
 	Vector3& GetUVTransformTranslate() { return uvTransform_.translate; }
 
 private:
+	/*==================== メンバ関数の宣言 ====================*/
 	// VertexResourceとVertexBufferViewの作成関数
 	/// <summary>
 	/// 頂点リソースを作成する
@@ -86,6 +89,7 @@ private:
 	/// </summary>
 	void MapTransformationMatrix();
 
+	/*==================== メンバ変数 ====================*/
 	// DirectXCommonのインスタンス
 	DirectXCommon* dxCommon_ = nullptr;
 	// ModelPSOのインスタンス

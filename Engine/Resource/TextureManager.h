@@ -8,6 +8,7 @@ class DirectXCommon;
 
 class TextureManager {
 public:
+	/*==================== メンバ関数とデストラクタの宣言 ====================*/
 	// デストラクタ
 	~TextureManager();
 
@@ -53,10 +54,13 @@ public:
 	/// <param name="index">テクスチャのインデックス</param>
 	void CreateSRV(ID3D12Resource* textureResource, uint32_t index);
 
+	/*==================== アクセッサ ====================*/
 	// ゲッター
 	D3D12_GPU_DESCRIPTOR_HANDLE GetTextureSrvHandleGPU(uint32_t index)const { return textureSrvHandleGPU_[index]; }
 	uint32_t GetNextIndex() { return nextTextureIndex_; }
+
 private:
+	/*==================== メンバ変数 ====================*/
 	// DirectXCommonのインスタンス
 	DirectXCommon* dxCommon_ = nullptr;
 

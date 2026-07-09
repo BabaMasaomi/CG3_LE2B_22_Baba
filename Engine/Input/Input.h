@@ -10,6 +10,7 @@
 
 class Input {
 public:
+	/*==================== メンバ関数の宣言 ====================*/
 	/// <summary>
 	/// Inputの初期化
 	/// </summary>
@@ -31,13 +32,13 @@ public:
 	/// キーが押された瞬間かを判定する
 	/// </summary>
 	/// <param name="keyNumber">キーの番号</param>
-	/// <returns>押された瞬間場合はtrue、そうでない場合はfalse</returns>
+	/// <returns>押された瞬間の場合はtrue、そうでない場合はfalse</returns>
 	bool TriggerKey(BYTE keyNumber);
 	/// <summary>
 	/// キーが離された瞬間かを判定する
 	/// </summary>
 	/// <param name="keyNumber">キーの番号</param>
-	/// <returns>離された瞬間場合はtrue、そうでない場合はfalse</returns>
+	/// <returns>離された瞬間の場合はtrue、そうでない場合はfalse</returns>
 	bool ReleaseKey(BYTE keyNumber);
 
 	/// <summary>
@@ -59,33 +60,33 @@ public:
 	/// <summary>
 	/// マウスの左ボタンが押された瞬間かを判定する
 	/// </summary>
-	/// <returns>押された瞬間場合はtrue、そうでない場合はfalse</returns>
+	/// <returns>押された瞬間の場合はtrue、そうでない場合はfalse</returns>
 	bool TriggerMouseLeft();
 	/// <summary>
 	/// マウスの右ボタンが押された瞬間かを判定する
 	/// </summary>
-	/// <returns>押された瞬間場合はtrue、そうでない場合はfalse</returns>
+	/// <returns>押された瞬間の場合はtrue、そうでない場合はfalse</returns>
 	bool TriggerMouseRight();
 	/// <summary>
 	/// マウスの中央ボタンが押された瞬間かを判定する
 	/// </summary>
-	/// <returns>押された瞬間場合はtrue、そうでない場合はfalse</returns>
+	/// <returns>押された瞬間の場合はtrue、そうでない場合はfalse</returns>
 	bool TriggerMouseMiddle();
 
 	/// <summary>
 	/// マウスの左ボタンが離された瞬間かを判定する
 	/// </summary>
-	/// <returns>離された瞬間場合はtrue、そうでない場合はfalse</returns>
+	/// <returns>離された瞬間の場合はtrue、そうでない場合はfalse</returns>
 	bool ReleaseMouseLeft();
 	/// <summary>
 	/// マウスの右ボタンが離された瞬間かを判定する
 	/// </summary>
-	/// <returns>離された瞬間場合はtrue、そうでない場合はfalse</returns>
+	/// <returns>離された瞬間の場合はtrue、そうでない場合はfalse</returns>
 	bool ReleaseMouseRight();
 	/// <summary>
 	/// マウスの中央ボタンが離された瞬間かを判定する
 	/// </summary>
-	/// <returns>離された瞬間場合はtrue、そうでない場合はfalse</returns>
+	/// <returns>離された瞬間の場合はtrue、そうでない場合はfalse</returns>
 	bool ReleaseMouseMiddle();
 	
 	/// <summary>
@@ -94,12 +95,14 @@ public:
 	/// <param name="delta">マウスホイールの回転量</param>
 	void AddWheelDelta(int delta);
 
+	/*==================== アクセッサ ====================*/
 	// ゲッター
 	Vector2 GetMouseDelta() const { return mouseDelta_; }
 	Vector2 GetMousePos() const { return Vector2(float(mousePos_.x), float(mousePos_.y)); }
 	int GetWheelDelta() const { return wheelDelta_; }
 
 private:
+	/*==================== メンバ変数 ====================*/
 	// キーボード入力用
 	Microsoft::WRL::ComPtr<IDirectInput8> directInput_ = nullptr;
 	Microsoft::WRL::ComPtr<IDirectInputDevice8> keyboard_ = nullptr;

@@ -5,6 +5,8 @@ class Input;
 
 class Camera {
 public:
+	/*==================== メンバ関数とデストラクタの宣言 ====================*/
+	// デストラクタ
 	~Camera();
 
 	/// <summary>
@@ -19,6 +21,7 @@ public:
 	/// </summary>
 	void Update();
 
+	/*==================== アクセッサ ====================*/
 	// ゲッター
 	Matrix4x4 GetViewProjectionMatrix() const { return viewProjectionMatrix_; }
 	Vector3& GetRotate() { return rotate_; }
@@ -30,11 +33,14 @@ public:
 	void SetDebugMode(bool enable) { isDebugMode_ = enable; }
 
 private:
+	/*==================== メンバ関数の宣言 ====================*/
 	// モード別のカメラの更新
 	// ゲーム中のカメラ更新
 	void UpdateGameCamera();
 	// デバッグカメラ更新
 	void UpdateDebugCamera();
+
+	/*==================== メンバ変数 ====================*/
 	// カメラの変換情報
 	Transform transform_;
 

@@ -13,6 +13,7 @@ class DirectXCommon;
 
 class DirectionalLight {
 public:
+	/*==================== メンバ関数とデストラクタの宣言 ====================*/
 	// デストラクタ
 	~DirectionalLight();
 
@@ -26,6 +27,7 @@ public:
 	/// </summary>
 	void Update();
 
+	/*==================== アクセッサ ====================*/
 	// ゲッター
 	ID3D12Resource* GetResource() const { return resource_.Get(); }
 	Vector4& GetColor() { return color_; }
@@ -33,6 +35,7 @@ public:
 	float& GetIntensity() { return intensity_; }
 
 private:
+	/*==================== メンバ変数 ====================*/
 	// DirectXCommonのインスタンス
 	DirectXCommon* dxCommon_ = nullptr;
 

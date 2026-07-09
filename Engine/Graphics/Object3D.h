@@ -13,6 +13,7 @@ class Camera;
 
 class Object3D {
 public:
+	/*==================== メンバ関数とデストラクタの宣言 ====================*/
 	// デストラクタ
 	~Object3D();
 
@@ -39,12 +40,14 @@ public:
 	/// <param name="model">設定するモデルのインスタンス</param>
 	void SetModel(Model* model);
 
+	/*==================== アクセッサ ====================*/
 	// ゲッター
 	Vector3& GetScale() { return scale_; }
 	Vector3& GetRotate() { return rotate_; }
 	Vector3& GetTranslate() { return translate_; }
 
 private:
+	/*==================== メンバ関数の宣言 ====================*/
 	// 変換行列用のResourceとデータの作成関数
 	/// <summary>
 	/// 変換行列用のリソースを作成する
@@ -55,6 +58,7 @@ private:
 	/// </summary>
 	void MapTransformationMatrix();
 
+	/*==================== メンバ変数 ====================*/
 	// DirectXCommonのインスタンス
 	DirectXCommon* dxCommon_ = nullptr;
 	// ModelPSOのインスタンス

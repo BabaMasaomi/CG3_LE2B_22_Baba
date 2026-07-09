@@ -38,6 +38,7 @@ struct ModelData {
 
 class Model {
 public:
+	/*==================== メンバ関数の宣言 ====================*/
 	/// <summary>
 	/// モデルの初期化
 	/// </summary>
@@ -78,6 +79,7 @@ public:
 	ID3D12Resource* GetMaterialResource() const { return materialResource_.Get(); }
 
 private:
+	/*==================== メンバ関数の宣言 ====================*/
 	// VertexResourceとVertexBufferViewの作成関数	
 	/// <summary>
 	/// 頂点リソースを作成する
@@ -102,6 +104,7 @@ private:
 	/// </summary>
 	void MapMaterial();
 
+	/*==================== メンバ変数 ====================*/
 	// DirectXCommonのインスタンス
 	DirectXCommon* dxCommon_ = nullptr;
 	// TextureManagerのインスタンス

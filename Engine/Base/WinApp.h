@@ -4,12 +4,14 @@
 
 class WinApp {
 public:
+	/*==================== メンバ変数 ====================*/
 	// クライアント領域サイズ
 	// ウィンドウの幅
 	static const int32_t kClientWidth_ = 1280;
 	// ウィンドウの高さ
 	static const int32_t kClientHeight_ = 720;
 
+	/*==================== メンバ関数とデストラクタの宣言 ====================*/
 	// デストラクタ
 	~WinApp();
 
@@ -32,6 +34,7 @@ public:
 	/// <param name="delta">ホイールの回転量</param>
 	void AddWheelDelta(int delta);
 
+	/*==================== アクセッサ ====================*/
 	// ゲッター
 	HWND GetHwnd() const { return hwnd_; }
 	int GetWheelDelta() const { return wheelDelta_; }
@@ -40,6 +43,7 @@ public:
 
 
 private:
+	/*==================== メンバ変数 ====================*/
 	// ウィンドウプロシージャ
 	HWND hwnd_ = nullptr;
 	// メッセージ

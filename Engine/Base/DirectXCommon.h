@@ -14,6 +14,7 @@ class WinApp;
 
 class DirectXCommon {
 public:
+	/*==================== メンバ関数とデストラクタの宣言 ====================*/
 	// デストラクタ
 	~DirectXCommon();
 
@@ -47,6 +48,7 @@ public:
 	/// </summary>
 	void ResetCommandList();
 
+	/*==================== アクセッサ ====================*/
 	// ゲッター
 	uint32_t GetDescriptorSizeSRV() const { return DescriptorSizeSRV_; }
 	uint32_t GetDescriptorSizeRTV() const { return DescriptorSizeRTV_; }
@@ -60,9 +62,8 @@ public:
 	D3D12_RENDER_TARGET_VIEW_DESC GetrtvDesc() const { return rtvDesc_; }
 
 private:
-	// ウィンドウアプリケーションのポインタ
-	WinApp* winApp_ = nullptr;
 
+	/*==================== メンバ関数の宣言 ====================*/
 	/// <summary>
 	/// デバッグレイヤーの初期化
 	/// </summary>
@@ -108,6 +109,10 @@ private:
 	/// ViewPortとScissorRectの生成
 	/// </summary>
 	void CreateViewport();
+
+	/*==================== メンバ変数 ====================*/
+	// ウィンドウアプリケーションのポインタ
+	WinApp* winApp_ = nullptr;
 
 #ifdef _DEBUG
 	// デバッグレイヤーのコントローラー

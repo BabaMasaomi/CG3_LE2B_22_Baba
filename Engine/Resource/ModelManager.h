@@ -10,6 +10,7 @@ class Model;
 
 class ModelManager {
 public:
+	/*==================== メンバ関数の宣言 ====================*/
 	/// <summary>
 	/// ModelManagerの初期化
 	/// </summary>
@@ -26,6 +27,7 @@ public:
 	Model* LoadModel(const std::string& directory, const std::string& filename);
 
 private:
+	/*==================== メンバ変数 ====================*/
 	// DirectXCommonのインスタンス
 	DirectXCommon* dxCommon_ = nullptr;
 	// TextureManagerのインスタンス
