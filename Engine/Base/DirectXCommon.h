@@ -98,8 +98,8 @@ namespace Engine {
 		uint32_t GetDescriptorSizeDSV() const { return DescriptorSizeDSV_; }
 		ID3D12Device* GetDevice() const { return device_.Get(); }
 		ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
-		const D3D12_VIEWPORT& GetViewPort() const { return viewPort_; }
-		const D3D12_RECT& GetScissorRect() const { return scissorRect_; }
+		//const D3D12_VIEWPORT& GetViewPort() const { return viewPort_; }
+		//const D3D12_RECT& GetScissorRect() const { return scissorRect_; }
 		ID3D12DescriptorHeap* GetSrvDescriptorHeap()const { return srvDescriptorHeap_.Get(); }
 		DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() const { return swapChainDesc_; }
 		D3D12_RENDER_TARGET_VIEW_DESC GetrtvDesc() const { return rtvDesc_; }

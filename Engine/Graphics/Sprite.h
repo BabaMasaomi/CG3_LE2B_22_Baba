@@ -41,6 +41,11 @@ namespace Engine {
 		Vector3& GetUVTransformRotate() { return uvTransform_.rotate; }
 		Vector3& GetUVTransformTranslate() { return uvTransform_.translate; }
 
+		// セッター
+		void SetUVTransformScale(Vector3 scale) { uvTransform_.scale = scale; }
+		void SetUVTransformRotate(Vector3 rotate) { uvTransform_.rotate = rotate; }
+		void SetUVTransformTranslate(Vector3 translate) { uvTransform_.translate = translate; }
+
 	private:
 		/*==================== メンバ関数の宣言 ====================*/
 		// VertexResourceとVertexBufferViewの作成関数

@@ -48,6 +48,11 @@ namespace Engine {
 		Vector3& GetRotate() { return rotate_; }
 		Vector3& GetTranslate() { return translate_; }
 
+		// セッター
+		void SetScale(Vector3 scale) { scale_ = scale; }
+		void SetRotate(Vector3 rotate) { rotate_ = rotate; }
+		void SetTranslate(Vector3 translate) { translate_ = translate; }
+
 	private:
 		/*==================== メンバ関数の宣言 ====================*/
 		// 変換行列用のResourceとデータの作成関数

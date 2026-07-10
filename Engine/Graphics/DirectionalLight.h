@@ -36,6 +36,11 @@ namespace Engine {
 		Vector3& GetDirection() { return direction_; }
 		float& GetIntensity() { return intensity_; }
 
+		// セッター
+		void SetColor(Vector4 color) { color_ = color; }
+		void SetDirection(Vector3 direction) { direction_ = direction; }
+		void SetIntensity(float intensity) { intensity_ = intensity; }
+
 	private:
 		/*==================== メンバ変数 ====================*/
 		// DirectXCommonのインスタンス

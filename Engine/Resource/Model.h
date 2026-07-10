@@ -72,6 +72,7 @@ namespace Engine {
 		/// <param name="uvTransform">更新するUV変換行列</param>
 		void UpdateUVTransform(const Matrix4x4& uvTransform);
 
+		/*==================== アクセッサ ====================*/
 		// ゲッター
 		D3D12_GPU_DESCRIPTOR_HANDLE GetTextureHandle() const;
 		const ModelData& GetModelData() const { return modelData_; }
@@ -79,6 +80,10 @@ namespace Engine {
 		const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() const { return indexBufferView_; }
 		uint32_t GetIndexCount() const { return indexCount_; }
 		ID3D12Resource* GetMaterialResource() const { return materialResource_.Get(); }
+
+		// セッター
+		void SetVertexBufferView(D3D12_VERTEX_BUFFER_VIEW vertexBufferView) { vertexBufferView_ = vertexBufferView; }
+		void SetIndexBufferView(D3D12_INDEX_BUFFER_VIEW indexBufferView) { indexBufferView_ = indexBufferView; }
 
 	private:
 		/*==================== メンバ関数の宣言 ====================*/
