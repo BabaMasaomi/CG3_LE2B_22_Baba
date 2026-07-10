@@ -22,22 +22,43 @@ namespace Engine {
 
 	/*-------------------- DirectXの初期化 --------------------*/
 	void DirectXCommon::Initialize(HWND hwnd, int32_t width, int32_t height) {
-		InitializeDebugLayer();		// デバッグレイヤーの初期化
-		CreateDevice();				// 1. Factoryの生成、アダプタ選択、D3D12デバイス生成
-		InitializeInfoQueue();		// Debug情報の初期化
-		CreateCommand();			// 2. コマンドキュー、コマンドアロケータ、コマンドリストの生成
-		CreateSwapChain(hwnd);		// 3. SwapChainの生成
-		CreateRenderTargetView();	// 4. レンダーターゲットビューの生成
-		// 深度バッファの生成
-		depthStencilResource_ = CreateDepthStencilTextureResource(device_.Get(), width, height);	// DepthStencilTextureResourceを作成
-		DepthStencilView();			// DepthStencilViewを作成
-		CreateFence();				// 5. Fenceの生成
-		CreateViewport();			// 描画用のViewPortとScissorRectの生成
+		// DirectXの初期化
+		InitializeDevice();
+		// レンダーターゲットの初期化
+		InitializeRenderTarget(hwnd, width, height);
+		// 同期オブジェクトの初期化
+		InitializeSynchronization();
+
+		// 描画用のViewPortとScissorRectの生成
+		CreateViewport();
 
 		// descriptorSizeを取得
 		DescriptorSizeSRV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		DescriptorSizeRTV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 		DescriptorSizeDSV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+	}
+
+	/*-------------------- デバイスの初期化 --------------------*/
+	void DirectXCommon::InitializeDevice() {
+		InitializeDebugLayer();		// デバッグレイヤーの初期化
+		CreateDevice();				// 1. Factoryの生成、アダプタ選択、D3D12デバイス生成
+		InitializeInfoQueue();		// Debug情報の初期化
+		CreateCommand();			// 2. コマンドキュー、コマンドアロケータ、コマンドリストの生成
+	}
+
+	/*-------------------- レンダーターゲットの初期化 --------------------*/
+	void DirectXCommon::InitializeRenderTarget(HWND hwnd, int32_t width, int32_t height) {
+		CreateSwapChain(hwnd);		// 3. SwapChainの生成
+		CreateRenderTargetView();	// 4. レンダーターゲットビューの生成
+		// DepthStencilTextureResourceを作成
+		depthStencilResource_ = CreateDepthStencilTextureResource(device_.Get(), width, height);
+		// DepthStencilViewを作成
+		DepthStencilView();
+	}
+
+	/*-------------------- 同期オブジェクトの初期化 --------------------*/
+	void DirectXCommon::InitializeSynchronization() {
+		CreateFence();	// 5. Fenceの生成
 	}
 
 	/*-------------------- デバッグレイヤーの初期化 --------------------*/
@@ -331,6 +352,7 @@ namespace Engine {
 		assert(SUCCEEDED(hr));
 	}
 
+
 	/*-------------------- コマンドを実行 --------------------*/
 	void DirectXCommon::ExecuteCommandList() {
 		// コマンドリストを閉じる
@@ -353,8 +375,13 @@ namespace Engine {
 
 	/*-------------------- commandListのReset --------------------*/
 	void DirectXCommon::ResetCommandList() {
-		commandAllocator_->Reset();
-		commandList_->Reset(commandAllocator_.Get(), nullptr);
+		HRESULT hr;
+
+		// 次のフレーム用のコマンドリストを準備する
+		hr = commandAllocator_->Reset();
+		assert(SUCCEEDED(hr));
+		hr = commandList_->Reset(commandAllocator_.Get(), nullptr);
+		assert(SUCCEEDED(hr));
 	}
 
 	/*-------------------- ViewPortとScissorRectの生成 --------------------*/

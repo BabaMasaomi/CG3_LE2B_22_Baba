@@ -28,6 +28,21 @@ namespace Engine {
 		/// <param name="width">ウィンドウの幅</param>
 		/// <param name="height">ウィンドウの高さ</param>
 		void Initialize(HWND hwnd, int32_t width, int32_t height);
+		/// <summary>
+		/// デバイスの初期化
+		/// </summary>
+		void InitializeDevice();
+		/// <summary>
+		/// レンダーターゲットの初期化
+		/// </summary>
+		/// <param name="hwnd">ウィンドウハンドル</param>
+		/// <param name="width">ウィンドウの幅</param>
+		/// <param name="height">ウィンドウの高さ</param>
+		void InitializeRenderTarget(HWND hwnd, int32_t width, int32_t height);
+		/// <summary>
+		/// 同期オブジェクトの初期化
+		/// </summary>
+		void InitializeSynchronization();
 
 		/// <summary>
 		/// 描画前の処理
