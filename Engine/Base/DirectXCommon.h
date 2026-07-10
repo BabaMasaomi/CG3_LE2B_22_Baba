@@ -27,6 +27,7 @@ namespace Engine {
 		/// <param name="hwnd">ウィンドウハンドル</param>
 		/// <param name="width">ウィンドウの幅</param>
 		/// <param name="height">ウィンドウの高さ</param>
+		/// <param name="winApp">WinAppのインスタンス</param>
 		void Initialize(HWND hwnd, int32_t width, int32_t height,WinApp* winApp);
 		/// <summary>
 		/// デバイスの初期化

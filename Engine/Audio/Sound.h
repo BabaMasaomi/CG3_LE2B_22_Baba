@@ -2,6 +2,7 @@
 #include <xaudio2.h>
 #include <fstream>
 #include <wrl.h>
+#include <vector>
 
 #pragma comment(lib,"xaudio2.lib")
 
@@ -25,10 +26,10 @@ namespace Engine {
 		WAVEFORMATEX fmt;	// 波形フォーマット
 	};
 
+	// サウンドデータ
 	struct SoundData {
-		WAVEFORMATEX wfex;			// 波形フォーマット
-		BYTE* pBuffer = nullptr;	// バッファの先頭アドレス
-		uint32_t bufferSize = 0;	// バッファのサイズ
+		WAVEFORMATEX wfex{};		// 波形フォーマット
+		std::vector<BYTE> buffer;	// バッファのデータ
 	};
 
 	/// <summary>
@@ -50,12 +51,6 @@ namespace Engine {
 		SoundData SoundLoadWave(const char* filename);
 
 		/// <summary>
-		/// サウンドデータのアンロード
-		/// </summary>
-		/// <param name="soundData">アンロードするサウンドデータ</param>
-		void SoundUnload(SoundData* soundData);
-
-		/// <summary>
 		/// WAVEファイルの再生
 		/// </summary>
 		/// <param name="soundData">再生するサウンドデータ</param>
@@ -69,7 +64,7 @@ namespace Engine {
 	private:
 		/*==================== メンバ変数 ====================*/
 		// XAudio2のインスタンス
-		Microsoft::WRL::ComPtr<IXAudio2> xAudio2_;
+		Microsoft::WRL::ComPtr<IXAudio2> xAudio2_ = nullptr;
 		// マスターボイス
 		IXAudio2MasteringVoice* masterVoice_;
 	};

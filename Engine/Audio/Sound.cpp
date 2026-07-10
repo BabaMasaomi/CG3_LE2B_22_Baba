@@ -61,38 +61,26 @@ namespace Engine {
 			// 再度読み込み
 			file.read((char*)&data, sizeof(data));
 		}
-
+		// Dataチャンクかチェック
 		if (strncmp(data.id, "data", 4) != 0) {
 			assert(0);
 		}
 
+		// returnする為の音声データ
+		SoundData soundData = {};
+
 		// Dataチャンクのデータ部(波形データ)の読み込み
-		char* pBuffer = new char[data.size];
-		file.read(pBuffer, data.size);
+		soundData.buffer.resize(data.size);
+		file.read(reinterpret_cast<char*>(soundData.buffer.data()), data.size);
 
 		// 3.ファイルクローズ
 		// Waveファイルを閉じる
 		file.close();
 
-		// 4.読み込んだ音声データをretun
-		// returnする為の音声データ
-		SoundData soundData = {};
-
+		// 4.読み込んだ音声データをretun		
 		soundData.wfex = format.fmt;
-		soundData.pBuffer = reinterpret_cast<BYTE*>(pBuffer);
-		soundData.bufferSize = data.size;
 
 		return soundData;
-	}
-
-	/*-------------------- 音声データの解放 --------------------*/
-	void Sound::SoundUnload(SoundData* soundData) {
-		// バッファのメモリを解放
-		delete[] soundData->pBuffer;
-
-		soundData->pBuffer = 0;
-		soundData->bufferSize = 0;
-		soundData->wfex = {};
 	}
 
 	/*-------------------- サウンドの再生 --------------------*/
@@ -106,8 +94,8 @@ namespace Engine {
 
 		// 再生する波形データの設定
 		XAUDIO2_BUFFER buf{};
-		buf.pAudioData = soundData.pBuffer;
-		buf.AudioBytes = soundData.bufferSize;
+		buf.pAudioData = soundData.buffer.data();
+		buf.AudioBytes =static_cast<UINT32>(soundData.buffer.size());
 		buf.Flags = XAUDIO2_END_OF_STREAM;
 
 		// 波形データの再生

@@ -240,7 +240,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 #endif
 
 	// 音声データ解放
-	sound.SoundUnload(&soundData1);
 	sound.Finalize();
 
 	dxCommon.WaitForGPU();
