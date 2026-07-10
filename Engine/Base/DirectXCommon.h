@@ -49,6 +49,23 @@ namespace Engine {
 		/// </summary>
 		void PreDraw();
 		/// <summary>
+		/// バリアを設定
+		/// </summary>
+		void TransitionToRenderTarget(UINT backBufferIndex);
+		/// <summary>
+		/// レンダーターゲットの設定
+		/// </summary>
+		void SetRenderTarget(UINT backBufferIndex);
+		/// <summary>
+		/// 画面のクリア
+		/// </summary>
+		void ClearScreen(UINT backBufferIndex);
+		/// <summary>
+		/// ディスクリプターヒープの設定
+		/// </summary>
+		void SetDescriptorHeap();
+
+		/// <summary>
 		/// 描画後の処理
 		/// </summary>
 		void PostDraw();

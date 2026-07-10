@@ -269,6 +269,18 @@ namespace Engine {
 		// これから書き込むバッファのインデックスを取得
 		UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
 
+		// バリアを設定
+		TransitionToRenderTarget(backBufferIndex);
+		// レンダーターゲットの設定
+		SetRenderTarget(backBufferIndex);
+		// 画面のクリア
+		ClearScreen(backBufferIndex);
+		// ディスクリプターヒープの設定
+		SetDescriptorHeap();
+	}
+
+	/*-------------------- バリアを設定 --------------------*/
+	void DirectXCommon::TransitionToRenderTarget(UINT backBufferIndex) {
 		// TransitionBarrierの設定
 		D3D12_RESOURCE_BARRIER barrier{};
 		// バリアはTransition
@@ -285,19 +297,25 @@ namespace Engine {
 		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
 		// TransitionBarrierを張る
 		commandList_->ResourceBarrier(1, &barrier);
-
+	}
+	/*-------------------- レンダーターゲットの設定 --------------------*/
+	void DirectXCommon::SetRenderTarget(UINT backBufferIndex) {
 		// 描画先のRTVとDSVを設定する
 		commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex], false, &dsvHandleCPU_);
 
 		// ビューポートとシザー矩形を設定する
 		commandList_->RSSetViewports(1, &viewPort_);
 		commandList_->RSSetScissorRects(1, &scissorRect_);
-
+	}
+	/*-------------------- 画面のクリア --------------------*/
+	void DirectXCommon::ClearScreen(UINT backBufferIndex) {
 		// 指定した色で画面全体をクリアする
 		float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };	// 青っぽい色
 		commandList_->ClearRenderTargetView(rtvHandles_[backBufferIndex], clearColor, 0, nullptr);
 		commandList_->ClearDepthStencilView(dsvHandleCPU_, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-
+	}
+	/*-------------------- ディスクリプターヒープの設定 --------------------*/
+	void DirectXCommon::SetDescriptorHeap() {
 		// 描画用のDescriptorHeapの設定
 		ID3D12DescriptorHeap* descripterHeaps[] = { srvDescriptorHeap_.Get() };
 		commandList_->SetDescriptorHeaps(1, descripterHeaps);
