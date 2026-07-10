@@ -323,11 +323,23 @@ namespace Engine {
 
 	/*-------------------- 7.描画後の処理 --------------------*/
 	void DirectXCommon::PostDraw() {
-		HRESULT hr;
-
 		// 現在のBackBuffer取得
 		UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
 
+		// present用のバリアを設定
+		TransitionToPresent(backBufferIndex);
+		// コマンドを実行
+		ExecuteCommandList();
+		// 画面の交換を指示
+		Present();
+		// GPUを待機
+		WaitForGPU();
+		// commandListのReset
+		ResetCommandList();
+	}
+
+	/*-------------------- present用のバリアを設定 --------------------*/
+	void DirectXCommon::TransitionToPresent(UINT backBufferIndex) {
 		// 画面に描く処理が終わり、画面に映すので状態を遷移させる
 		// RenderTargetからPresentにする
 		D3D12_RESOURCE_BARRIER barrier{};
@@ -339,17 +351,23 @@ namespace Engine {
 		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 		// TransitionBarrierを張る
 		commandList_->ResourceBarrier(1, &barrier);
-
-		// コマンドリストの内容を確定させる。全てのコマンドを積んでからcloseする
-		hr = commandList_->Close();
+	}
+	/*-------------------- コマンドを実行 --------------------*/
+	void DirectXCommon::ExecuteCommandList() {
+		// コマンドリストを閉じる
+		HRESULT hr = commandList_->Close();
 		assert(SUCCEEDED(hr));
-
-		// GPUにコマンドリスト実行を指示する
+		// GPUへ投げる
 		ID3D12CommandList* commandLists[] = { commandList_.Get() };
 		commandQueue_->ExecuteCommandLists(1, commandLists);
+	}
+	/*-------------------- 画面の交換を指示 --------------------*/
+	void DirectXCommon::Present() {
 		// GPUとOSに画面の交換を指示する(ここで画面反映)
 		swapChain_->Present(1, 0);
-
+	}
+	/*-------------------- GPUを待機 --------------------*/
+	void DirectXCommon::WaitForGPU() {
 		// Fenceの値の更新
 		fenceValue_++;
 		// GPUがここまでたどり着いた時、Fenceの値を指定した値に代入するようにSignalを送る
@@ -362,35 +380,7 @@ namespace Engine {
 			// イベントが起きるまで待つ
 			WaitForSingleObject(fenceEvent_, INFINITE);
 		}
-
-		// 次のフレーム用のコマンドリストを準備する
-		hr = commandAllocator_->Reset();
-		assert(SUCCEEDED(hr));
-		hr = commandList_->Reset(commandAllocator_.Get(), nullptr);
-		assert(SUCCEEDED(hr));
 	}
-
-
-	/*-------------------- コマンドを実行 --------------------*/
-	void DirectXCommon::ExecuteCommandList() {
-		// コマンドリストを閉じる
-		HRESULT hr = commandList_->Close();
-		assert(SUCCEEDED(hr));
-		// GPUへ投げる
-		ID3D12CommandList* commandLists[] = { commandList_.Get() };
-		commandQueue_->ExecuteCommandLists(1, commandLists);
-	}
-
-	/*-------------------- GPUを待機 --------------------*/
-	void DirectXCommon::WaitForGPU() {
-		fenceValue_++;
-		commandQueue_->Signal(fence_.Get(), fenceValue_);
-		if (fence_->GetCompletedValue() < fenceValue_) {
-			fence_->SetEventOnCompletion(fenceValue_, fenceEvent_);
-			WaitForSingleObject(fenceEvent_, INFINITE);
-		}
-	}
-
 	/*-------------------- commandListのReset --------------------*/
 	void DirectXCommon::ResetCommandList() {
 		HRESULT hr;

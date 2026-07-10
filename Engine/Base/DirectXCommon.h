@@ -69,17 +69,25 @@ namespace Engine {
 		/// 描画後の処理
 		/// </summary>
 		void PostDraw();
-
+		/// <summary>
+		/// present用のバリアを設定
+		/// </summary>
+		/// <param name="backBufferIndex"></param>
+		void TransitionToPresent(UINT backBufferIndex);
 		/// <summary>
 		/// コマンドを実行
 		/// </summary>
 		void ExecuteCommandList();
 		/// <summary>
+		/// 画面の交換を指示
+		/// </summary>
+		void Present();
+		/// <summary>
 		/// GPUを待機
 		/// </summary>
 		void WaitForGPU();
 		/// <summary>
-		/// コマンドリストをリセット
+		/// commandListのReset
 		/// </summary>
 		void ResetCommandList();
 
