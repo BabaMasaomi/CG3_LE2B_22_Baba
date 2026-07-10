@@ -21,7 +21,9 @@ namespace Engine {
 	}
 
 	/*-------------------- DirectXの初期化 --------------------*/
-	void DirectXCommon::Initialize(HWND hwnd, int32_t width, int32_t height) {
+	void DirectXCommon::Initialize(HWND hwnd, int32_t width, int32_t height, WinApp* winApp) {
+		winApp_ = winApp;
+
 		// DirectXの初期化
 		InitializeDevice();
 		// レンダーターゲットの初期化
@@ -162,8 +164,8 @@ namespace Engine {
 	/*-------------------- 3.スワップチェーンの生成 --------------------*/
 	void DirectXCommon::CreateSwapChain(HWND hwnd) {
 		HRESULT hr;
-		swapChainDesc_.Width = WinApp::kClientWidth_;					// ウィンドウの横幅。クライアント領域と同じにする
-		swapChainDesc_.Height = WinApp::kClientHeight_;					// ウィンドウの縦幅。クライアント領域と同じにする
+		swapChainDesc_.Width = winApp_->GetClientWidth();					// ウィンドウの横幅。クライアント領域と同じにする
+		swapChainDesc_.Height = winApp_->GetClientHeight();					// ウィンドウの縦幅。クライアント領域と同じにする
 		swapChainDesc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM;				// 色の形式
 		swapChainDesc_.SampleDesc.Count = 1;							// マルチサンプルしない
 		swapChainDesc_.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;	// 描画のターゲットとして使う
@@ -395,14 +397,14 @@ namespace Engine {
 	/*-------------------- ViewPortとScissorRectの生成 --------------------*/
 	void DirectXCommon::CreateViewport() {
 		// ビューポートの設定
-		viewPort_.Width = static_cast<float>(WinApp::kClientWidth_);
-		viewPort_.Height = static_cast<float>(WinApp::kClientHeight_);
+		viewPort_.Width = static_cast<float>(winApp_->GetClientWidth());
+		viewPort_.Height = static_cast<float>(winApp_->GetClientHeight());
 		viewPort_.MinDepth = 0.0f;
 		viewPort_.MaxDepth = 1.0f;
 		// シザー矩形の設定
 		scissorRect_.left = 0;
 		scissorRect_.top = 0;
-		scissorRect_.right = WinApp::kClientWidth_;
-		scissorRect_.bottom = WinApp::kClientHeight_;
+		scissorRect_.right = winApp_->GetClientWidth();
+		scissorRect_.bottom = winApp_->GetClientHeight();
 	}
 }

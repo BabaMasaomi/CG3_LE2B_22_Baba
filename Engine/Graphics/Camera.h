@@ -1,5 +1,6 @@
 #pragma once
 #include "struct.h"
+#include <cstdint>
 
 namespace Engine {
 
@@ -18,7 +19,7 @@ namespace Engine {
 		/// <param name="width">ウィンドウの幅</param>
 		/// <param name="height">ウィンドウの高さ</param>
 		/// <param name="input">Inputクラスのインスタンス</param>
-		void Initialize(float width, float height, Input* input);
+		void Initialize(int32_t width, int32_t height, Input* input);
 		/// <summary>
 		/// Cameraの更新
 		/// </summary>

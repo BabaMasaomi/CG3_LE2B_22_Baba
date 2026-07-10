@@ -85,7 +85,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 
 	// DirectXの初期化
 	DirectXCommon dxCommon;
-	dxCommon.Initialize(winApp.GetHwnd(), winApp.kClientWidth_, winApp.kClientHeight_);
+	dxCommon.Initialize(winApp.GetHwnd(), winApp.GetClientWidth(), winApp.GetClientHeight(), &winApp);
 
 	// DXCの初期化
 	DXCManager dxcManager;
@@ -115,7 +115,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 
 	// カメラの初期化
 	Camera camera;
-	camera.Initialize(WinApp::kClientWidth_, WinApp::kClientHeight_, &input);
+	camera.Initialize(winApp.GetClientWidth(), winApp.GetClientHeight(), &input);
 
 	// 平行光源の初期化
 	DirectionalLight directionalLight;
@@ -187,7 +187,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 				camera.SetDebugMode(camera.GetDebugMode());
 			}
 			if (ImGui::Button("Reset")) {
-				camera.Initialize(WinApp::kClientWidth_, WinApp::kClientHeight_, &input);
+				camera.Initialize(winApp.GetClientWidth(), winApp.GetClientHeight(), &input);
 			}
 		}
 		// Lightを調整

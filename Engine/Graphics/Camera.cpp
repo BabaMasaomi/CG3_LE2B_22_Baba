@@ -11,7 +11,7 @@ namespace Engine {
 	}
 
 	/*-------------------- 初期化 --------------------*/
-	void Camera::Initialize(float width, float height, Input* input) {
+	void Camera::Initialize(int32_t width, int32_t height, Input* input) {
 		// カメラの変換情報を初期化
 		transform_.scale = { 1.0f,1.0f,1.0f };
 		transform_.rotate = { 0.3f,0.0f,0.0f };
@@ -27,7 +27,7 @@ namespace Engine {
 		input_ = input;
 
 		// 透視投影行列を作るために、アスペクト比を計算しておく
-		aspectRatio_ = width / height;
+		aspectRatio_ = float(width) / float(height);
 
 		// ImGui等で弄る用の変数に初期値を入れておく
 		rotate_ = transform_.rotate;

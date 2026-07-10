@@ -6,13 +6,6 @@ namespace Engine {
 
 	class WinApp {
 	public:
-		/*==================== メンバ変数 ====================*/
-		// クライアント領域サイズ
-		// ウィンドウの幅
-		static const int32_t kClientWidth_ = 1280;
-		// ウィンドウの高さ
-		static const int32_t kClientHeight_ = 720;
-
 		/*==================== メンバ関数とデストラクタの宣言 ====================*/
 		// デストラクタ
 		~WinApp();
@@ -38,6 +31,8 @@ namespace Engine {
 
 		/*==================== アクセッサ ====================*/
 		// ゲッター
+		int32_t GetClientWidth() const { return kClientWidth_; }
+		int32_t GetClientHeight() const { return kClientHeight_; }
 		HWND GetHwnd() const { return hwnd_; }
 		int GetWheelDelta() const { return wheelDelta_; }
 		void ResetWheelDelta() { wheelDelta_ = 0; }
@@ -46,6 +41,12 @@ namespace Engine {
 
 	private:
 		/*==================== メンバ変数 ====================*/
+		// クライアント領域サイズ
+		// ウィンドウの幅
+		static const int32_t kClientWidth_ = 1280;
+		// ウィンドウの高さ
+		static const int32_t kClientHeight_ = 720;
+
 		// ウィンドウプロシージャ
 		HWND hwnd_ = nullptr;
 		// メッセージ
