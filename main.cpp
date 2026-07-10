@@ -13,7 +13,7 @@
 #include "ModelPSO.h"
 #include "Model.h"
 #include "Object3D.h"
-#include "Sound.h"
+#include "Audio.h"
 // Debug用のあれこれを使える様にする
 #include <dbghelp.h>
 #include <strsafe.h>
@@ -135,13 +135,13 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	// モデルの読み込み
 	object3d.SetModel(modelManager.LoadModel("resources", "axis.obj"));
 
-	// Soundの初期化
-	Sound sound;
-	sound.Initialize();
+	// Audioの初期化
+	Audio audio;
+	audio.Initialize();
 	// 音声読み込み
-	SoundData soundData1 = sound.SoundLoadWave("resources/fanfare.wav");
+	SoundData audioData1 = audio.AudioLoadWave("resources/fanfare.wav");
 	// サウンド再生
-	sound.SoundPlayWave(soundData1);
+	audio.AudioPlayWave(audioData1);
 
 	// ログ出力
 	Log(logStream, "Start logging!");
@@ -240,7 +240,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 #endif
 
 	// 音声データ解放
-	sound.Finalize();
+	audio.Finalize();
 
 	dxCommon.WaitForGPU();
 

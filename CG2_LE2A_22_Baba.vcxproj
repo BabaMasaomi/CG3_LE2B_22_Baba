@@ -129,7 +129,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Resource\ModelManager.cpp" />
     <ClCompile Include="Engine\Graphics\ModelPSO.cpp" />
     <ClCompile Include="Engine\Graphics\Object3D.cpp" />
-    <ClCompile Include="Engine\Audio\Sound.cpp" />
+    <ClCompile Include="Engine\Audio\Audio.cpp" />
     <ClCompile Include="Engine\Graphics\Sprite.cpp" />
     <ClCompile Include="Engine\Resource\TextureManager.cpp" />
     <ClCompile Include="Engine\Math\Utility.cpp" />
@@ -155,7 +155,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Resource\ModelManager.h" />
     <ClInclude Include="Engine\Graphics\ModelPSO.h" />
     <ClInclude Include="Engine\Graphics\Object3D.h" />
-    <ClInclude Include="Engine\Audio\Sound.h" />
+    <ClInclude Include="Engine\Audio\Audio.h" />
     <ClInclude Include="Engine\Graphics\Sprite.h" />
     <ClInclude Include="Engine\Math\struct.h" />
     <ClInclude Include="Engine\Resource\TextureManager.h" />

@@ -180,7 +180,7 @@
 //      Font Size in Pixels or Points
 //         The preferred interface for specifying font sizes in stb_truetype
 //         is to specify how tall the font's vertical extent should be in pixels.
-//         If that sounds good enough, skip the next paragraph.
+//         If that audios good enough, skip the next paragraph.
 //
 //         Most font APIs instead use "points", which are a common typographic
 //         measurement for describing font size, defined as 72 points per inch.

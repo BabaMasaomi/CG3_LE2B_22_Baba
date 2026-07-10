@@ -35,7 +35,7 @@ namespace Engine {
 	/// <summary>
 	/// サウンドの管理クラス
 	/// </summary>
-	class Sound {
+	class Audio {
 	public:
 		/*==================== メンバ関数の宣言 ====================*/
 		/// <summary>
@@ -48,13 +48,13 @@ namespace Engine {
 		/// </summary>
 		/// <param name="filename">ファイル名</param>
 		/// <returns>ロードしたサウンドデータ</returns>
-		SoundData SoundLoadWave(const char* filename);
+		SoundData AudioLoadWave(const char* filename);
 
 		/// <summary>
 		/// WAVEファイルの再生
 		/// </summary>
 		/// <param name="soundData">再生するサウンドデータ</param>
-		void SoundPlayWave(const SoundData& soundData);
+		void AudioPlayWave(const SoundData& soundData);
 
 		/// <summary>
 		/// サウンドの終了処理

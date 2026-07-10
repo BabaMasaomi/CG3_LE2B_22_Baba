@@ -1,10 +1,10 @@
-#include "Sound.h"
+#include "Audio.h"
 #include <cassert>
 
 namespace Engine {
 
 	/*-------------------- 初期化 --------------------*/
-	void Sound::Initialize() {
+	void Audio::Initialize() {
 		HRESULT result;
 
 		// XAudioのインスタンスを生成
@@ -17,7 +17,7 @@ namespace Engine {
 	}
 
 	/*-------------------- 音声データの読み込み --------------------*/
-	SoundData Sound::SoundLoadWave(const char* filename) {
+	SoundData Audio::AudioLoadWave(const char* filename) {
 		// 1.ファイルオープン 
 		// ファイル入力ストリームのインスタンス
 		std::ifstream file;
@@ -84,7 +84,7 @@ namespace Engine {
 	}
 
 	/*-------------------- サウンドの再生 --------------------*/
-	void Sound::SoundPlayWave(const SoundData& soundData) {
+	void Audio::AudioPlayWave(const SoundData& soundData) {
 		HRESULT result;
 
 		// 波形フォーマットを元にSourceVoiceの生成
@@ -104,7 +104,7 @@ namespace Engine {
 	}
 
 	/*-------------------- 終了処理 --------------------*/
-	void Sound::Finalize() {
+	void Audio::Finalize() {
 		masterVoice_->DestroyVoice();
 		masterVoice_ = nullptr;
 	}
