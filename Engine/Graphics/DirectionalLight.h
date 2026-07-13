@@ -32,9 +32,9 @@ namespace Engine {
 		/*==================== アクセッサ ====================*/
 		// ゲッター
 		ID3D12Resource* GetResource() const { return resource_.Get(); }
-		Vector4& GetColor() { return color_; }
-		Vector3& GetDirection() { return direction_; }
-		float& GetIntensity() { return intensity_; }
+		Vector4 GetColor() { return color_; }
+		Vector3 GetDirection() { return direction_; }
+		float GetIntensity() { return intensity_; }
 
 		// セッター
 		void SetColor(Vector4 color) { color_ = color; }
