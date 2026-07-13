@@ -129,11 +129,18 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	Sprite sprite;
 	sprite.Initialize(&dxCommon, &modelPSO, &textureManager, &winApp);
 
+	/*-------------------- モデルの描画 --------------------*/
+	// モデルの読み込み
+	Model* axis = modelManager.LoadModel("resources", "axis.obj");
+
 	// Object3Dの初期化
 	Object3D object3d;
 	object3d.Initialize(&dxCommon, &modelPSO, &directionalLight);
-	// モデルの読み込み
-	object3d.SetModel(modelManager.LoadModel("resources", "axis.obj"));
+	object3d.SetModel(axis);
+	// Addの初期化(同一モデルを複数個配置できるか試す)
+	Object3D Add;
+	Add.Initialize(&dxCommon, &modelPSO, &directionalLight);
+	Add.SetModel(axis);
 
 	// Audioの初期化
 	Audio audio;
@@ -157,10 +164,14 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		winApp.ProcessMessage();
 
 		/*-------------------- 更新処理 --------------------*/
+		// プロジェクトの種類問わず3種は固定配置
 		input.Update();
 		camera.Update();
 		directionalLight.Update();
+
+		// 作りたい物に合わせて配置
 		object3d.Update(camera);
+		Add.Update(camera);
 		sprite.Update();
 
 		/*-------------------- 描画処理 --------------------*/
@@ -234,6 +245,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 #endif
 
 		// モデルの描画
+		Add.Draw();
 		object3d.Draw();
 
 		// スプライトの描画

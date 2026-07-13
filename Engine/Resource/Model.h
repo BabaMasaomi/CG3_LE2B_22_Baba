@@ -109,12 +109,7 @@ namespace Engine {
 
 		/*==================== メンバ変数 ====================*/
 		// DirectXCommonのインスタンス
-		DirectXCommon* dxCommon_ = nullptr;
-		// TextureManagerのインスタンス
-		TextureManager* textureManager_ = nullptr;
-
-		// テクスチャのインデックス
-		uint32_t textureIndex_ = 0;
+		DirectXCommon* dxCommon_ = nullptr;		
 
 		// ModelDataを保持する
 		ModelData modelData_ = {};
@@ -134,5 +129,11 @@ namespace Engine {
 		Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_ = nullptr;
 		// マテリアルデータ
 		Material* materialData_ = nullptr;
+
+		// TextureManagerのインスタンス
+		TextureManager* textureManager_ = nullptr;
+
+		// テクスチャのインデックス
+		uint32_t textureIndex_ = 0;
 	};
 }

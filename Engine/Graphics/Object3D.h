@@ -91,9 +91,9 @@ namespace Engine {
 
 		// UVTransform用の変数
 		Transform uvTransform_ = {
-			{1.0f,1.0f,1.0f},
-			{0.0f,0.0f,0.0f},
-			{0.0f,0.0f,0.0f},
+			{1.0f,1.0f,1.0f},	// scale
+			{0.0f,0.0f,0.0f},	// rotate
+			{0.0f,0.0f,0.0f},	// translate
 		};
 
 		// 変換行列用のリソース
