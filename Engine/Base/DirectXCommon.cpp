@@ -21,13 +21,13 @@ namespace Engine {
 	}
 
 	/*-------------------- DirectXの初期化 --------------------*/
-	void DirectXCommon::Initialize(HWND hwnd, int32_t width, int32_t height, WinApp* winApp) {
+	void DirectXCommon::Initialize(WinApp* winApp) {
 		winApp_ = winApp;
 
 		// DirectXの初期化
 		InitializeDevice();
 		// レンダーターゲットの初期化
-		InitializeRenderTarget(hwnd, width, height);
+		InitializeRenderTarget(winApp->GetHwnd(), winApp->GetClientWidth(), winApp->GetClientHeight());
 		// 同期オブジェクトの初期化
 		InitializeSynchronization();
 

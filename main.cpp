@@ -85,7 +85,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 
 	// DirectXの初期化
 	DirectXCommon dxCommon;
-	dxCommon.Initialize(winApp.GetHwnd(), winApp.GetClientWidth(), winApp.GetClientHeight(), &winApp);
+	dxCommon.Initialize(&winApp);
 
 	// DXCの初期化
 	DXCManager dxcManager;
