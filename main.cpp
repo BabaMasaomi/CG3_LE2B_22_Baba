@@ -226,9 +226,18 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		if (ImGui::CollapsingHeader("UVTransform")) {
 			ImGui::PushID(2);
 			ImGui::Checkbox("Sprite", &showSprite);
-			ImGui::DragFloat2("Scale", &sprite.GetUVTransformScale().x, 0.01f, -10.0f, 10.0f);
-			ImGui::DragFloat2("Translate", &sprite.GetUVTransformTranslate().x, 0.01f, -10.0f, 10.0f);
-			ImGui::SliderAngle("Rotate", &sprite.GetUVTransformRotate().z);
+			Vector3 UVScale = sprite.GetUVTransformScale();
+			Vector3 UVTranslate = sprite.GetUVTransformTranslate();
+			Vector3 UVRotate = sprite.GetUVTransformRotate();
+			if (ImGui::DragFloat2("Scale", &UVScale.x, 0.01f, -10.0f, 10.0f)) {
+				sprite.SetUVTransformScale(UVScale);
+			}
+			if (ImGui::DragFloat2("Translate", &UVTranslate.x, 0.01f, -10.0f, 10.0f)) {
+				sprite.SetUVTransformTranslate(UVTranslate);
+			}
+			if (ImGui::SliderAngle("Rotate", &UVRotate.z)) {
+				sprite.SetUVTransformRotate(UVRotate);
+			}
 			ImGui::PopID();
 		}
 

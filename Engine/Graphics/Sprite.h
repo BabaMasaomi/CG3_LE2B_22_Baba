@@ -37,9 +37,9 @@ namespace Engine {
 
 		/*==================== アクセッサ ====================*/
 		// ゲッター
-		Vector3& GetUVTransformScale() { return uvTransform_.scale; }
-		Vector3& GetUVTransformRotate() { return uvTransform_.rotate; }
-		Vector3& GetUVTransformTranslate() { return uvTransform_.translate; }
+		const Vector3 GetUVTransformScale() { return uvTransform_.scale; }
+		const Vector3 GetUVTransformRotate() { return uvTransform_.rotate; }
+		const Vector3 GetUVTransformTranslate() { return uvTransform_.translate; }
 
 		// セッター
 		void SetUVTransformScale(Vector3 scale) { uvTransform_.scale = scale; }
