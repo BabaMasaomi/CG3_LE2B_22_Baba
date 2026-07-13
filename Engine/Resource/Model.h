@@ -75,7 +75,7 @@ namespace Engine {
 		/*==================== アクセッサ ====================*/
 		// ゲッター
 		D3D12_GPU_DESCRIPTOR_HANDLE GetTextureHandle() const;
-		const ModelData& GetModelData() const { return modelData_; }
+		const ModelData GetModelData() const { return modelData_; }
 		const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const { return vertexBufferView_; }
 		const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() const { return indexBufferView_; }
 		uint32_t GetIndexCount() const { return indexCount_; }
