@@ -44,9 +44,9 @@ namespace Engine {
 
 		/*==================== アクセッサ ====================*/
 		// ゲッター
-		Vector3& GetScale() { return scale_; }
-		Vector3& GetRotate() { return rotate_; }
-		Vector3& GetTranslate() { return translate_; }
+		const Vector3 GetScale() { return scale_; }
+		const Vector3 GetRotate() { return rotate_; }
+		const Vector3 GetTranslate() { return translate_; }
 
 		// セッター
 		void SetScale(Vector3 scale) { scale_ = scale; }

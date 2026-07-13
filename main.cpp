@@ -199,9 +199,18 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		// Modelを調整
 		if (ImGui::CollapsingHeader("Model")) {
 			ImGui::PushID(1);
-			ImGui::DragFloat3("Scale", &object3d.GetScale().x, 0.01f, -10.0f, 10.0f);
-			ImGui::DragFloat3("Rotate", &object3d.GetRotate().x, 0.01f, -10.0f, 10.0f);
-			ImGui::DragFloat3("Translate", &object3d.GetTranslate().x, 0.01f);
+			Vector3 scale = object3d.GetScale();
+			Vector3 rotate = object3d.GetRotate();
+			Vector3 translate = object3d.GetTranslate();
+			if (ImGui::DragFloat3("Scale", &scale.x, 0.01f, -10.0f, 10.0f)) {
+				object3d.SetScale(scale);
+			}
+			if (ImGui::DragFloat3("Rotate", &rotate.x, 0.01f, -10.0f, 10.0f)) {
+				object3d.SetRotate(rotate);
+			}
+			if (ImGui::DragFloat3("Translate", &translate.x, 0.01f)) {
+				object3d.SetTranslate(translate);
+			}
 			ImGui::PopID();
 		}
 		// SpriteのUVTransformを調整
