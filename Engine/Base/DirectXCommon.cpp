@@ -31,13 +31,11 @@ namespace Engine {
 		// 同期オブジェクトの初期化
 		InitializeSynchronization();
 
-		// 描画用のViewPortとScissorRectの生成
-		CreateViewport();
+		// 描画用のViewPortとScissorRectの初期化
+		InitializeViewport();
 
 		// descriptorSizeを取得
-		DescriptorSizeSRV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		DescriptorSizeRTV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-		DescriptorSizeDSV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+		InitializeDescriptorSize();
 	}
 
 	/*-------------------- デバイスの初期化 --------------------*/
@@ -50,8 +48,18 @@ namespace Engine {
 
 	/*-------------------- レンダーターゲットの初期化 --------------------*/
 	void DirectXCommon::InitializeRenderTarget(HWND hwnd, int32_t width, int32_t height) {
+		// SwapChainの初期化
+		InitializeSwapChain(hwnd);
+		// DepthStencilの初期化
+		InitializeDepthStencil(width, height);
+	}
+	/*-------------------- SwapChainの初期化 --------------------*/
+	void DirectXCommon::InitializeSwapChain(HWND hwnd) {
 		CreateSwapChain(hwnd);		// 3. SwapChainの生成
 		CreateRenderTargetView();	// 4. レンダーターゲットビューの生成
+	}
+	/*-------------------- DepthStencilの初期化 --------------------*/
+	void DirectXCommon::InitializeDepthStencil(int32_t width, int32_t height) {
 		// DepthStencilTextureResourceを作成
 		depthStencilResource_ = CreateDepthStencilTextureResource(device_.Get(), width, height);
 		// DepthStencilViewを作成
@@ -178,12 +186,23 @@ namespace Engine {
 
 	/*-------------------- 4.RTV(レンダーターゲットビュー)の生成 --------------------*/
 	void DirectXCommon::CreateRenderTargetView() {
-		HRESULT hr;
-
+		// ディスクリプタヒープを作成
+		CreateDescriptorHeaps();
+		// SwapChainのリソースを作成
+		CreateSwapChainResources();
+		// レンダーターゲットビューの生成
+		CreateRenderTargetViews();
+	}
+	/*-------------------- ディスクリプタヒープを作成 --------------------*/
+	void DirectXCommon::CreateDescriptorHeaps() {
 		// ディスクリプタヒープを作成(deviceは,Typeはレンダーターゲットビュー用,ダブルバッファ用に2つ,shaderVisibleはfalse)
 		rtvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
 		// SRV用の物も作成(deviceは,Typeはレンダーターゲットビュー用,数は128,shaderVisibleはtrue)
 		srvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
+	}
+	/*-------------------- SwapChainのリソースを作成 --------------------*/
+	void DirectXCommon::CreateSwapChainResources() {
+		HRESULT hr;
 
 		// SwapChainからBackBuffer取得
 		hr = swapChain_->GetBuffer(0, IID_PPV_ARGS(&swapChainResources_[0]));
@@ -191,7 +210,9 @@ namespace Engine {
 		assert(SUCCEEDED(hr));
 		hr = swapChain_->GetBuffer(1, IID_PPV_ARGS(&swapChainResources_[1]));
 		assert(SUCCEEDED(hr));
-
+	}
+	/*-------------------- レンダーターゲットビューの生成 --------------------*/
+	void DirectXCommon::CreateRenderTargetViews() {
 		// RTV設定
 		rtvDesc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;		// 出力結果をSRGBに変換して書き込む
 		rtvDesc_.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;	// 2Dテクスチャとして描画
@@ -394,8 +415,8 @@ namespace Engine {
 		assert(SUCCEEDED(hr));
 	}
 
-	/*-------------------- ViewPortとScissorRectの生成 --------------------*/
-	void DirectXCommon::CreateViewport() {
+	/*-------------------- ViewPortとScissorRectの初期化 --------------------*/
+	void DirectXCommon::InitializeViewport() {
 		// ビューポートの設定
 		viewPort_.Width = static_cast<float>(winApp_->GetClientWidth());
 		viewPort_.Height = static_cast<float>(winApp_->GetClientHeight());
@@ -406,5 +427,15 @@ namespace Engine {
 		scissorRect_.top = 0;
 		scissorRect_.right = winApp_->GetClientWidth();
 		scissorRect_.bottom = winApp_->GetClientHeight();
+	}
+
+	/*-------------------- descriptorSizeを取得 --------------------*/
+	void DirectXCommon::InitializeDescriptorSize() {
+		// SRVのサイズを取得
+		DescriptorSizeSRV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		// RTVとDSVはSRVと同じサイズなので、SRVのサイズを取得しておけば良い
+		DescriptorSizeRTV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+		// DSVのサイズを取得
+		DescriptorSizeDSV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 	}
 }

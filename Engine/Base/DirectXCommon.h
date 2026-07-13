@@ -41,6 +41,17 @@ namespace Engine {
 		/// <param name="height">ウィンドウの高さ</param>
 		void InitializeRenderTarget(HWND hwnd, int32_t width, int32_t height);
 		/// <summary>
+		/// SwapChainの初期化
+		/// </summary>
+		/// <param name="hwnd">ウィンドウハンドル</param>
+		void InitializeSwapChain(HWND hwnd);
+		/// <summary>
+		/// DepthStencilの初期化
+		/// </summary>
+		/// <param name="width">ウィンドウの幅</param>
+		/// <param name="height">ウィンドウの高さ</param>
+		void InitializeDepthStencil(int32_t width, int32_t height);
+		/// <summary>
 		/// 同期オブジェクトの初期化
 		/// </summary>
 		void InitializeSynchronization();
@@ -132,6 +143,18 @@ namespace Engine {
 		/// </summary>
 		void CreateRenderTargetView();
 		/// <summary>
+		/// ディスクリプタヒープを作成
+		/// </summary>
+		void CreateDescriptorHeaps();
+		/// <summary>
+		/// SwapChainのリソースを作成
+		/// </summary>
+		void CreateSwapChainResources();
+		/// <summary>
+		/// レンダーターゲットビューの生成
+		/// </summary>
+		void CreateRenderTargetViews();
+		/// <summary>
 		/// DepthStencilTextureResourceを作成
 		/// </summary>
 		/// <param name="device">D3D12デバイス</param>
@@ -148,9 +171,13 @@ namespace Engine {
 		/// </summary>
 		void CreateFence();
 		/// <summary>
-		/// ViewPortとScissorRectの生成
+		/// ViewPortとScissorRectの初期化
 		/// </summary>
-		void CreateViewport();
+		void InitializeViewport();
+		/// <summary>
+		/// descriptorSizeを取得
+		/// </summary>
+		void InitializeDescriptorSize();
 
 		/*==================== メンバ変数 ====================*/
 		// ウィンドウアプリケーションのポインタ

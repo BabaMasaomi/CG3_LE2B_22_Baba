@@ -163,18 +163,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		object3d.Update(camera);
 		sprite.Update();
 
-		if (input.PushKey(DIK_0)) {
-			OutputDebugStringA("PushKey: 0\n");
-		}
-
-		if (input.TriggerKey(DIK_1)) {
-			OutputDebugStringA("TriggerKey: 1\n");
-		}
-
-		if (input.ReleaseKey(DIK_2)) {
-			OutputDebugStringA("ReleaseKey: 2\n");
-		}
-
 		/*-------------------- 描画処理 --------------------*/
 		dxCommon.PreDraw();		// 描画前の処理
 
