@@ -183,8 +183,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		imguiManager.Begin();	// 以下にImGuiの内容を記述
 		// cameraの位置をリセット
 		if (ImGui::CollapsingHeader("DebugCamera")) {
-			if (ImGui::Checkbox("Enable", &camera.GetDebugMode())) {
-				camera.SetDebugMode(camera.GetDebugMode());
+			bool debugMode = camera.GetDebugMode();
+			if (ImGui::Checkbox("Enable", &debugMode)) {
+				camera.SetDebugMode(debugMode);
 			}
 			if (ImGui::Button("Reset")) {
 				camera.Initialize(winApp.GetClientWidth(), winApp.GetClientHeight(), &input);

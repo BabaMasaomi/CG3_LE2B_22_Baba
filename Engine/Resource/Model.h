@@ -81,10 +81,6 @@ namespace Engine {
 		uint32_t GetIndexCount() const { return indexCount_; }
 		ID3D12Resource* GetMaterialResource() const { return materialResource_.Get(); }
 
-		// セッター
-		void SetVertexBufferView(D3D12_VERTEX_BUFFER_VIEW vertexBufferView) { vertexBufferView_ = vertexBufferView; }
-		void SetIndexBufferView(D3D12_INDEX_BUFFER_VIEW indexBufferView) { indexBufferView_ = indexBufferView; }
-
 	private:
 		/*==================== メンバ関数の宣言 ====================*/
 		// VertexResourceとVertexBufferViewの作成関数	

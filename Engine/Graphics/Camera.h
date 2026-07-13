@@ -31,7 +31,7 @@ namespace Engine {
 		Vector3 GetRotate() { return rotate_; }
 		Vector3 GetTranslate() { return translate_; }
 		float GetDistance() { return distance_; }
-		bool& GetDebugMode() { return isDebugMode_; }	// ImGuiとの兼ね合いを加味して一旦そのまま
+		bool GetDebugMode() { return isDebugMode_; }
 
 		// セッター
 		void SetRotate(Vector3 rotate) { rotate_ = rotate; }
