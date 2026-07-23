@@ -96,7 +96,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Engine\Base\GameObject .cpp" />
+    <ClCompile Include="Engine\Base\GameObject.cpp" />
     <ClCompile Include="Engine\Graphics\Camera.cpp" />
     <ClCompile Include="Engine\Graphics\DirectionalLight.cpp" />
     <ClCompile Include="Engine\Base\DirectXCommon.cpp" />
