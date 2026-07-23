@@ -9,6 +9,7 @@
 #include "ModelManager.h"
 #include "Camera.h"
 #include "DirectionalLight.h"
+#include "SpritePSO.h"
 #include "Sprite.h"
 #include "ModelPSO.h"
 #include "Model.h"
@@ -119,17 +120,21 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 
 	// 平行光源の初期化
 	DirectionalLight directionalLight;
-	directionalLight.Initialize(&dxCommon);
+	directionalLight.Initialize(&dxCommon);	
 
+	// SpritePSOの初期化
+	SpritePSO spritePSO;
+	spritePSO.Initialize(&dxCommon, &dxcManager);
+
+	// Spriteの初期化(デバッグ用Spriteとして先頭で初期化し、uvCheckerを Index = 1 で固定しておく)
+	Sprite sprite;
+	sprite.Initialize(&dxCommon, &spritePSO, &textureManager, &winApp);
+
+	/*-------------------- モデルの描画 --------------------*/
 	// ModelPSOの初期化
 	ModelPSO modelPSO;
 	modelPSO.Initialize(&dxCommon, &dxcManager);
 
-	// Spriteの初期化(デバッグ用Spriteとして先頭で初期化し、uvCheckerを Index = 1 で固定しておく)
-	Sprite sprite;
-	sprite.Initialize(&dxCommon, &modelPSO, &textureManager, &winApp);
-
-	/*-------------------- モデルの描画 --------------------*/
 	// モデルの読み込み
 	Model* axis = modelManager.LoadModel("resources", "axis.obj");
 

@@ -25,7 +25,6 @@ namespace Engine {
 		// ゲッター
 		ID3D12RootSignature* GetRootSignature() const { return rootSignature_.Get(); }
 		ID3D12PipelineState* GetPipelineState() const { return pipelineState_.Get(); }
-		ID3D12PipelineState* GetSpritePipelineState() { return spritePipelineState_.Get(); }
 
 	private:
 		/*==================== メンバ関数の宣言 ====================*/
@@ -38,10 +37,6 @@ namespace Engine {
 		/// GraphicsPipelineの生成
 		/// </summary>
 		void CreateGraphicsPipeline();
-		/// <summary>
-		/// SpritePipelineの生成
-		/// </summary>
-		void CreateSpritePipeline();
 
 		/*==================== メンバ変数 ====================*/
 		// DirectXCommonのインスタンス
@@ -52,6 +47,5 @@ namespace Engine {
 		// PSOを生成するために必要なRootSignatureとPipelineStateを用意しておく
 		Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
 		Microsoft::WRL::ComPtr<ID3D12PipelineState> pipelineState_ = nullptr;
-		Microsoft::WRL::ComPtr<ID3D12PipelineState> spritePipelineState_ = nullptr;
 	};
 }
