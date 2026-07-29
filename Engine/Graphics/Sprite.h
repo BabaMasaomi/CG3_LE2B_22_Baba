@@ -8,7 +8,7 @@ namespace Engine {
 
 	// 前方宣言
 	class DirectXCommon;
-	class ModelPSO;
+	class SpritePSO;
 	class TextureManager;
 	class WinApp;
 
@@ -22,10 +22,10 @@ namespace Engine {
 		/// Spriteの初期化
 		/// </summary>
 		/// <param name="dxCommon">DirectXCommonのインスタンス</param>
-		/// <param name="modelPSO">ModelPSOのインスタンス</param>
+		/// <param name="spritePSO">SpritePSOのインスタンス</param>
 		/// <param name="textureManager">TextureManagerのインスタンス</param>
 		/// <param name="winApp">WinAppのインスタンス</param>
-		void Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, TextureManager* textureManager, WinApp* winApp);
+		void Initialize(DirectXCommon* dxCommon, SpritePSO* spritePSO, TextureManager* textureManager, WinApp* winApp);
 		/// <summary>
 		/// Spriteの更新
 		/// </summary>
@@ -99,8 +99,8 @@ namespace Engine {
 		/*==================== メンバ変数 ====================*/
 		// DirectXCommonのインスタンス
 		DirectXCommon* dxCommon_ = nullptr;
-		// ModelPSOのインスタンス
-		ModelPSO* modelPSO_ = nullptr;
+		// SpritePSOのインスタンス
+		SpritePSO* spritePSO_ = nullptr;
 		// TextureManagerのインスタンス
 		TextureManager* textureManager_ = nullptr;
 		// WinAppのインスタンス

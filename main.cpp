@@ -9,6 +9,7 @@
 #include "ModelManager.h"
 #include "Camera.h"
 #include "DirectionalLight.h"
+#include "SpritePSO.h"
 #include "Sprite.h"
 #include "ModelPSO.h"
 #include "Model.h"
@@ -121,26 +122,41 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	DirectionalLight directionalLight;
 	directionalLight.Initialize(&dxCommon);
 
+	// SpritePSOの初期化
+	SpritePSO spritePSO;
+	spritePSO.Initialize(&dxCommon, &dxcManager);
+
+	// Spriteの初期化(デバッグ用Spriteとして先頭で初期化し、uvCheckerを Index = 1 で固定しておく)
+	Sprite sprite;
+	sprite.Initialize(&dxCommon, &spritePSO, &textureManager, &winApp);
+
+	/*-------------------- モデルの描画 --------------------*/
 	// ModelPSOの初期化
 	ModelPSO modelPSO;
 	modelPSO.Initialize(&dxCommon, &dxcManager);
 
-	// Spriteの初期化(デバッグ用Spriteとして先頭で初期化し、uvCheckerを Index = 1 で固定しておく)
-	Sprite sprite;
-	sprite.Initialize(&dxCommon, &modelPSO, &textureManager, &winApp);
-
-	/*-------------------- モデルの描画 --------------------*/
 	// モデルの読み込み
 	Model* axis = modelManager.LoadModel("resources", "axis.obj");
+	Model* plane=modelManager.LoadModel("resources", "plane.obj");
+	Model* bunny = modelManager.LoadModel("resources", "bunny.obj");
+	Model* teapot = modelManager.LoadModel("resources", "teapot.obj");
 
 	// Object3Dの初期化
 	Object3D object3d;
 	object3d.Initialize(&dxCommon, &modelPSO, &directionalLight);
 	object3d.SetModel(axis);
-	// Addの初期化(同一モデルを複数個配置できるか試す)
-	Object3D Add;
-	Add.Initialize(&dxCommon, &modelPSO, &directionalLight);
-	Add.SetModel(axis);
+
+	// 平面の初期化
+
+	// ウサギの初期化
+	Object3D stanfordBunny;
+	stanfordBunny.Initialize(&dxCommon, &modelPSO, &directionalLight);
+	stanfordBunny.SetModel(bunny);
+
+	// ティーポットの初期化
+	Object3D utahTeapot;
+	utahTeapot.Initialize(&dxCommon, &modelPSO, &directionalLight);
+	utahTeapot.SetModel(teapot);
 
 	// Audioの初期化
 	Audio audio;
@@ -171,7 +187,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 
 		// 作りたい物に合わせて配置
 		object3d.Update(camera);
-		Add.Update(camera);
+		stanfordBunny.Update(camera);
+		utahTeapot.Update(camera);
 		sprite.Update();
 
 		/*-------------------- 描画処理 --------------------*/
@@ -245,8 +262,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 #endif
 
 		// モデルの描画
-		Add.Draw();
 		object3d.Draw();
+		stanfordBunny.Draw();
+		utahTeapot.Draw();
 
 		// スプライトの描画
 		if (showSprite) {
