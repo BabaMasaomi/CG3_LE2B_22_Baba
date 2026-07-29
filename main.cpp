@@ -178,8 +178,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	Log(logStream, "Start logging!");
 
 	/*-------------------- 変数 --------------------*/
-	// ImGui用に変数を用意
+	// spriteを表示するか
 	bool showSprite = false;
+	// ライティングモードを記録する
+	static int lightingMode = int(directionalLight.GetLightingMode());
 
 	/*-------------------- ゲームループの処理 --------------------*/
 	MSG msg{};
@@ -229,7 +231,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 			}
 			if (ImGui::DragFloat("Intensity", &intensity, 0.01f, 0.0f, 10.0f)) {	// 輝度を変更
 				directionalLight.SetIntensity(intensity);
-			}
+			}			
+			ImGui::Combo("Lighting", &lightingMode, "None\0Lambert\0Half Lambert\0");	// ライティングを変更
+			directionalLight.SetLightingMode(static_cast<LightingMode>(lightingMode));
 		}
 		// Modelを調整
 		if (ImGui::CollapsingHeader("Model")) {
