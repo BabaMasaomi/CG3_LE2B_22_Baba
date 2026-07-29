@@ -12,6 +12,8 @@ struct DirectionalLight
     float32_t4 color;
     float32_t3 direction;
     float intensity;
+    int lightingType;
+    float3 padding;
 };
 ConstantBuffer<Material> gMaterial : register(b0);
 ConstantBuffer<DirectionalLight> gDirectionalLight : register(b1);
@@ -31,8 +33,20 @@ PixelShaderOutput main(VertexShaderOutput input)
     if (gMaterial.enableLighting != 0)
     {
         float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction);
-        float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
-        output.color = gMaterial.color * textureColor * gDirectionalLight.color * cos * gDirectionalLight.intensity;
+        float diffuse = 1.0f;
+        if (gDirectionalLight.lightingType == 0)
+        {
+            diffuse = 1.0f;
+        }
+        else if (gDirectionalLight.lightingType == 1)
+        {
+            diffuse = saturate(NdotL);
+        }
+        else
+        {
+            diffuse = pow(saturate(NdotL * 0.5f + 0.5f), 2.0f);
+        }
+        output.color = gMaterial.color * textureColor * gDirectionalLight.color * diffuse * gDirectionalLight.intensity;
     }
     else
     {

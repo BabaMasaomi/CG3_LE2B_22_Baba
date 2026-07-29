@@ -14,6 +14,7 @@
 #include "ModelPSO.h"
 #include "Model.h"
 #include "Object3D.h"
+#include "Sphere.h"
 #include "Audio.h"
 // Debug用のあれこれを使える様にする
 #include <dbghelp.h>
@@ -137,7 +138,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 
 	// モデルの読み込み
 	Model* axis = modelManager.LoadModel("resources", "axis.obj");
-	Model* plane=modelManager.LoadModel("resources", "plane.obj");
+	Model* plane = modelManager.LoadModel("resources", "plane.obj");
 	Model* bunny = modelManager.LoadModel("resources", "bunny.obj");
 	Model* teapot = modelManager.LoadModel("resources", "teapot.obj");
 
@@ -157,6 +158,13 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	Object3D utahTeapot;
 	utahTeapot.Initialize(&dxCommon, &modelPSO, &directionalLight);
 	utahTeapot.SetModel(teapot);
+
+	// テクスチャの読み込み
+	textureManager.LoadTexture("resources/uvChecker.png");
+
+	// 球の初期化
+	Sphere sphere;
+	sphere.Initialize(&dxCommon, &modelPSO, &textureManager, &directionalLight);
 
 	// Audioの初期化
 	Audio audio;
@@ -189,6 +197,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		object3d.Update(camera);
 		stanfordBunny.Update(camera);
 		utahTeapot.Update(camera);
+		sphere.Update(camera);
 		sprite.Update();
 
 		/*-------------------- 描画処理 --------------------*/
@@ -262,9 +271,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 #endif
 
 		// モデルの描画
-		object3d.Draw();
-		stanfordBunny.Draw();
-		utahTeapot.Draw();
+		//object3d.Draw();
+		//stanfordBunny.Draw();
+		//utahTeapot.Draw();
+
+		// 球の描画
+		sphere.Draw(1);
 
 		// スプライトの描画
 		if (showSprite) {

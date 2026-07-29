@@ -30,5 +30,6 @@ namespace Engine {
 		data_->color = color_;
 		data_->direction = direction_;
 		data_->intensity = intensity_;
+		data_->lightingMode = static_cast<int32_t>(lightingMode_);
 	}
 }
