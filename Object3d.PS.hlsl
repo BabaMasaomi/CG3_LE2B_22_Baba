@@ -37,16 +37,19 @@ PixelShaderOutput main(VertexShaderOutput input)
         if (gDirectionalLight.lightingType == 0)
         {
             diffuse = 1.0f;
+            output.color = gMaterial.color * textureColor;
         }
         else if (gDirectionalLight.lightingType == 1)
         {
             diffuse = saturate(NdotL);
+            output.color = gMaterial.color * textureColor * gDirectionalLight.color * diffuse * gDirectionalLight.intensity;
         }
         else
         {
             diffuse = pow(saturate(NdotL * 0.5f + 0.5f), 2.0f);
+            output.color = gMaterial.color * textureColor * gDirectionalLight.color * diffuse * gDirectionalLight.intensity;
         }
-        output.color = gMaterial.color * textureColor * gDirectionalLight.color * diffuse * gDirectionalLight.intensity;
+        
     }
     else
     {
