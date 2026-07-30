@@ -197,8 +197,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	int selectedModelIndex = 0;
 	// spriteを表示するか
 	bool showSprite = false;
-	// ライティングモードを記録する
-	static int lightingMode = int(directionalLight.GetLightingMode());
 
 	/*-------------------- ゲームループの処理 --------------------*/
 	MSG msg{};
@@ -295,6 +293,11 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 				}
 				// UV、色、Lightingを調整
 				if (ImGui::TreeNode("Model")) {
+					// ライティングモードを記録する
+					int lightingMode = static_cast<int>(object.GetLightingMode());
+
+					ImGui::Combo("Lighting", &lightingMode, "None\0Lambert\0Half Lambert\0");	// ライティングを変更
+					object.SetLightingMode(static_cast<LightingMode>(lightingMode));
 
 					ImGui::TreePop();
 				}
@@ -321,12 +324,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 			if (ImGui::DragFloat("Intensity", &intensity, 0.01f, 0.0f, 10.0f)) {	// 輝度を変更
 				directionalLight.SetIntensity(intensity);
 			}
-			ImGui::Combo("Lighting", &lightingMode, "None\0Lambert\0Half Lambert\0");	// ライティングを変更
-			directionalLight.SetLightingMode(static_cast<LightingMode>(lightingMode));
+			//ImGui::Combo("Lighting", &lightingMode, "None\0Lambert\0Half Lambert\0");	// ライティングを変更
+			//directionalLight.SetLightingMode(static_cast<LightingMode>(lightingMode));
 		}
 
 		ImGui::Separator();
-		// SpriteのUVTransformを調整
+		// Spriteを調整
 		if (ImGui::CollapsingHeader("Sprite")) {
 			ImGui::Checkbox("Show", &showSprite);
 			Vector3 UVScale = sprite.GetUVTransformScale();

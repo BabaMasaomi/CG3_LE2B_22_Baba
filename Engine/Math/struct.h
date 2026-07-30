@@ -89,3 +89,10 @@ struct TransformationMatrix {
 	Matrix4x4 WVP;
 	Matrix4x4 World;
 };
+
+// ライティングモード
+enum class LightingMode {
+	None,
+	Lambert,
+	HalfLambert,
+};

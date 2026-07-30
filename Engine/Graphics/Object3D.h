@@ -1,8 +1,8 @@
 #pragma once
 #include <d3d12.h>
 #include <cstdint>
-#include"struct.h"
 #include <wrl.h>
+#include"struct.h"
 
 namespace Engine {
 
@@ -12,6 +12,12 @@ namespace Engine {
 	class DirectionalLight;
 	class Model;
 	class Camera;
+
+	// Object3Dごとのライティング設定
+	struct ObjectLightingData {
+		int32_t lightingType;
+		float padding[3];
+	};
 
 	class Object3D {
 	public:
@@ -47,11 +53,13 @@ namespace Engine {
 		const Vector3 GetScale() { return scale_; }
 		const Vector3 GetRotate() { return rotate_; }
 		const Vector3 GetTranslate() { return translate_; }
+		LightingMode GetLightingMode() const { return lightingMode_; }
 
 		// セッター
 		void SetScale(Vector3 scale) { scale_ = scale; }
 		void SetRotate(Vector3 rotate) { rotate_ = rotate; }
 		void SetTranslate(Vector3 translate) { translate_ = translate; }
+		void SetLightingMode(LightingMode lightingMode) { lightingMode_ = lightingMode; }
 
 	private:
 		/*==================== メンバ関数の宣言 ====================*/
@@ -74,6 +82,13 @@ namespace Engine {
 		DirectionalLight* directionalLight_ = nullptr;
 		// モデルのインスタンス
 		Model* model_ = nullptr;
+
+		// Object3Dごとのライティング形式
+		LightingMode lightingMode_ = LightingMode::HalfLambert;
+		// Object3Dごとのライティング設定用のリソース
+		Microsoft::WRL::ComPtr<ID3D12Resource>objectLightingResource_ = nullptr;
+		// Object3Dごとのライティング設定用のデータ
+		ObjectLightingData* objectLightingData_ = nullptr;
 
 		// テクスチャのインデックス
 		uint32_t textureIndex_ = 0;

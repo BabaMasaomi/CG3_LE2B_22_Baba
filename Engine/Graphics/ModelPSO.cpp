@@ -28,7 +28,7 @@ namespace Engine {
 			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 		// RootParameterを作成
-		D3D12_ROOT_PARAMETER rootParameters[4] = {};
+		D3D12_ROOT_PARAMETER rootParameters[5] = {};
 		// Material用
 		rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		// CBVを使う(b0のbと一致)
 		rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		// PixelShaderで使う
@@ -37,6 +37,7 @@ namespace Engine {
 		rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		// CBVを使う(b1のbと一致)
 		rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;	// VertexShaderで使う
 		rootParameters[1].Descriptor.ShaderRegister = 1;						// レジスタ番号1を使う
+		// SRV用
 		descriptionRootSignature.pParameters = rootParameters;					// ルートパラメータ配列へのポインタ
 		descriptionRootSignature.NumParameters = _countof(rootParameters);		// 配列の長さ
 		// DescriptorRangeを用意(SRVのため)
@@ -54,6 +55,10 @@ namespace Engine {
 		rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		// CBVを使う
 		rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		// PixelShaderで使う
 		rootParameters[3].Descriptor.ShaderRegister = 1;						// レジスタ番号1を使う
+		// Object3Dごとのライティング形式
+		rootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		// CBVを使う
+		rootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		// PixelShaderで使う
+		rootParameters[4].Descriptor.ShaderRegister = 2;						// レジスタ番号2を使う
 
 		// Samplerの設定
 		D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};

@@ -37,6 +37,19 @@ namespace Engine {
 		// 変換行列用のResourceとデータの作成関数
 		CreateTransformationMatrixResource();
 		MapTransformationMatrix();
+
+		// Object3Dごとのライティング設定用リソース
+		objectLightingResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(ObjectLightingData));
+		// 書き込むためのアドレスを取得
+		HRESULT hr = objectLightingResource_->Map(0, nullptr, reinterpret_cast<void**>(&objectLightingData_));
+		assert(SUCCEEDED(hr));
+
+		// ライティングモードを設定
+		objectLightingData_->lightingType = static_cast<int32_t>(lightingMode_);
+		// パディングを設定
+		objectLightingData_->padding[0] = 0.0f;
+		objectLightingData_->padding[1] = 0.0f;
+		objectLightingData_->padding[2] = 0.0f;
 	}
 
 	/*-------------------- 変換行列用のResourceの生成 --------------------*/
@@ -78,6 +91,9 @@ namespace Engine {
 		Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix_, camera.GetViewProjectionMatrix());
 		transformationMatrixData_->WVP = worldViewProjectionMatrix;
 		transformationMatrixData_->World = worldMatrix_;
+
+		// ライティングモードを設定
+		objectLightingData_->lightingType = static_cast<int32_t>(lightingMode_);
 	}
 
 	/*-------------------- 描画 --------------------*/
@@ -95,6 +111,7 @@ namespace Engine {
 		// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
 		commandList->SetGraphicsRootDescriptorTable(2, model_->GetTextureHandle());
 		commandList->SetGraphicsRootConstantBufferView(3, directionalLight_->GetResource()->GetGPUVirtualAddress());	// 平行光源を適用
+		commandList->SetGraphicsRootConstantBufferView(4, objectLightingResource_->GetGPUVirtualAddress());				// Object3Dごとのライティング設定
 		// 描画！(DrawCall)
 		commandList->DrawInstanced(UINT(model_->GetModelData().vertices.size()), 1, 0, 0);
 	}
