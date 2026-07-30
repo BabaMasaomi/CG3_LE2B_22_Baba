@@ -113,8 +113,28 @@ namespace Engine {
 
 		// BlendStateの設定
 		D3D12_BLEND_DESC blendDesc{};
+		// マルチサンプリングを利用した透過は使用しない
+		blendDesc.AlphaToCoverageEnable = FALSE;
+		// レンダーターゲットごとに異なるブレンド設定は使用しない
+		blendDesc.IndependentBlendEnable = FALSE;
+		// 1つ目のレンダーターゲットの設定
+		D3D12_RENDER_TARGET_BLEND_DESC& renderTargetBlend =blendDesc.RenderTarget[0];
+		// αブレンドを有効化
+		renderTargetBlend.BlendEnable = TRUE;
+		// 論理演算は使用しない
+		renderTargetBlend.LogicOpEnable = FALSE;
+		// RGBのブレンド設定
+		renderTargetBlend.SrcBlend =D3D12_BLEND_SRC_ALPHA;
+		renderTargetBlend.DestBlend =D3D12_BLEND_INV_SRC_ALPHA;
+		renderTargetBlend.BlendOp =D3D12_BLEND_OP_ADD;
+		// α値自体のブレンド設定
+		renderTargetBlend.SrcBlendAlpha =D3D12_BLEND_ONE;
+		renderTargetBlend.DestBlendAlpha =D3D12_BLEND_ZERO;
+		renderTargetBlend.BlendOpAlpha =D3D12_BLEND_OP_ADD;
+		// 論理演算は行わない
+		renderTargetBlend.LogicOp =D3D12_LOGIC_OP_NOOP;
 		// 全ての色要素を書き込む
-		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		renderTargetBlend.RenderTargetWriteMask =D3D12_COLOR_WRITE_ENABLE_ALL;
 
 		// RasterizerStateの設定
 		D3D12_RASTERIZER_DESC rasterizerDesc{};

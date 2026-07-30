@@ -53,12 +53,16 @@ namespace Engine {
 		const Vector3 GetScale() { return scale_; }
 		const Vector3 GetRotate() { return rotate_; }
 		const Vector3 GetTranslate() { return translate_; }
+		const Vector4& GetColor() const { return color_; }
+		const Transform& GetUVTransform() const { return uvTransform_; }
 		LightingMode GetLightingMode() const { return lightingMode_; }
 
 		// セッター
 		void SetScale(Vector3 scale) { scale_ = scale; }
 		void SetRotate(Vector3 rotate) { rotate_ = rotate; }
 		void SetTranslate(Vector3 translate) { translate_ = translate; }
+		void SetColor(const Vector4& color) { color_ = color; }
+		void SetUVTransform(const Transform& uvTransform) { uvTransform_ = uvTransform; }
 		void SetLightingMode(LightingMode lightingMode) { lightingMode_ = lightingMode; }
 
 	private:
@@ -73,6 +77,15 @@ namespace Engine {
 		/// </summary>
 		void MapTransformationMatrix();
 
+		/// <summary>
+		/// マテリアル用のResourceとデータの作成関数
+		/// </summary>
+		void CreateMaterialResource();
+		/// <summary>
+		/// マテリアルを更新する
+		/// </summary>
+		void UpdateMaterial();
+
 		/*==================== メンバ変数 ====================*/
 		// DirectXCommonのインスタンス
 		DirectXCommon* dxCommon_ = nullptr;
@@ -82,13 +95,6 @@ namespace Engine {
 		DirectionalLight* directionalLight_ = nullptr;
 		// モデルのインスタンス
 		Model* model_ = nullptr;
-
-		// Object3Dごとのライティング形式
-		LightingMode lightingMode_ = LightingMode::HalfLambert;
-		// Object3Dごとのライティング設定用のリソース
-		Microsoft::WRL::ComPtr<ID3D12Resource>objectLightingResource_ = nullptr;
-		// Object3Dごとのライティング設定用のデータ
-		ObjectLightingData* objectLightingData_ = nullptr;
 
 		// テクスチャのインデックス
 		uint32_t textureIndex_ = 0;
@@ -102,14 +108,7 @@ namespace Engine {
 			Vector4 pos;
 			Vector2 texcoord;
 			Vector3 normal;
-		};
-
-		// UVTransform用の変数
-		Transform uvTransform_ = {
-			{1.0f,1.0f,1.0f},	// scale
-			{0.0f,0.0f,0.0f},	// rotate
-			{0.0f,0.0f,0.0f},	// translate
-		};
+		};		
 
 		// 変換行列用のリソース
 		Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource_ = nullptr;
@@ -120,5 +119,25 @@ namespace Engine {
 		Vector3 scale_;
 		Vector3 rotate_;
 		Vector3 translate_;
+
+		// Object3Dごとのマテリアル
+		Microsoft::WRL::ComPtr<ID3D12Resource>materialResource_ = nullptr;
+		// Object3Dごとのマテリアルデータ
+		Material* materialData_ = nullptr;
+		// Object3Dごとの色
+		Vector4 color_ = { 1.0f,1.0f,1.0f,1.0f };
+		// UVTransform用の変数
+		Transform uvTransform_ = {
+			{1.0f,1.0f,1.0f},	// scale
+			{0.0f,0.0f,0.0f},	// rotate
+			{0.0f,0.0f,0.0f},	// translate
+		};
+
+		// Object3Dごとのライティング形式
+		LightingMode lightingMode_ = LightingMode::HalfLambert;
+		// Object3Dごとのライティング設定用のリソース
+		Microsoft::WRL::ComPtr<ID3D12Resource>objectLightingResource_ = nullptr;
+		// Object3Dごとのライティング設定用のデータ
+		ObjectLightingData* objectLightingData_ = nullptr;
 	};
 }

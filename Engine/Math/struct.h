@@ -90,6 +90,14 @@ struct TransformationMatrix {
 	Matrix4x4 World;
 };
 
+// マテリアルデータの構造体
+struct Material {
+	Vector4 color;
+	int enableLighting;
+	float padding[3];
+	Matrix4x4 uvTransform;
+};
+
 // ライティングモード
 enum class LightingMode {
 	None,

@@ -174,13 +174,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	// 配置済みObject3Dを管理
 	std::vector<std::unique_ptr<Object3D>> objects;
 
-	//// テクスチャの読み込み
-	//textureManager.LoadTexture("resources/uvChecker.png");
-
-	//// 球の初期化
-	//Sphere sphere;
-	//sphere.Initialize(&dxCommon, &modelPSO, &textureManager, &directionalLight);
-
 	// Audioの初期化
 	Audio audio;
 	audio.Initialize();
@@ -215,7 +208,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		for (const auto& object : objects) {
 			object->Update(camera);
 		}
-		//sphere.Update(camera);
 		sprite.Update();
 
 		/*-------------------- 描画処理 --------------------*/
@@ -224,15 +216,15 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		// ImGui
 #ifdef USE_IMGUI
 		imguiManager.Begin();	// 以下にImGuiの内容を記述
+		ImGui::Text("DebugCamera");
+		// デバッグカメラを起動
+		bool debugMode = camera.GetDebugMode();
+		if (ImGui::Checkbox("Enable", &debugMode)) {
+			camera.SetDebugMode(debugMode);
+		}
 		// cameraの位置をリセット
-		if (ImGui::CollapsingHeader("DebugCamera")) {
-			bool debugMode = camera.GetDebugMode();
-			if (ImGui::Checkbox("Enable", &debugMode)) {
-				camera.SetDebugMode(debugMode);
-			}
-			if (ImGui::Button("Reset")) {
-				camera.Initialize(winApp.GetClientWidth(), winApp.GetClientHeight(), &input);
-			}
+		if (ImGui::Button("Reset")) {
+			camera.Initialize(winApp.GetClientWidth(), winApp.GetClientHeight(), &input);
 		}
 
 		ImGui::Separator();
@@ -293,10 +285,33 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 				}
 				// UV、色、Lightingを調整
 				if (ImGui::TreeNode("Model")) {
+					// UVTransformを取得
+					Transform uvTransform = object.GetUVTransform();
+					// UVを変更したか記録
+					bool uvChanged = false;
+					uvChanged |= ImGui::DragFloat2("UV Scale", &uvTransform.scale.x, 0.01f, 0.01f, 10.0f);	// スケールを変更
+					uvChanged |= ImGui::DragFloat2("UV Translate", &uvTransform.translate.x, 0.01f);		// 移動を変更
+					uvChanged |= ImGui::DragFloat("UV Rotate", &uvTransform.rotate.z, 0.01f);				// 回転を変更
+					// UVで使用しない成分を固定
+					if (uvChanged) {
+						uvTransform.scale.z = 1.0f;
+						uvTransform.rotate.x = 0.0f;
+						uvTransform.rotate.y = 0.0f;
+						uvTransform.translate.z = 0.0f;
+						object.SetUVTransform(uvTransform);
+					}
+
+					// テクスチャの色を取得
+					Vector4 color = object.GetColor();
+					// 色を変更
+					if (ImGui::ColorEdit4("Color", &color.x)) {
+						object.SetColor(color);
+					}
+
 					// ライティングモードを記録する
 					int lightingMode = static_cast<int>(object.GetLightingMode());
-
-					ImGui::Combo("Lighting", &lightingMode, "None\0Lambert\0Half Lambert\0");	// ライティングを変更
+					// ライティングを変更
+					ImGui::Combo("Lighting", &lightingMode, "None\0Lambert\0Half Lambert\0");
 					object.SetLightingMode(static_cast<LightingMode>(lightingMode));
 
 					ImGui::TreePop();
@@ -324,8 +339,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 			if (ImGui::DragFloat("Intensity", &intensity, 0.01f, 0.0f, 10.0f)) {	// 輝度を変更
 				directionalLight.SetIntensity(intensity);
 			}
-			//ImGui::Combo("Lighting", &lightingMode, "None\0Lambert\0Half Lambert\0");	// ライティングを変更
-			//directionalLight.SetLightingMode(static_cast<LightingMode>(lightingMode));
 		}
 
 		ImGui::Separator();
@@ -338,10 +351,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 			if (ImGui::DragFloat2("SpriteScale", &UVScale.x, 0.01f, -10.0f, 10.0f)) {			// スケールを変更
 				sprite.SetUVTransformScale(UVScale);
 			}
-			if (ImGui::DragFloat2("SpriteTranslate", &UVTranslate.x, 0.01f, -10.0f, 10.0f)) {	// 回転を変更
+			if (ImGui::DragFloat2("SpriteTranslate", &UVTranslate.x, 0.01f, -10.0f, 10.0f)) {	// 移動を変更
 				sprite.SetUVTransformTranslate(UVTranslate);
 			}
-			if (ImGui::SliderAngle("SpriteRotate", &UVRotate.z)) {								// 移動を変更
+			if (ImGui::SliderAngle("SpriteRotate", &UVRotate.z)) {								// 回転を変更
 				sprite.SetUVTransformRotate(UVRotate);
 			}
 		}
@@ -353,9 +366,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		for (const auto& object : objects) {
 			object->Draw();
 		}
-
-		// 球の描画
-		//sphere.Draw(1);
 
 		// スプライトの描画
 		if (showSprite) {

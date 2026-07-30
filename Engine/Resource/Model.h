@@ -16,15 +16,7 @@ namespace Engine {
 		Vector4 pos;
 		Vector2 texcoord;
 		Vector3 normal;
-	};
-
-	// マテリアルデータの構造体
-	struct Material {
-		Vector4 color;
-		int32_t enableLighting;
-		float padding[3];
-		Matrix4x4 uvTransform;
-	};
+	};	
 
 	struct MaterialData {
 		std::string textureFilePath;
