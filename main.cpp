@@ -185,8 +185,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	audio.Initialize();
 	// 音声読み込み
 	SoundData audioData1 = audio.AudioLoadWave("resources/fanfare.wav");
-	// サウンド再生
-	audio.AudioPlayWave(audioData1);
+	//// サウンド再生
+	//audio.AudioPlayWave(audioData1);
 
 	// ログ出力
 	Log(logStream, "Start logging!");
@@ -371,6 +371,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 			if (ImGui::SliderAngle("SpriteRotate", &UVRotate.z)) {								// 回転を変更
 				sprite.SetUVTransformRotate(UVRotate);
 			}
+		}
+
+		ImGui::Separator();
+		// Soundの再生
+		if (ImGui::Button("Play Sound")) {
+			audio.AudioPlayWave(audioData1);
 		}
 
 		imguiManager.End();		// 以上でImGuiの内容を終える
