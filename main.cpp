@@ -16,6 +16,10 @@
 #include "Object3D.h"
 #include "Sphere.h"
 #include "Audio.h"
+// オブジェクト描画用
+#include <memory>
+#include <vector>
+#include <string>
 // Debug用のあれこれを使える様にする
 #include <dbghelp.h>
 #include <strsafe.h>
@@ -131,33 +135,34 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	Sprite sprite;
 	sprite.Initialize(&dxCommon, &spritePSO, &textureManager, &winApp);
 
-	/*-------------------- モデルの描画 --------------------*/
+	/*-------------------- モデルの初期化 --------------------*/
 	// ModelPSOの初期化
 	ModelPSO modelPSO;
 	modelPSO.Initialize(&dxCommon, &dxcManager);
 
+	// モデルの複数描画の準備
+	struct ModelEntry {
+		std::string displayName;
+		std::string directoryPath;
+		std::string filename;
+		Model* model = nullptr;
+	};
+
 	// モデルの読み込み
-	Model* axis = modelManager.LoadModel("resources", "axis.obj");
-	Model* plane = modelManager.LoadModel("resources", "plane.obj");
-	Model* bunny = modelManager.LoadModel("resources", "bunny.obj");
-	Model* teapot = modelManager.LoadModel("resources", "teapot.obj");
+	std::vector<ModelEntry> modelEntries = {
+	{"Axis",   "resources", "axis.obj",   nullptr},
+	{"Plane",   "resources", "plane.obj",   nullptr},
+	{"Bunny", "resources",  "bunny.obj", nullptr},
+	{"Teapot", "resources",  "teapot.obj", nullptr},
+	};
 
-	// Object3Dの初期化
-	Object3D object3d;
-	object3d.Initialize(&dxCommon, &modelPSO, &directionalLight);
-	object3d.SetModel(axis);
+	// 各モデルの読み込み
+	for (ModelEntry& entry : modelEntries) {
+		entry.model = modelManager.LoadModel(entry.directoryPath, entry.filename);
+	}
 
-	// 平面の初期化
-
-	// ウサギの初期化
-	Object3D stanfordBunny;
-	stanfordBunny.Initialize(&dxCommon, &modelPSO, &directionalLight);
-	stanfordBunny.SetModel(bunny);
-
-	// ティーポットの初期化
-	Object3D utahTeapot;
-	utahTeapot.Initialize(&dxCommon, &modelPSO, &directionalLight);
-	utahTeapot.SetModel(teapot);
+	// 配置済みObject3Dを管理
+	std::vector<std::unique_ptr<Object3D>> objects;
 
 	// テクスチャの読み込み
 	textureManager.LoadTexture("resources/uvChecker.png");
@@ -178,6 +183,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	Log(logStream, "Start logging!");
 
 	/*-------------------- 変数 --------------------*/
+	// 選択したモデルを記録
+	int selectedModelIndex = 0;
 	// spriteを表示するか
 	bool showSprite = false;
 	// ライティングモードを記録する
@@ -196,9 +203,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		directionalLight.Update();
 
 		// 作りたい物に合わせて配置
-		object3d.Update(camera);
-		stanfordBunny.Update(camera);
-		utahTeapot.Update(camera);
+		// モデルの更新
+		for (const auto& object : objects) {
+			object->Update(camera);
+		}
 		sphere.Update(camera);
 		sprite.Update();
 
@@ -218,6 +226,78 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 				camera.Initialize(winApp.GetClientWidth(), winApp.GetClientHeight(), &input);
 			}
 		}
+
+		ImGui::Separator();
+
+		// Modelを追加
+		if (ImGui::BeginCombo("Model Type", modelEntries[selectedModelIndex].displayName.c_str())) {
+			// 追加するモデルを選択
+			for (int i = 0; i < static_cast<int>(modelEntries.size()); ++i) {
+				bool isSelected = (selectedModelIndex == i);
+				// 選択肢を表示
+				if (ImGui::Selectable(modelEntries[i].displayName.c_str(), isSelected)) {
+					selectedModelIndex = i;
+				}
+				// 選んだ選択肢をデフォルトフォーカスにする
+				if (isSelected) {
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndCombo();
+		}
+		// モデルを追加する
+		if (ImGui::Button("Add Model")) {
+			auto object = std::make_unique<Object3D>();
+			// モデルを初期化
+			object->Initialize(&dxCommon, &modelPSO, &directionalLight);
+			// モデルをセット
+			object->SetModel(modelEntries[selectedModelIndex].model);
+			// リストに追加
+			objects.push_back(std::move(object));
+		}		
+
+		// 削除するモデルを記録する変数
+		int deleteObjectIndex = -1;
+
+		// 配置済みモデルの調整
+		for (size_t i = 0; i < objects.size(); ++i) {
+			Object3D& object = *objects[i];
+			ImGui::PushID(static_cast<int>(i));
+			// ツリーノードのラベルを作成
+			std::string label = "Objects " + std::to_string(i);
+			// 個別でモデルを調整
+			if (ImGui::CollapsingHeader(label.c_str())) {
+				Vector3 scale = object.GetScale();
+				Vector3 rotate = object.GetRotate();
+				Vector3 translate = object.GetTranslate();
+				// SRTを変更
+				if (ImGui::DragFloat3("Scale", &scale.x, 0.01f, 0.01f, 100.0f)) {	// スケールを変更
+					object.SetScale(scale);
+				}
+				if (ImGui::DragFloat3("Rotate", &rotate.x, 0.01f)) {				// 回転を変更
+					object.SetRotate(rotate);
+				}
+				if (ImGui::DragFloat3("Translate", &translate.x, 0.01f)) {			// 移動を変更
+					object.SetTranslate(translate);
+				}
+				// モデルを削除
+				if (ImGui::Button("Delete")) {
+					deleteObjectIndex = static_cast<int>(i);
+				}
+				// UV、色、Lightingを調整
+				if (ImGui::TreeNode("Model")) {
+
+					ImGui::TreePop();
+				}
+			}
+			ImGui::PopID();
+		}
+		// 削除するモデルがあれば削除
+		if (deleteObjectIndex >= 0) {
+			objects.erase(objects.begin() + deleteObjectIndex);
+		}
+
+		ImGui::Separator();
 		// Lightを調整
 		if (ImGui::CollapsingHeader("Light")) {
 			Vector4 color = directionalLight.GetColor();
@@ -231,56 +311,39 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 			}
 			if (ImGui::DragFloat("Intensity", &intensity, 0.01f, 0.0f, 10.0f)) {	// 輝度を変更
 				directionalLight.SetIntensity(intensity);
-			}			
+			}
 			ImGui::Combo("Lighting", &lightingMode, "None\0Lambert\0Half Lambert\0");	// ライティングを変更
 			directionalLight.SetLightingMode(static_cast<LightingMode>(lightingMode));
 		}
-		// Modelを調整
-		if (ImGui::CollapsingHeader("Model")) {
-			ImGui::PushID(1);
-			Vector3 scale = object3d.GetScale();
-			Vector3 rotate = object3d.GetRotate();
-			Vector3 translate = object3d.GetTranslate();
-			if (ImGui::DragFloat3("Scale", &scale.x, 0.01f, -10.0f, 10.0f)) {
-				object3d.SetScale(scale);
-			}
-			if (ImGui::DragFloat3("Rotate", &rotate.x, 0.01f, -10.0f, 10.0f)) {
-				object3d.SetRotate(rotate);
-			}
-			if (ImGui::DragFloat3("Translate", &translate.x, 0.01f)) {
-				object3d.SetTranslate(translate);
-			}
-			ImGui::PopID();
-		}
+
+		ImGui::Separator();
 		// SpriteのUVTransformを調整
-		if (ImGui::CollapsingHeader("UVTransform")) {
-			ImGui::PushID(2);
-			ImGui::Checkbox("Sprite", &showSprite);
+		if (ImGui::CollapsingHeader("Sprite")) {
+			ImGui::Checkbox("Show", &showSprite);
 			Vector3 UVScale = sprite.GetUVTransformScale();
 			Vector3 UVTranslate = sprite.GetUVTransformTranslate();
 			Vector3 UVRotate = sprite.GetUVTransformRotate();
-			if (ImGui::DragFloat2("Scale", &UVScale.x, 0.01f, -10.0f, 10.0f)) {
+			if (ImGui::DragFloat2("SpriteScale", &UVScale.x, 0.01f, -10.0f, 10.0f)) {			// スケールを変更
 				sprite.SetUVTransformScale(UVScale);
 			}
-			if (ImGui::DragFloat2("Translate", &UVTranslate.x, 0.01f, -10.0f, 10.0f)) {
+			if (ImGui::DragFloat2("SpriteTranslate", &UVTranslate.x, 0.01f, -10.0f, 10.0f)) {	// 回転を変更
 				sprite.SetUVTransformTranslate(UVTranslate);
 			}
-			if (ImGui::SliderAngle("Rotate", &UVRotate.z)) {
+			if (ImGui::SliderAngle("SpriteRotate", &UVRotate.z)) {								// 移動を変更
 				sprite.SetUVTransformRotate(UVRotate);
 			}
-			ImGui::PopID();
 		}
 
 		imguiManager.End();		// 以上でImGuiの内容を終える
 #endif
 
 		// モデルの描画
-		//object3d.Draw();
-		//stanfordBunny.Draw();
-		//utahTeapot.Draw();
+		for (const auto& object : objects) {
+			object->Draw();
+		}
 
 		// 球の描画
-		sphere.Draw(1);
+		//sphere.Draw(1);
 
 		// スプライトの描画
 		if (showSprite) {
