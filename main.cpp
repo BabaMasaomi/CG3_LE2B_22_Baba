@@ -444,11 +444,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 
 					// UV、色を調整
 					if (ImGui::TreeNode("Model")) {
+						// UVTransformを取得
 						Vector3 UVScale = sprite.GetUVTransformScale();
 						Vector3 UVTranslate = sprite.GetUVTransformTranslate();
 						Vector3 UVRotate = sprite.GetUVTransformRotate();
-						// UVを変更したか記録
-						bool uvChanged = false;
 						if (ImGui::DragFloat2("UV Scale", &UVScale.x, 0.01f, -10.0f, 10.0f)) {			// スケールを変更
 							sprite.SetUVTransformScale(UVScale);
 						}
@@ -457,6 +456,13 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 						}
 						if (ImGui::SliderAngle("UV Rotate", &UVRotate.z)) {								// 回転を変更
 							sprite.SetUVTransformRotate(UVRotate);
+						}
+
+						// テクスチャの色を取得
+						Vector4 color = sprite.GetColor();
+						// 色を変更
+						if (ImGui::ColorEdit4("Color", &color.x, ImGuiColorEditFlags_AlphaBar)) {
+							sprite.SetColor(color);
 						}
 
 						ImGui::TreePop();

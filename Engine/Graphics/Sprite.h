@@ -44,9 +44,10 @@ namespace Engine {
 		const Vector3& GetRotate() const { return transform_.rotate; }
 		const Vector3& GetTranslate() const { return transform_.translate; }
 		// UV用
-		const Vector3 GetUVTransformScale() { return uvTransform_.scale; }
-		const Vector3 GetUVTransformRotate() { return uvTransform_.rotate; }
-		const Vector3 GetUVTransformTranslate() { return uvTransform_.translate; }
+		const Vector3 GetUVTransformScale() const { return uvTransform_.scale; }
+		const Vector3 GetUVTransformRotate() const { return uvTransform_.rotate; }
+		const Vector3 GetUVTransformTranslate() const { return uvTransform_.translate; }
+		const Vector4& GetColor() const { return color_; }
 
 		// セッター
 		void SetScale(const Vector3& scale) { transform_.scale = scale; }
@@ -56,6 +57,7 @@ namespace Engine {
 		void SetUVTransformScale(Vector3 scale) { uvTransform_.scale = scale; }
 		void SetUVTransformRotate(Vector3 rotate) { uvTransform_.rotate = rotate; }
 		void SetUVTransformTranslate(Vector3 translate) { uvTransform_.translate = translate; }
+		void SetColor(const Vector4& color) { color_ = color; }
 
 	private:
 		/*==================== メンバ関数の宣言 ====================*/
@@ -156,6 +158,9 @@ namespace Engine {
 			{0.0f,0.0f,0.0f},	// rotate
 			{0.0f,0.0f,0.0f},	// translate
 		};
+
+		// Spriteごとの色
+		Vector4 color_ = { 1.0f,1.0f,1.0f,1.0f };
 
 		// マテリアルリソース
 		Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_ = nullptr;

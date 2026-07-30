@@ -144,7 +144,7 @@ namespace Engine {
 		materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
 		std::memset(materialData_, 0, sizeof(Material));
 		// ここで色を弄れる
-		materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+		materialData_->color = color_;
 		materialData_->enableLighting = false;
 		materialData_->uvTransform = MakeIdentity4x4();
 	}
@@ -166,6 +166,9 @@ namespace Engine {
 
 	/*-------------------- 更新 --------------------*/
 	void Sprite::Update() {
+		// Spriteごとの色を反映
+		materialData_->color = color_;
+
 		// UVTransform用の行列を作成
 		Matrix4x4 uvTransformMatrix = MakeScaleMatrix(uvTransform_.scale);
 		uvTransformMatrix = Multiply(uvTransformMatrix, MakeRotateZMatrix(uvTransform_.rotate.z));
