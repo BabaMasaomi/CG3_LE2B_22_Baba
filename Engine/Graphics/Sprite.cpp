@@ -14,7 +14,8 @@ namespace Engine {
 	}
 
 	/*-------------------- 初期化 --------------------*/
-	void Sprite::Initialize(DirectXCommon* dxCommon, SpritePSO* spritePSO, TextureManager* textureManager, WinApp* winApp) {
+	void Sprite::Initialize(DirectXCommon* dxCommon, SpritePSO* spritePSO, TextureManager* textureManager,
+		WinApp* winApp, uint32_t textureIndex, const Vector2& size) {
 
 		// DirectXCommonのポインタを保存しておく
 		dxCommon_ = dxCommon;
@@ -22,12 +23,18 @@ namespace Engine {
 		textureManager_ = textureManager;
 		winApp_ = winApp;
 
-		// CPUで動かす用のTransformを作る
-		transform_ = { {1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };
+		// 外部で読み込んだテクスチャ番号を保存
+		textureIndex_ = textureIndex;
 
-		// テクスチャの読み込み
-		textureIndex_ = 1;
-		textureManager_->LoadTexture("resources/uvChecker.png");
+		// Spriteの表示サイズを保存
+		size_ = size;
+
+		// 初期SRT
+		transform_ = {
+			{ 1.0f, 1.0f, 1.0f },
+			{ 0.0f, 0.0f, 0.0f },
+			{ 0.0f, 0.0f, 0.0f }
+		};
 
 		// VertexResourceとVertexBufferViewを用意
 		CreateVertexResource();
@@ -69,19 +76,31 @@ namespace Engine {
 		VertexData* vertexData = nullptr;
 		// 書き込むためのアドレスを取得
 		vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+
+		// Spriteの幅と高さを設定
+		const float width = size_.x;
+		const float height = size_.y;
+
 		// 四角形(二つの三角形)のデータを設定
-		vertexData[0].pos = { 0.0f, 360.0f, 0.0f, 1.0f };	// 左下
+		// 左下
+		vertexData[0].pos = { 0.0f,height,0.0f,1.0f };
 		vertexData[0].texcoord = { 0.0f, 1.0f };
-		vertexData[0].normal = { 0.0f,0.0f,-1.0f };
-		vertexData[1].pos = { 0.0f, 0.0f, 0.0f, 1.0f };		// 左上
+		vertexData[0].normal = { 0.0f, 0.0f, -1.0f };
+
+		// 左上
+		vertexData[1].pos = { 0.0f,0.0f,0.0f,1.0f };
 		vertexData[1].texcoord = { 0.0f, 0.0f };
-		vertexData[1].normal = { 0.0f,0.0f,-1.0f };
-		vertexData[2].pos = { 640.0f, 360.0f, 0.0f, 1.0f };	// 右下
+		vertexData[1].normal = { 0.0f, 0.0f, -1.0f };
+
+		// 右下
+		vertexData[2].pos = { width,height,0.0f,1.0f };
 		vertexData[2].texcoord = { 1.0f, 1.0f };
-		vertexData[2].normal = { 0.0f,0.0f,-1.0f };
-		vertexData[3].pos = { 640.0f, 0.0f, 0.0f, 1.0f };		// 右上
+		vertexData[2].normal = { 0.0f, 0.0f, -1.0f };
+
+		// 右上
+		vertexData[3].pos = { width,0.0f,0.0f,1.0f };
 		vertexData[3].texcoord = { 1.0f, 0.0f };
-		vertexData[3].normal = { 0.0f,0.0f,-1.0f };
+		vertexData[3].normal = { 0.0f, 0.0f, -1.0f };
 	}
 
 	/*-------------------- IndexResourceの生成 --------------------*/
@@ -132,7 +151,7 @@ namespace Engine {
 
 	/*-------------------- 変換行列用のResourceの生成 --------------------*/
 	void Sprite::CreateTransformationMatrixResource() {
-		transformationMatrixResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(Matrix4x4));
+		transformationMatrixResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(TransformationMatrix));
 	}
 
 	/*-------------------- 変換行列用のResourceにデータを書き込む --------------------*/
@@ -141,6 +160,8 @@ namespace Engine {
 		transformationMatrixResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixData_));
 		// 単位行列を書きこんでおく
 		transformationMatrixData_->WVP = MakeIdentity4x4();
+		// ワールドにも
+		transformationMatrixData_->World = MakeIdentity4x4();
 	}
 
 	/*-------------------- 更新 --------------------*/

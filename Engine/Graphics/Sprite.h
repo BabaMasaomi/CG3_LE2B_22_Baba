@@ -25,7 +25,10 @@ namespace Engine {
 		/// <param name="spritePSO">SpritePSOのインスタンス</param>
 		/// <param name="textureManager">TextureManagerのインスタンス</param>
 		/// <param name="winApp">WinAppのインスタンス</param>
-		void Initialize(DirectXCommon* dxCommon, SpritePSO* spritePSO, TextureManager* textureManager, WinApp* winApp);
+		/// <param name="textureIndex"></param>
+		/// <param name="size"></param>
+		void Initialize(DirectXCommon* dxCommon, SpritePSO* spritePSO, TextureManager* textureManager,
+			WinApp* winApp, uint32_t textureIndex, const Vector2& size);
 		/// <summary>
 		/// Spriteの更新
 		/// </summary>
@@ -37,11 +40,19 @@ namespace Engine {
 
 		/*==================== アクセッサ ====================*/
 		// ゲッター
+		const Vector3& GetScale() const { return transform_.scale; }
+		const Vector3& GetRotate() const { return transform_.rotate; }
+		const Vector3& GetTranslate() const { return transform_.translate; }
+		// UV用
 		const Vector3 GetUVTransformScale() { return uvTransform_.scale; }
 		const Vector3 GetUVTransformRotate() { return uvTransform_.rotate; }
 		const Vector3 GetUVTransformTranslate() { return uvTransform_.translate; }
 
 		// セッター
+		void SetScale(const Vector3& scale) { transform_.scale = scale; }
+		void SetRotate(const Vector3& rotate) { transform_.rotate = rotate; }
+		void SetTranslate(const Vector3& translate) { transform_.translate = translate; }
+		// UV用
 		void SetUVTransformScale(Vector3 scale) { uvTransform_.scale = scale; }
 		void SetUVTransformRotate(Vector3 rotate) { uvTransform_.rotate = rotate; }
 		void SetUVTransformTranslate(Vector3 translate) { uvTransform_.translate = translate; }
@@ -138,6 +149,7 @@ namespace Engine {
 			float padding[3];
 			Matrix4x4 uvTransform;
 		};
+
 		// UVTransform用の変数
 		Transform uvTransform_ = {
 			{1.0f,1.0f,1.0f},	// scale
@@ -154,5 +166,10 @@ namespace Engine {
 		Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource_ = nullptr;
 		// 変換行列データ
 		TransformationMatrix* transformationMatrixData_ = nullptr;
+
+		// Spriteの表示サイズ
+		Vector2 size_ = {
+			640.0f,360.0f
+		};
 	};
 }

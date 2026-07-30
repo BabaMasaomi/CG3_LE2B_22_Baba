@@ -126,57 +126,81 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	// 平行光源の初期化
 	DirectionalLight directionalLight;
 	directionalLight.Initialize(&dxCommon);
+	/*-------------------- モデルの初期化 --------------------*/
 
 	// SpritePSOの初期化
 	SpritePSO spritePSO;
 	spritePSO.Initialize(&dxCommon, &dxcManager);
 
 	// Spriteの初期化(デバッグ用Spriteとして先頭で初期化し、uvCheckerを Index = 1 で固定しておく)
-	Sprite sprite;
-	sprite.Initialize(&dxCommon, &spritePSO, &textureManager, &winApp);
+	//Sprite sprite;
+	//sprite.Initialize(&dxCommon, &spritePSO, &textureManager, &winApp);
 
-	/*-------------------- モデルの初期化 --------------------*/
 	// ModelPSOの初期化
 	ModelPSO modelPSO;
 	modelPSO.Initialize(&dxCommon, &dxcManager);
 
+	// レンダーの種類
+	enum class RenderObjectType {
+		kModel3D,
+		kSprite2D,
+	};
+
 	// モデルの複数描画の構造体
-	struct ModelEntry {
+	struct RenderEntry {
 		std::string displayName;
+		RenderObjectType  type;
+
+		// 3Dモデル用
 		std::string directoryPath;
 		std::string filename;
 		Model* model = nullptr;
+
+		// Sprite用
+		uint32_t textureIndex = 0;
+		Vector2 spriteSize = {
+			640.0f, 360.0f
+		};
 	};
 
 	// 配置済みオブジェクトの構造体
 	struct PlacedObject {
-		std::unique_ptr<Object3D> object;
-		std::string modelName;
+		RenderObjectType type = RenderObjectType::kModel3D;
+		std::string displayName;
+
+		// kModel3Dのときだけ使用
+		std::unique_ptr<Object3D> object3D;
+
+		// kSprite2Dのときだけ使用
+		std::unique_ptr<Sprite> sprite;
 	};
 
 	// 配置済みObject3Dを管理
-	std::vector<PlacedObject> objects;
+	std::vector<PlacedObject> placedObjects;
+
+	// Sprite用のテクスチャ
+	uint32_t spriteTextureIndex = textureManager.LoadTexture("resources/uvChecker.png");
 
 	// SphereをModelとして生成
 	Model* sphereModel = modelManager.CreateSphereModel("UnitSphere", 1.0f, 16, "resources/uvChecker.png");
 
 	// モデルの読み込み
-	std::vector<ModelEntry> modelEntries = {
-	{"Sphere", "", "", sphereModel},		// SphereはOBJではないため、directoryPathとfilenameは空文字
-	{"Axis",   "resources", "axis.obj",   nullptr},
-	{"Plane",   "resources", "plane.obj",   nullptr},
-	{"Bunny", "resources",  "bunny.obj", nullptr},
-	{"Teapot", "resources",  "teapot.obj", nullptr},
+	std::vector<RenderEntry> renderEntries = {
+		{"Sprite", RenderObjectType::kSprite2D, "", "", nullptr, spriteTextureIndex,{ 640.0f, 360.0f } },
+		{"Sphere", RenderObjectType::kModel3D, "", "", sphereModel, 0, {} },
+		{"Axis", RenderObjectType::kModel3D,"resources", "axis.obj", nullptr, 0, {}},
+		{"Plane", RenderObjectType::kModel3D, "resources", "plane.obj", nullptr, 0, {}},
+		{"Bunny", RenderObjectType::kModel3D, "resources",  "bunny.obj", nullptr, 0, {}},
+		{"Teapot", RenderObjectType::kModel3D, "resources",  "teapot.obj", nullptr, 0, {}},
 	};
 
 	// 各モデルの読み込み
-	for (ModelEntry& entry : modelEntries) {
+	for (RenderEntry& entry : renderEntries) {
 		// modelが未設定の項目だけOBJから読み込む
-		if (entry.model == nullptr) {
-			entry.model = modelManager.LoadModel(
-				entry.directoryPath,
-				entry.filename
-			);
+		if (entry.type == RenderObjectType::kModel3D &&
+			entry.model == nullptr) {
+
+			entry.model = modelManager.LoadModel(entry.directoryPath, entry.filename);
 		}
 	}
 
@@ -225,14 +249,18 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		// プロジェクトの種類問わず3種は固定配置
 		input.Update();
 		camera.Update();
-		directionalLight.Update();		
+		directionalLight.Update();
 
 		// 作りたい物に合わせて配置
-		// モデルの更新
-		for (const auto& placedObject : objects) {
-			placedObject.object->Update(camera);
+		// オブジェクトの更新
+		for (const auto& placedObject : placedObjects) {
+			if (placedObject.type == RenderObjectType::kModel3D) {
+				placedObject.object3D->Update(camera);
+
+			} else {
+				placedObject.sprite->Update();
+			}
 		}
-		sprite.Update();
 
 		// 音声の更新
 		audio.Update();
@@ -255,13 +283,13 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		}
 
 		ImGui::Separator();
-		// Modelを選択
-		if (ImGui::BeginCombo("Model Type", modelEntries[selectedModelIndex].displayName.c_str())) {
-			// 追加するモデルを選択
-			for (int i = 0; i < static_cast<int>(modelEntries.size()); ++i) {
-				bool isSelected = (selectedModelIndex == i);
+		// Objectを選択
+		if (ImGui::BeginCombo("Object Type", renderEntries[selectedModelIndex].displayName.c_str())) {
+			// 追加するオブジェクトを選択
+			for (int i = 0; i < static_cast<int>(renderEntries.size()); ++i) {
+				const bool isSelected = (selectedModelIndex == i);
 				// 選択肢を表示
-				if (ImGui::Selectable(modelEntries[i].displayName.c_str(), isSelected)) {
+				if (ImGui::Selectable(renderEntries[i].displayName.c_str(), isSelected)) {
 					selectedModelIndex = i;
 				}
 				// 選んだ選択肢をデフォルトフォーカスにする
@@ -271,92 +299,175 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 			}
 			ImGui::EndCombo();
 		}
-		// Modelを追加する
-		if (ImGui::Button("Add Model")) {
+		// Objectを追加する
+		if (ImGui::Button("Add")) {
 			// 現在選択されているモデル情報
-			const ModelEntry& selectedEntry = modelEntries[selectedModelIndex];
-			auto object = std::make_unique<Object3D>();
-			// モデルを初期化
-			object->Initialize(&dxCommon, &modelPSO, &directionalLight);
-			// モデルをセット
-			object->SetModel(selectedEntry.model);
-			// 描画される前にWVPを一度更新する
-			object->Update(camera);
+			const RenderEntry& entry = renderEntries[selectedModelIndex];
+
+			PlacedObject placedObject{};
+			placedObject.type = entry.type;
+			placedObject.displayName = entry.displayName;
+
+			// Objectの種類別で追加
+			if (entry.type == RenderObjectType::kModel3D) {
+				// 3Dモデルの場合
+				auto object = std::make_unique<Object3D>();
+				// モデルを初期化
+				object->Initialize(&dxCommon, &modelPSO, &directionalLight);
+				// モデルをセット
+				object->SetModel(entry.model);
+				// 描画される前にWVPを一度更新する
+				object->Update(camera);
+				// 
+				placedObject.object3D = std::move(object);
+
+			} else {
+				// 2Dのスプライトの場合
+				auto sprite = std::make_unique<Sprite>();
+				// ここは現在のSprite::Initializeの引数に合わせる
+				sprite->Initialize(&dxCommon, &spritePSO, &textureManager,
+					&winApp, entry.textureIndex, entry.spriteSize);
+
+				// 初期SRT
+				sprite->SetScale({ 1.0f,1.0f,1.0f });
+				sprite->SetRotate({ 0.0f,0.0f,0.0f });
+				sprite->SetTranslate({ 0.0f,0.0f,0.0f });
+
+				// 追加したフレームで正しい行列を使用する
+				sprite->Update();
+				// 
+				placedObject.sprite = std::move(sprite);
+			}
 			// Object3Dのリスト追加とモデル名の保存を一緒に
-			objects.push_back({ std::move(object),selectedEntry.displayName });
+			placedObjects.push_back(std::move(placedObject));
 		}
 
 		// 削除するモデルを記録する変数
 		int deleteObjectIndex = -1;
 
 		// 配置済みモデルの調整
-		for (size_t i = 0; i < objects.size(); ++i) {
+		for (size_t i = 0; i < placedObjects.size(); ++i) {
 			// Objectを管理
-			PlacedObject& placedObject = objects[i];
-			Object3D& object = *placedObject.object;
+			PlacedObject& placedObject = placedObjects[i];
 
 			ImGui::PushID(static_cast<int>(i));
 			// ラベルを作成
-			std::string label = "Object " + std::to_string(i) + " : " + placedObject.modelName;
+			std::string label = "Object " + std::to_string(i) + " : " + placedObject.displayName;
 			// 個別でモデルを調整
 			if (ImGui::CollapsingHeader(label.c_str())) {
-				// SRTを取得
-				Vector3 scale = object.GetScale();
-				Vector3 rotate = object.GetRotate();
-				Vector3 translate = object.GetTranslate();
-				// SRTを変更
-				if (ImGui::DragFloat3("Scale", &scale.x, 0.01f, 0.01f, 100.0f)) {	// スケールを変更
-					object.SetScale(scale);
-				}
-				if (ImGui::DragFloat3("Rotate", &rotate.x, 0.01f)) {				// 回転を変更
-					object.SetRotate(rotate);
-				}
-				if (ImGui::DragFloat3("Translate", &translate.x, 0.01f)) {			// 移動を変更
-					object.SetTranslate(translate);
-				}
-				// モデルを削除
-				if (ImGui::Button("Delete")) {
-					deleteObjectIndex = static_cast<int>(i);
-				}
-				// UV、色、Lightingを調整
-				if (ImGui::TreeNode("Model")) {
-					// UVTransformを取得
-					Transform uvTransform = object.GetUVTransform();
-					// UVを変更したか記録
-					bool uvChanged = false;
-					uvChanged |= ImGui::DragFloat2("UV Scale", &uvTransform.scale.x, 0.01f, 0.01f, 10.0f);	// スケールを変更
-					uvChanged |= ImGui::DragFloat2("UV Translate", &uvTransform.translate.x, 0.01f);		// 移動を変更
-					uvChanged |= ImGui::DragFloat("UV Rotate", &uvTransform.rotate.z, 0.01f);				// 回転を変更
-					// UVで使用しない成分を固定
-					if (uvChanged) {
-						uvTransform.scale.z = 1.0f;
-						uvTransform.rotate.x = 0.0f;
-						uvTransform.rotate.y = 0.0f;
-						uvTransform.translate.z = 0.0f;
-						object.SetUVTransform(uvTransform);
+				// 3Dモデルの場合の処理
+				if (placedObject.type == RenderObjectType::kModel3D) {
+					Object3D& object = *placedObject.object3D;
+
+					// SRTを取得
+					Vector3 scale = object.GetScale();
+					Vector3 rotate = object.GetRotate();
+					Vector3 translate = object.GetTranslate();
+					// SRTを変更
+					if (ImGui::DragFloat3("Scale", &scale.x, 0.01f, 0.01f, 100.0f)) {	// スケールを変更
+						object.SetScale(scale);
+					}
+					if (ImGui::DragFloat3("Rotate", &rotate.x, 0.01f)) {				// 回転を変更
+						object.SetRotate(rotate);
+					}
+					if (ImGui::DragFloat3("Translate", &translate.x, 0.01f)) {			// 移動を変更
+						object.SetTranslate(translate);
+					}
+					// モデルを削除
+					if (ImGui::Button("Delete")) {
+						deleteObjectIndex = static_cast<int>(i);
 					}
 
-					// テクスチャの色を取得
-					Vector4 color = object.GetColor();
-					// 色を変更
-					if (ImGui::ColorEdit4("Color", &color.x)) {
-						object.SetColor(color);
+					// UV、色、Lightingを調整
+					if (ImGui::TreeNode("Model")) {
+						// UVTransformを取得
+						Transform uvTransform = object.GetUVTransform();
+						// UVを変更したか記録
+						bool uvChanged = false;
+						uvChanged |= ImGui::DragFloat2("UV Scale", &uvTransform.scale.x, 0.01f, 0.01f, 10.0f);	// スケールを変更
+						uvChanged |= ImGui::DragFloat2("UV Translate", &uvTransform.translate.x, 0.01f);		// 移動を変更
+						uvChanged |= ImGui::DragFloat("UV Rotate", &uvTransform.rotate.z, 0.01f);				// 回転を変更
+						// UVで使用しない成分を固定
+						if (uvChanged) {
+							uvTransform.scale.z = 1.0f;
+							uvTransform.rotate.x = 0.0f;
+							uvTransform.rotate.y = 0.0f;
+							uvTransform.translate.z = 0.0f;
+							object.SetUVTransform(uvTransform);
+						}
+
+						// テクスチャの色を取得
+						Vector4 color = object.GetColor();
+						// 色を変更
+						if (ImGui::ColorEdit4("Color", &color.x)) {
+							object.SetColor(color);
+						}
+
+						// ライティングモードを記録する
+						int lightingMode = static_cast<int>(object.GetLightingMode());
+						// ライティングを変更
+						ImGui::Combo("Lighting", &lightingMode, "None\0Lambert\0Half Lambert\0");
+						object.SetLightingMode(static_cast<LightingMode>(lightingMode));
+
+						ImGui::TreePop();
 					}
 
-					// ライティングモードを記録する
-					int lightingMode = static_cast<int>(object.GetLightingMode());
-					// ライティングを変更
-					ImGui::Combo("Lighting", &lightingMode, "None\0Lambert\0Half Lambert\0");
-					object.SetLightingMode(static_cast<LightingMode>(lightingMode));
+				} else {
+					// 3DSpriteの場合の処理 
+					Sprite& sprite = *placedObject.sprite;
 
-					ImGui::TreePop();
+					// SRTを取得
+					Vector3 scale = sprite.GetScale();
+					Vector3 rotate = sprite.GetRotate();
+					Vector3 translate = sprite.GetTranslate();
+					// SpriteではXYスケールを使用
+					if (ImGui::DragFloat2("Scale", &scale.x, 0.01f, 0.01f, 100.0f)) {
+						scale.z = 1.0f;
+						sprite.SetScale(scale);
+					}
+					// SpriteではZ回転を使用
+					if (ImGui::DragFloat("Rotate", &rotate.z, 0.01f)) {
+						rotate.x = 0.0f;
+						rotate.y = 0.0f;
+						sprite.SetRotate(rotate);
+					}
+					// SpriteではXY移動を使用
+					if (ImGui::DragFloat2("Translate", &translate.x, 1.0f)) {
+						translate.z = 0.0f;
+						sprite.SetTranslate(translate);
+					}
+					// Spriteを削除
+					if (ImGui::Button("Delete")) {
+						deleteObjectIndex =
+							static_cast<int>(i);
+					}
+
+					// UV、色を調整
+					if (ImGui::TreeNode("Model")) {
+						Vector3 UVScale = sprite.GetUVTransformScale();
+						Vector3 UVTranslate = sprite.GetUVTransformTranslate();
+						Vector3 UVRotate = sprite.GetUVTransformRotate();
+						// UVを変更したか記録
+						bool uvChanged = false;
+						if (ImGui::DragFloat2("UV Scale", &UVScale.x, 0.01f, -10.0f, 10.0f)) {			// スケールを変更
+							sprite.SetUVTransformScale(UVScale);
+						}
+						if (ImGui::DragFloat2("UV Translate", &UVTranslate.x, 0.01f, -10.0f, 10.0f)) {	// 移動を変更
+							sprite.SetUVTransformTranslate(UVTranslate);
+						}
+						if (ImGui::SliderAngle("UV Rotate", &UVRotate.z)) {								// 回転を変更
+							sprite.SetUVTransformRotate(UVRotate);
+						}
+
+						ImGui::TreePop();
+					}
 				}
 			}
 			ImGui::PopID();
 		}
 		// 削除するモデルがあれば削除
 		if (deleteObjectIndex >= 0) {
-			objects.erase(objects.begin() + deleteObjectIndex);
+			placedObjects.erase(placedObjects.begin() + deleteObjectIndex);
 		}
 
 		ImGui::Separator();
@@ -373,24 +484,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 			}
 			if (ImGui::DragFloat("Intensity", &intensity, 0.01f, 0.0f, 10.0f)) {	// 輝度を変更
 				directionalLight.SetIntensity(intensity);
-			}
-		}
-
-		ImGui::Separator();
-		// Spriteを調整
-		if (ImGui::CollapsingHeader("Sprite")) {
-			ImGui::Checkbox("Show", &showSprite);
-			Vector3 UVScale = sprite.GetUVTransformScale();
-			Vector3 UVTranslate = sprite.GetUVTransformTranslate();
-			Vector3 UVRotate = sprite.GetUVTransformRotate();
-			if (ImGui::DragFloat2("SpriteScale", &UVScale.x, 0.01f, -10.0f, 10.0f)) {			// スケールを変更
-				sprite.SetUVTransformScale(UVScale);
-			}
-			if (ImGui::DragFloat2("SpriteTranslate", &UVTranslate.x, 0.01f, -10.0f, 10.0f)) {	// 移動を変更
-				sprite.SetUVTransformTranslate(UVTranslate);
-			}
-			if (ImGui::SliderAngle("SpriteRotate", &UVRotate.z)) {								// 回転を変更
-				sprite.SetUVTransformRotate(UVRotate);
 			}
 		}
 
@@ -427,7 +520,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 				bool allowOverlap = audio.GetAllowOverlap();
 				// 音声の重なりの許可を切り替える
 				ImGui::SameLine();
-				if (ImGui::Checkbox("Allow Sound Overlap",&allowOverlap)) {
+				if (ImGui::Checkbox("Allow Sound Overlap", &allowOverlap)) {
 					audio.SetAllowOverlap(allowOverlap);
 				}
 
@@ -441,14 +534,18 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		imguiManager.End();		// 以上でImGuiの内容を終える
 #endif
 
-		// モデルの描画
-		for (const auto& placedObject : objects) {
-			placedObject.object->Draw();
+		// 3Dモデルを描画
+		for (const PlacedObject& placedObject : placedObjects) {
+			if (placedObject.type == RenderObjectType::kModel3D) {
+				placedObject.object3D->Draw();
+			}
 		}
 
-		// スプライトの描画
-		if (showSprite) {
-			sprite.Draw();
+		// Spriteを後から描画
+		for (const PlacedObject& placedObject : placedObjects) {
+			if (placedObject.type == RenderObjectType::kSprite2D) {
+				placedObject.sprite->Draw();
+			}
 		}
 
 		// ImGuiの描画
