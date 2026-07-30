@@ -108,12 +108,21 @@ namespace Engine {
 		assert(xAudio2_ != nullptr);
 		assert(!soundData.buffer.empty());
 
+		// 重なりを許可しない場合、現在鳴っている音をすべて停止する
+		if (!allowOverlap_) {
+			StopAllSounds();
+		}
+
 		// sourceVoice
 		IXAudio2SourceVoice* sourceVoice = nullptr;
 
 		// 波形フォーマットを元にSourceVoiceの生成
 		HRESULT result = xAudio2_->CreateSourceVoice(&sourceVoice, &soundData.wfex);
-		assert(SUCCEEDED(result));
+		// SourceVoiceの生成ができていなければ止める
+		if (FAILED(result)) {
+			assert(false);
+			return;
+		}
 
 		// 音声ごとの波形フォーマットでSourceVoiceを作成
 		XAUDIO2_BUFFER buffer{};
@@ -130,7 +139,7 @@ namespace Engine {
 			return;
 		}
 
-		// SourceVoiceを開始
+		// SourceVoiceの再生を開始
 		result = sourceVoice->Start();
 		// SourceVoiceを破棄
 		if (FAILED(result)) {
@@ -168,21 +177,43 @@ namespace Engine {
 		}
 	}
 
-	/*-------------------- 終了処理 --------------------*/
-	void Audio::Finalize() {
-		// 残っているSourceVoiceをすべて破棄
-		for (IXAudio2SourceVoice* sourceVoice : sourceVoices_) {
-			// 再生を停止、SourceVoiceを破棄
-			if (sourceVoice) {
-				sourceVoice->Stop();
-				sourceVoice->DestroyVoice();
+	/*-------------------- すべての音声を停止 --------------------*/
+	void Audio::StopAllSounds() {
+		for (IXAudio2SourceVoice* sourceVoice : sourceVoices_) {			
+			if (sourceVoice == nullptr) {
+				continue;
 			}
+			// SourceVoiceを停止、破棄する
+			sourceVoice->Stop();
+			sourceVoice->FlushSourceBuffers();
+			sourceVoice->DestroyVoice();
 		}
+
 		// SourceVoiceをクリアする
 		sourceVoices_.clear();
+	}
 
+	/*-------------------- 音声の重なりを設定 --------------------*/
+	void Audio::SetAllowOverlap(bool allowOverlap) {
+		// 音声を変更していないならスキップ
+		if (allowOverlap_ == allowOverlap) {
+			return;
+		}
+
+		allowOverlap_ = allowOverlap;
+
+		// 重なり禁止へ切り替えた時点で、現在鳴っている音をすべて停止する
+		if (!allowOverlap_) {
+			StopAllSounds();
+		}
+	}
+
+	/*-------------------- 終了処理 --------------------*/
+	void Audio::Finalize() {
+		// 再生中の音声をすべて停止
+		StopAllSounds();
 		// マスターボイスを破棄
-		if (masterVoice_) {
+		if (masterVoice_ != nullptr) {
 			masterVoice_->DestroyVoice();
 			masterVoice_ = nullptr;
 		}

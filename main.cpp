@@ -422,6 +422,19 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 				if (ImGui::Button("Play Sound")) {
 					audio.AudioPlayWave(soundEntries[selectedSoundIndex].soundData);
 				}
+
+				// 音声の重なりが許可されているか
+				bool allowOverlap = audio.GetAllowOverlap();
+				// 音声の重なりの許可を切り替える
+				ImGui::SameLine();
+				if (ImGui::Checkbox("Allow Sound Overlap",&allowOverlap)) {
+					audio.SetAllowOverlap(allowOverlap);
+				}
+
+				// 再生を即座に停止
+				if (ImGui::Button("Stop Sounds")) {
+					audio.StopAllSounds();
+				}
 			}
 		}
 

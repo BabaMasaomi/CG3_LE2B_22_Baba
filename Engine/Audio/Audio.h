@@ -41,7 +41,7 @@ namespace Engine {
 		/// <summary>
 		/// サウンドの初期化
 		/// </summary>
-		void Initialize();		
+		void Initialize();
 
 		/// <summary>
 		/// WAVEファイルのロード
@@ -62,9 +62,24 @@ namespace Engine {
 		void Update();
 
 		/// <summary>
+		/// すべての音声を停止
+		/// </summary>
+		void StopAllSounds();
+
+		/// <summary>
+		/// 音声の重なりを設定
+		/// </summary>
+		/// <param name="allowOverlap"></param>
+		void SetAllowOverlap(bool allowOverlap);
+
+		/// <summary>
 		/// サウンドの終了処理
 		/// </summary>
 		void Finalize();
+
+		/*==================== アクセッサ ====================*/
+		// ゲッター
+		bool GetAllowOverlap() const { return allowOverlap_; }
 
 	private:
 		/*==================== メンバ変数 ====================*/
@@ -74,5 +89,9 @@ namespace Engine {
 		IXAudio2MasteringVoice* masterVoice_ = nullptr;
 		// 再生中のSourceVoice
 		std::vector<IXAudio2SourceVoice*> sourceVoices_;
+
+		// true：複数音声の同時再生を許可
+		// false：新しい音を鳴らす前に既存の音を停止
+		bool allowOverlap_ = false;
 	};
 }
