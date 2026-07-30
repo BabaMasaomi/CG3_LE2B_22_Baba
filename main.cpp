@@ -148,6 +148,15 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		Model* model = nullptr;
 	};
 
+	// 配置済みオブジェクトの準備
+	struct PlacedObject {
+		std::unique_ptr<Object3D> object;
+		std::string modelName;
+	};
+
+	// 配置済みObject3Dを管理
+	std::vector<PlacedObject> objects;
+
 	// SphereをModelとして生成
 	Model* sphereModel = modelManager.CreateSphereModel("UnitSphere", 1.0f, 16, "resources/uvChecker.png");
 
@@ -169,10 +178,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 				entry.filename
 			);
 		}
-	}
-
-	// 配置済みObject3Dを管理
-	std::vector<std::unique_ptr<Object3D>> objects;
+	}	
 
 	// Audioの初期化
 	Audio audio;
@@ -180,7 +186,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	// 音声読み込み
 	SoundData audioData1 = audio.AudioLoadWave("resources/fanfare.wav");
 	// サウンド再生
-	//audio.AudioPlayWave(audioData1);
+	audio.AudioPlayWave(audioData1);
 
 	// ログ出力
 	Log(logStream, "Start logging!");
@@ -205,8 +211,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 
 		// 作りたい物に合わせて配置
 		// モデルの更新
-		for (const auto& object : objects) {
-			object->Update(camera);
+		for (const auto& placedObject : objects) {
+			placedObject.object->Update(camera);
 		}
 		sprite.Update();
 
@@ -228,7 +234,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		}
 
 		ImGui::Separator();
-		// Modelを追加
+		// Modelを選択
 		if (ImGui::BeginCombo("Model Type", modelEntries[selectedModelIndex].displayName.c_str())) {
 			// 追加するモデルを選択
 			for (int i = 0; i < static_cast<int>(modelEntries.size()); ++i) {
@@ -244,15 +250,19 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 			}
 			ImGui::EndCombo();
 		}
-		// モデルを追加する
+		// Modelを追加する
 		if (ImGui::Button("Add Model")) {
+			// 現在選択されているモデル情報
+			const ModelEntry& selectedEntry = modelEntries[selectedModelIndex];
 			auto object = std::make_unique<Object3D>();
 			// モデルを初期化
 			object->Initialize(&dxCommon, &modelPSO, &directionalLight);
 			// モデルをセット
-			object->SetModel(modelEntries[selectedModelIndex].model);
-			// リストに追加
-			objects.push_back(std::move(object));
+			object->SetModel(selectedEntry.model);
+			// 描画される前にWVPを一度更新する
+			object->Update(camera);
+			// Object3Dのリスト追加とモデル名の保存を一緒に
+			objects.push_back({ std::move(object),selectedEntry.displayName });
 		}
 
 		// 削除するモデルを記録する変数
@@ -260,12 +270,16 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 
 		// 配置済みモデルの調整
 		for (size_t i = 0; i < objects.size(); ++i) {
-			Object3D& object = *objects[i];
+			// Objectを管理
+			PlacedObject& placedObject = objects[i];
+			Object3D& object = *placedObject.object;
+
 			ImGui::PushID(static_cast<int>(i));
-			// ツリーノードのラベルを作成
-			std::string label = "Objects " + std::to_string(i);
+			// ラベルを作成
+			std::string label = "Object " + std::to_string(i) + " : " + placedObject.modelName;
 			// 個別でモデルを調整
 			if (ImGui::CollapsingHeader(label.c_str())) {
+				// SRTを取得
 				Vector3 scale = object.GetScale();
 				Vector3 rotate = object.GetRotate();
 				Vector3 translate = object.GetTranslate();
@@ -363,8 +377,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 #endif
 
 		// モデルの描画
-		for (const auto& object : objects) {
-			object->Draw();
+		for (const auto& placedObject : objects) {
+			placedObject.object->Draw();
 		}
 
 		// スプライトの描画
