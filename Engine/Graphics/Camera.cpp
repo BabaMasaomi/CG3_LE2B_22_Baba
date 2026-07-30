@@ -143,4 +143,37 @@ namespace Engine {
 		transform_.rotate.x = orbitPitch_ + lookPitch_;
 		transform_.rotate.y = orbitYaw_ + lookYaw_;
 	}
+
+	/*-------------------- デバッグカメラを初期状態へ戻す --------------------*/
+	void Camera::ResetDebugCamera() {
+		// 注視点を初期位置へ戻す
+		target_ = { 0.0f,0.0f,0.0f };
+		// 注視点との距離を戻す
+		distance_ = 10.0f;
+		// Orbitの角度を戻す
+		orbitYaw_ = 0.0f;
+		orbitPitch_ = 0.3f;
+		// LookAroundの角度を戻す
+		lookYaw_ = 0.0f;
+		lookPitch_ = 0.0f;
+		isLookAround_ = false;
+
+		// 初期角度から回転行列を作成
+		Matrix4x4 rotateY = MakeRotateYMatrix(orbitYaw_);
+		Matrix4x4 rotateX = MakeRotateXMatrix(orbitPitch_);
+		Matrix4x4 rotateMatrix = Multiply(rotateX, rotateY);
+
+		// 注視点からカメラまでのオフセット
+		Vector3 offset = { 0.0f,0.0f,-distance_ };
+		offset = TransformNormal(offset, rotateMatrix);
+
+		// デバッグカメラの位置を更新
+		transform_.translate = { target_.x + offset.x,target_.y + offset.y,target_.z + offset.z };
+		// デバッグカメラの回転を更新
+		transform_.rotate = { orbitPitch_,orbitYaw_,0.0f };
+
+		// 通常カメラ用の変数も同期しておく
+		rotate_ = transform_.rotate;
+		translate_ = transform_.translate;
+	}
 }

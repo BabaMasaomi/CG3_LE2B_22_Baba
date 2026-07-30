@@ -14,7 +14,6 @@
 #include "ModelPSO.h"
 #include "Model.h"
 #include "Object3D.h"
-#include "Sphere.h"
 #include "Audio.h"
 // オブジェクト描画用
 #include <memory>
@@ -131,10 +130,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	// SpritePSOの初期化
 	SpritePSO spritePSO;
 	spritePSO.Initialize(&dxCommon, &dxcManager);
-
-	// Spriteの初期化(デバッグ用Spriteとして先頭で初期化し、uvCheckerを Index = 1 で固定しておく)
-	//Sprite sprite;
-	//sprite.Initialize(&dxCommon, &spritePSO, &textureManager, &winApp);
 
 	// ModelPSOの初期化
 	ModelPSO modelPSO;
@@ -279,7 +274,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		}
 		// cameraの位置をリセット
 		if (ImGui::Button("Reset")) {
-			camera.Initialize(winApp.GetClientWidth(), winApp.GetClientHeight(), &input);
+			camera.ResetDebugCamera();
 		}
 
 		ImGui::Separator();
