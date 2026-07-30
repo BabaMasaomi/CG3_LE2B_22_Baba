@@ -87,8 +87,7 @@ namespace Engine {
 		// RootSignature設定
 		commandList->SetGraphicsRootSignature(modelPSO_->GetRootSignature());
 		commandList->SetPipelineState(modelPSO_->GetPipelineState());	// PSOを設定
-		commandList->IASetVertexBuffers(0, 1, &model_->GetVertexBufferView());		// VertexBufferViewを設定
-		commandList->IASetIndexBuffer(&model_->GetIndexBufferView());				// IndexBufferViewを設定
+		commandList->IASetVertexBuffers(0, 1, &model_->GetVertexBufferView());	// VertexBufferViewを設定
 		// 形状を設定
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		commandList->SetGraphicsRootConstantBufferView(0, model_->GetMaterialResource()->GetGPUVirtualAddress());	// マテリアルCBufferの場所を設定

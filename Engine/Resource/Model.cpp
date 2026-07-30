@@ -8,6 +8,7 @@
 
 namespace Engine {
 
+	/*-------------------- OBJファイルから初期化 --------------------*/
 	void Model::Initialize(DirectXCommon* dxCommon, TextureManager* textureManager,
 		const std::string& directory, const std::string& filename) {
 		// ポインタを保存しておく
@@ -16,17 +17,28 @@ namespace Engine {
 
 		// モデル読み込み
 		LoadObjFile(directory, filename);
-		// VertexResourceとVertexBufferViewを用意
-		CreateVertexResource();
-		CreateVertexBufferView();
-		MapVertexData();
-
-		// 色付けのためのMaterialResourceも作る
-		CreateMaterialResource();
-		MapMaterial();
 
 		// テクスチャの読み込み
 		textureIndex_ = textureManager_->LoadTexture(modelData_.material.textureFilePath);
+
+		// 頂点、インデックス、マテリアル等を生成
+		CreateResources();
+	}
+
+	/*-------------------- プログラムで生成したModelDataから初期化 --------------------*/
+	void Model::Initialize(DirectXCommon* dxCommon, TextureManager* textureManager, ModelData modelData) {
+		// ポインタを保存しておく
+		dxCommon_ = dxCommon;
+		textureManager_ = textureManager;
+
+		// 生成済みのモデルデータを受け取る
+		modelData_ = std::move(modelData);
+
+		// テクスチャ読み込み
+		textureIndex_ = textureManager_->LoadTexture(modelData_.material.textureFilePath);
+
+		// 頂点、インデックス、マテリアル等を生成
+		CreateResources();
 	}
 
 	/*-------------------- objファイルを読み込む --------------------*/
@@ -146,6 +158,23 @@ namespace Engine {
 	/*-------------------- UV変換行列の更新 --------------------*/
 	void Model::UpdateUVTransform(const Matrix4x4& uvTransform) {
 		materialData_->uvTransform = uvTransform;
+	}
+
+	/*-------------------- リソース作成をまとめる --------------------*/
+	void Model::CreateResources() {
+		// VertexResourceとVertexBufferViewを用意
+		CreateVertexResource();
+		CreateVertexBufferView();
+		MapVertexData();
+
+		// Index生成がないのでコメントアウト
+		//CreateIndexResource();
+		//CreateIndexBufferView();
+		//MapIndexData();
+
+		// 色付けのためのMaterialResourceも作る
+		CreateMaterialResource();
+		MapMaterial();
 	}
 
 	/*-------------------- VertexResourceの生成 --------------------*/

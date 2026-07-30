@@ -148,8 +148,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		Model* model = nullptr;
 	};
 
+	// SphereをModelとして生成
+	Model* sphereModel = modelManager.CreateSphereModel("UnitSphere", 1.0f, 16, "resources/uvChecker.png");
+
 	// モデルの読み込み
 	std::vector<ModelEntry> modelEntries = {
+	{"Sphere", "", "", sphereModel},		// SphereはOBJではないため、directoryPathとfilenameは空文字
 	{"Axis",   "resources", "axis.obj",   nullptr},
 	{"Plane",   "resources", "plane.obj",   nullptr},
 	{"Bunny", "resources",  "bunny.obj", nullptr},
@@ -158,18 +162,24 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 
 	// 各モデルの読み込み
 	for (ModelEntry& entry : modelEntries) {
-		entry.model = modelManager.LoadModel(entry.directoryPath, entry.filename);
+		// modelが未設定の項目だけOBJから読み込む
+		if (entry.model == nullptr) {
+			entry.model = modelManager.LoadModel(
+				entry.directoryPath,
+				entry.filename
+			);
+		}
 	}
 
 	// 配置済みObject3Dを管理
 	std::vector<std::unique_ptr<Object3D>> objects;
 
-	// テクスチャの読み込み
-	textureManager.LoadTexture("resources/uvChecker.png");
+	//// テクスチャの読み込み
+	//textureManager.LoadTexture("resources/uvChecker.png");
 
-	// 球の初期化
-	Sphere sphere;
-	sphere.Initialize(&dxCommon, &modelPSO, &textureManager, &directionalLight);
+	//// 球の初期化
+	//Sphere sphere;
+	//sphere.Initialize(&dxCommon, &modelPSO, &textureManager, &directionalLight);
 
 	// Audioの初期化
 	Audio audio;
@@ -177,7 +187,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	// 音声読み込み
 	SoundData audioData1 = audio.AudioLoadWave("resources/fanfare.wav");
 	// サウンド再生
-	audio.AudioPlayWave(audioData1);
+	//audio.AudioPlayWave(audioData1);
 
 	// ログ出力
 	Log(logStream, "Start logging!");
@@ -207,7 +217,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		for (const auto& object : objects) {
 			object->Update(camera);
 		}
-		sphere.Update(camera);
+		//sphere.Update(camera);
 		sprite.Update();
 
 		/*-------------------- 描画処理 --------------------*/
@@ -228,7 +238,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		}
 
 		ImGui::Separator();
-
 		// Modelを追加
 		if (ImGui::BeginCombo("Model Type", modelEntries[selectedModelIndex].displayName.c_str())) {
 			// 追加するモデルを選択
@@ -254,7 +263,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 			object->SetModel(modelEntries[selectedModelIndex].model);
 			// リストに追加
 			objects.push_back(std::move(object));
-		}		
+		}
 
 		// 削除するモデルを記録する変数
 		int deleteObjectIndex = -1;

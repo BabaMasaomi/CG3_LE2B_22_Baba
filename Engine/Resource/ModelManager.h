@@ -28,6 +28,17 @@ namespace Engine {
 		/// <returns>読み込まれたモデルのポインタ</returns>
 		Model* LoadModel(const std::string& directory, const std::string& filename);
 
+		/// <summary>
+		/// 球モデルを作成
+		/// </summary>
+		/// <param name="modelName"></param>
+		/// <param name="radius"></param>
+		/// <param name="subdivision"></param>
+		/// <param name="textureFilePath"></param>
+		/// <returns></returns>
+		Model* CreateSphereModel(const std::string& modelName, float radius,
+			uint32_t subdivision, const std::string& textureFilePath);
+
 	private:
 		/*==================== メンバ変数 ====================*/
 		// DirectXCommonのインスタンス

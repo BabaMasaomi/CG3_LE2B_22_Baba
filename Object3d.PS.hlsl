@@ -32,7 +32,9 @@ PixelShaderOutput main(VertexShaderOutput input)
     float32_t4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
     if (gMaterial.enableLighting != 0)
     {
-        float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction);
+        float3 normal = normalize(input.normal);
+        float3 lightDirection = normalize(-gDirectionalLight.direction);
+        float NdotL = dot(normal, lightDirection);
         float diffuse = 1.0f;
         if (gDirectionalLight.lightingType == 0)
         {

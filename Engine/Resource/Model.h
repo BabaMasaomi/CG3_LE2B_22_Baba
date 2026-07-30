@@ -28,13 +28,14 @@ namespace Engine {
 
 	struct MaterialData {
 		std::string textureFilePath;
-		Vector3 diffuseColor;
-		Vector3 specularColor;
-		float shininess;
+		Vector3 diffuseColor = { 1.0f,1.0f,1.0f };		// 初期値を設定しておく
+		Vector3 specularColor = { 1.0f,1.0f,1.0f };
+		float shininess = 32.0f;
 	};
 
 	struct ModelData {
 		std::vector<VertexData> vertices;
+		std::vector<uint32_t> indices;
 		MaterialData material;
 	};
 
@@ -42,7 +43,7 @@ namespace Engine {
 	public:
 		/*==================== メンバ関数の宣言 ====================*/
 		/// <summary>
-		/// モデルの初期化
+		/// OBJファイルから初期化
 		/// </summary>
 		/// <param name="dxCommon">DirectXCommonのインスタンス</param>
 		/// <param name="textureManager">TextureManagerのインスタンス</param>
@@ -50,6 +51,14 @@ namespace Engine {
 		/// <param name="filename">ファイル名</param>
 		void Initialize(DirectXCommon* dxCommon, TextureManager* textureManager,
 			const std::string& directory, const std::string& filename);
+
+		/// <summary>
+		/// プログラムで生成したModelDataから初期化
+		/// </summary>
+		/// <param name="dxCommon">DirectXCommonのインスタンス</param>
+		/// <param name="textureManager">TextureManagerのインスタンス</param>
+		/// <param name="modelData">ModelDataのインスタンス</param>
+		void Initialize(DirectXCommon* dxCommon, TextureManager* textureManager, ModelData modelData);
 
 		/// <summary>
 		/// OBJファイルを読み込む
@@ -81,8 +90,18 @@ namespace Engine {
 		uint32_t GetIndexCount() const { return indexCount_; }
 		ID3D12Resource* GetMaterialResource() const { return materialResource_.Get(); }
 
+		// 
+		bool HasIndices() const {
+			return !modelData_.indices.empty();
+		}
+
 	private:
 		/*==================== メンバ関数の宣言 ====================*/
+		/// <summary>
+		/// リソース作成をまとめる
+		/// </summary>
+		void CreateResources();
+
 		// VertexResourceとVertexBufferViewの作成関数	
 		/// <summary>
 		/// 頂点リソースを作成する
@@ -109,7 +128,7 @@ namespace Engine {
 
 		/*==================== メンバ変数 ====================*/
 		// DirectXCommonのインスタンス
-		DirectXCommon* dxCommon_ = nullptr;		
+		DirectXCommon* dxCommon_ = nullptr;
 
 		// ModelDataを保持する
 		ModelData modelData_ = {};

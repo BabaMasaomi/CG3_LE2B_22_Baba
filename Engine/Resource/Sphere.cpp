@@ -1,206 +1,88 @@
 #include "Sphere.h"
-#include "DirectXCommon.h"
-#include "ModelPSO.h"
-#include "TextureManager.h"
-#include "DirectionalLight.h"
-#include "Camera.h"
-#include "Utility.h"
-#include "Logger.h"
-#include <format>			// フォーマットの自動指定をしてくれる(+安全策)
-#include <cmath>
+
 #include <cassert>
+#include <cmath>
 
 namespace Engine {
 
-	// デストラクタ
-	Sphere::~Sphere() {
+	/*-------------------- 球体のModelDataを生成 --------------------*/
+	ModelData Sphere::Generate(
+		float radius,
+		uint32_t subdivision,
+		const std::string& textureFilePath) {
+		// 引数のチェック
+		assert(radius > 0.0f);
+		assert(subdivision >= 3);
 
-	}
+		// ModelDataの生成
+		ModelData modelData{};
+		// Sphere用のマテリアルを設定
+		modelData.material.textureFilePath = textureFilePath;
 
-	/*-------------------- 初期化 --------------------*/
-	void Sphere::Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, TextureManager* textureManager, DirectionalLight* directionalLight) {
-
-		// ポインタを保存しておく
-		dxCommon_ = dxCommon;
-		modelPSO_ = modelPSO;
-		textureManager_ = textureManager;
-		directionalLight_ = directionalLight;
-
-		// CPUで動かす用のTransformを作る
-		transform_ = { {1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };
-
-		CreateMesh();
-		CreateMaterial();
-		CreateTransform();
-	}
-
-	/*-------------------- メッシュを作成する --------------------*/
-	void Sphere::CreateMesh() {
-		// VertexDataを生成
-		CreateVertexResource();
-		CreateVertexBufferView();
-		MapVertexData();
-
-		// IndexDataを生成
-		CreateIndexResource();
-		CreateIndexBufferView();
-		MapIndexData();
-	}
-
-	/*-------------------- VertexResourceの生成 --------------------*/
-	void Sphere::CreateVertexResource() {
-		vertexResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(VertexData) * vertexCount_);
-	}
-
-	/*-------------------- VertexBufferViewの作成 --------------------*/
-	void Sphere::CreateVertexBufferView() {
-		// リソースの先頭のアドレスから使う
-		vertexBufferView_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
-		// 使用するリソースのサイズはVector4を球の頂点数分
-		vertexBufferView_.SizeInBytes = sizeof(VertexData) * vertexCount_;
-		// 1頂点あたりのサイズ
-		vertexBufferView_.StrideInBytes = sizeof(VertexData);
-	}
-
-	/*-------------------- VertexResourceにデータを書き込む --------------------*/
-	void Sphere::MapVertexData() {
-		// 頂点リソースにデータを書きこむ
-		VertexData* vertexData = nullptr;
-		// 書き込むためのアドレスを取得
-		vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
-
-		const float pi = std::acos(-1.0f);
-		// 経度1つ分の角度
-		const float kLonEvery = pi * 2.0f / float(kSubdivision_);
-		// 緯度1つ分の角度
-		const float kLatEvery = pi / float(kSubdivision_);
-		// 球(大量の三角形)のデータを設定
-		for (uint32_t lat = 0; lat <= kSubdivision_; lat++) {
-			for (uint32_t lon = 0; lon <= kSubdivision_; lon++) {
-				uint32_t index = lat * (kSubdivision_ + 1) + lon;
-				float latitude = -pi / 2.0f + kLatEvery * lat;
-				float longitude = kLonEvery * lon;
-				// データの書き込み
-				vertexData[index].pos = { cosf(latitude) * cosf(longitude),sinf(latitude),cosf(latitude) * sinf(longitude),1.0f };
-				vertexData[index].texcoord = { float(lon) / float(kSubdivision_),1.0f - float(lat) / float(kSubdivision_) };
-				vertexData[index].normal = { vertexData[index].pos.x,vertexData[index].pos.y,vertexData[index].pos.z };
-			}
-		}
-	}
-
-	/*-------------------- IndexResourceの生成 --------------------*/
-	void Sphere::CreateIndexResource() {
-		indexCount_ = kSubdivision_ * kSubdivision_ * 6;
-		indexResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(uint32_t) * indexCount_);
-	}
-
-	/*-------------------- IndexBufferViewの作成 --------------------*/
-	void Sphere::CreateIndexBufferView() {
-		// リソースの先頭のアドレスから使う
-		indexBufferView_.BufferLocation = indexResource_->GetGPUVirtualAddress();
-		// 使用するリソースのサイズはVector4を球の頂点数分
-		indexBufferView_.SizeInBytes = sizeof(uint32_t) * indexCount_;
-		// 1頂点あたりのサイズ
-		indexBufferView_.Format = DXGI_FORMAT_R32_UINT;
-	}
-
-	/*-------------------- IndexResourceにデータを書き込む --------------------*/
-	void Sphere::MapIndexData() {
-		// 書き込むためのアドレスを取得
-		indexResource_->Map(0, nullptr, reinterpret_cast<void**>(&indexData_));
-		uint32_t i = 0;
-		// 球(大量の三角形)のデータを設定
-		for (uint32_t lat = 0; lat < kSubdivision_; lat++) {
-			for (uint32_t lon = 0; lon < kSubdivision_; lon++) {
-				uint32_t current = lat * (kSubdivision_ + 1) + lon;
-				uint32_t next = current + 1;
-				uint32_t down = current + (kSubdivision_ + 1);
-				uint32_t downNext = down + 1;
-				// データを設定
-				indexData_[i++] = current;
-				indexData_[i++] = down;
-				indexData_[i++] = next;
-				indexData_[i++] = next;
-				indexData_[i++] = down;
-				indexData_[i++] = downNext;
-			}
-		}
-	}
-
-	/*-------------------- マテリアルを作成する --------------------*/
-	void Sphere::CreateMaterial() {
-		CreateMaterialResource();
-		MapMaterial();
-	}
-
-	/*-------------------- MaterialResourceの生成 --------------------*/
-	void Sphere::CreateMaterialResource() {
-		materialResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(Material));
-	}
-
-	/*-------------------- MaterialResourceにデータを書き込む --------------------*/
-	void Sphere::MapMaterial() {
-		// Mapする
-		materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
-		// ここで色を弄れる
-		materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-		materialData_->enableLighting = true;
-		materialData_->uvTransform = MakeIdentity4x4();
-	}
-
-	/*-------------------- 変換行列を作成する --------------------*/
-	void Sphere::CreateTransform() {
-		CreateTransformationMatrixResource();
-		MapTransformationMatrix();
-	}
-
-	/*-------------------- 変換行列用のResourceの生成 --------------------*/
-	void Sphere::CreateTransformationMatrixResource() {
-		transformResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(TransformationMatrix));
-	}
-
-	/*-------------------- 変換行列用のResourceにデータを書き込む --------------------*/
-	void Sphere::MapTransformationMatrix() {
-		// 書き込むためのアドレスを取得
-		HRESULT hr = transformResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformData_));
-		assert(SUCCEEDED(hr));
-		// 単位行列を書きこんでおく
-		transformData_->WVP = MakeIdentity4x4();
-		transformData_->World = MakeIdentity4x4();
-	}
-
-	/*-------------------- 更新 --------------------*/
-	void Sphere::Update(const Camera& camera) {
-		// ワールド行列を計算する
-		worldMatrix_ = MakeAffineMatrix(
-			transform_.scale,
-			transform_.rotate,
-			transform_.translate
+		// 1マスにつき三角形2枚、1三角形につき3頂点
+		modelData.vertices.reserve(
+			subdivision * subdivision * 6
 		);
 
-		// WVP行列を計算して、CBufferに書き込む
-		Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix_, camera.GetViewProjectionMatrix());
-		transformData_->WVP = worldViewProjectionMatrix;
-		transformData_->World = worldMatrix_;
+		// 球の頂点を生成
+		const float pi = std::acos(-1.0f);
+		const float lonEvery = 2.0f * pi / static_cast<float>(subdivision);
+		const float latEvery = pi / static_cast<float>(subdivision);
+
+		// ラムダ式で頂点を生成する関数を定義
+		auto createVertex = [radius, subdivision, pi, lonEvery, latEvery](uint32_t lat, uint32_t lon) {
+			// lat: 緯度、lon: 経度
+			VertexData vertex{};
+			// 緯度と経度をラジアンに変換
+			const float latitude = -pi * 0.5f + latEvery * static_cast<float>(lat);
+			const float longitude = lonEvery * static_cast<float>(lon);
+			// 球の法線ベクトルを計算
+			const Vector3 normal = {
+				std::cos(latitude) * std::cos(longitude),
+				std::sin(latitude),
+				std::cos(latitude) * std::sin(longitude)
+			};
+			// 頂点の位置を計算
+			vertex.pos = {
+				normal.x * radius,
+				normal.y * radius,
+				normal.z * radius,
+				1.0f
+			};
+			// UV座標を計算
+			vertex.texcoord = {
+				static_cast<float>(lon) / static_cast<float>(subdivision),
+				1.0f - static_cast<float>(lat) / static_cast<float>(subdivision)
+			};
+			// 法線ベクトルを設定
+			vertex.normal = normal;
+
+			return vertex;
+			};
+
+		// 球の頂点を生成
+		for (uint32_t lat = 0; lat < subdivision; ++lat) {
+			for (uint32_t lon = 0; lon < subdivision; ++lon) {
+
+				// 四角形の4頂点
+				const VertexData current = createVertex(lat, lon);
+				const VertexData next = createVertex(lat, lon + 1);
+				const VertexData down = createVertex(lat + 1, lon);
+				const VertexData downNext = createVertex(lat + 1, lon + 1);
+
+				// 1枚目
+				modelData.vertices.push_back(current);
+				modelData.vertices.push_back(down);
+				modelData.vertices.push_back(next);
+
+				// 2枚目
+				modelData.vertices.push_back(next);
+				modelData.vertices.push_back(down);
+				modelData.vertices.push_back(downNext);
+			}
+		}
+
+		return modelData;
 	}
 
-	/*-------------------- 描画 --------------------*/
-	void Sphere::Draw(uint32_t textureIndex) {
-		// コマンドリストを取得
-		auto* commandList = dxCommon_->GetCommandList();
-		// RootSignature設定
-		commandList->SetGraphicsRootSignature(modelPSO_->GetRootSignature());
-		commandList->SetPipelineState(modelPSO_->GetPipelineState());	// PSOを設定
-		commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);		// VertexBufferViewを設定
-		commandList->IASetIndexBuffer(&indexBufferView_);				// IndexBufferViewを設定
-		// 形状を設定
-		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());				// マテリアルCBufferの場所を設定
-		commandList->SetGraphicsRootConstantBufferView(1, transformResource_->GetGPUVirtualAddress());	// wvp用のCBufferの場所を設定
-		// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
-		commandList->SetGraphicsRootDescriptorTable(2, textureManager_->GetTextureSrvHandleGPU(textureIndex - 1));
-		commandList->SetGraphicsRootConstantBufferView(3, directionalLight_->GetResource()->GetGPUVirtualAddress());	// 平行光源を適用
-		// 描画！(DrawCall)
-		commandList->DrawIndexedInstanced(indexCount_, 1, 0, 0, 0);
-	}
 }
