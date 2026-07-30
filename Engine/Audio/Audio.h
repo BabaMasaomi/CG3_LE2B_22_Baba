@@ -11,7 +11,7 @@ namespace Engine {
 	// チャンクヘッダ
 	struct ChunkHeader {
 		char id[4];		// チャンク毎のID
-		int32_t size;	// チャンクサイズ
+		uint32_t size;	// チャンクサイズ
 	};
 
 	// RIFFヘッダチャンク
@@ -41,7 +41,7 @@ namespace Engine {
 		/// <summary>
 		/// サウンドの初期化
 		/// </summary>
-		void Initialize();
+		void Initialize();		
 
 		/// <summary>
 		/// WAVEファイルのロード
@@ -57,6 +57,11 @@ namespace Engine {
 		void AudioPlayWave(const SoundData& soundData);
 
 		/// <summary>
+		/// 再生終了したSourceVoiceを破棄
+		/// </summary>
+		void Update();
+
+		/// <summary>
 		/// サウンドの終了処理
 		/// </summary>
 		void Finalize();
@@ -66,6 +71,8 @@ namespace Engine {
 		// XAudio2のインスタンス
 		Microsoft::WRL::ComPtr<IXAudio2> xAudio2_ = nullptr;
 		// マスターボイス
-		IXAudio2MasteringVoice* masterVoice_;
+		IXAudio2MasteringVoice* masterVoice_ = nullptr;
+		// 再生中のSourceVoice
+		std::vector<IXAudio2SourceVoice*> sourceVoices_;
 	};
 }

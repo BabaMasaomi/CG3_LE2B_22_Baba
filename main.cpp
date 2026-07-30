@@ -140,7 +140,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	ModelPSO modelPSO;
 	modelPSO.Initialize(&dxCommon, &dxcManager);
 
-	// モデルの複数描画の準備
+	// モデルの複数描画の構造体
 	struct ModelEntry {
 		std::string displayName;
 		std::string directoryPath;
@@ -148,7 +148,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		Model* model = nullptr;
 	};
 
-	// 配置済みオブジェクトの準備
+	// 配置済みオブジェクトの構造体
 	struct PlacedObject {
 		std::unique_ptr<Object3D> object;
 		std::string modelName;
@@ -178,15 +178,31 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 				entry.filename
 			);
 		}
-	}	
+	}
 
+	/*-------------------- 音声の初期化 --------------------*/
 	// Audioの初期化
 	Audio audio;
 	audio.Initialize();
+
+	// 音声を管理する構造体
+	struct SoundEntry {
+		std::string displayName;
+		std::string filePath;
+		SoundData soundData;
+	};
+
 	// 音声読み込み
-	SoundData audioData1 = audio.AudioLoadWave("resources/fanfare.wav");
-	//// サウンド再生
-	//audio.AudioPlayWave(audioData1);
+	std::vector<SoundEntry> soundEntries = {
+		{"Fanfare", "resources/fanfare.wav", {}},
+		{"Mokugyo", "resources/mokugyo.wav", {}},
+		{"Start", "resources/start.wav", {}},
+	};
+
+	// 音声ファイルを最初に一度だけ読み込む
+	for (SoundEntry& entry : soundEntries) {
+		entry.soundData = audio.AudioLoadWave(entry.filePath.c_str());
+	}
 
 	// ログ出力
 	Log(logStream, "Start logging!");
@@ -196,6 +212,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	int selectedModelIndex = 0;
 	// spriteを表示するか
 	bool showSprite = false;
+	// Comboで現在選択している音声
+	int selectedSoundIndex = 0;
 
 	/*-------------------- ゲームループの処理 --------------------*/
 	MSG msg{};
@@ -207,7 +225,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		// プロジェクトの種類問わず3種は固定配置
 		input.Update();
 		camera.Update();
-		directionalLight.Update();
+		directionalLight.Update();		
 
 		// 作りたい物に合わせて配置
 		// モデルの更新
@@ -215,6 +233,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 			placedObject.object->Update(camera);
 		}
 		sprite.Update();
+
+		// 音声の更新
+		audio.Update();
 
 		/*-------------------- 描画処理 --------------------*/
 		dxCommon.PreDraw();		// 描画前の処理
@@ -374,9 +395,34 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		}
 
 		ImGui::Separator();
-		// Soundの再生
-		if (ImGui::Button("Play Sound")) {
-			audio.AudioPlayWave(audioData1);
+		if (ImGui::CollapsingHeader("Audio")) {
+			if (soundEntries.empty()) {
+				// 音声が無ければ操作項目を非表示に
+				ImGui::Text("No sound data");
+
+			} else {
+				if (ImGui::BeginCombo("Sound Type", soundEntries[selectedSoundIndex].displayName.c_str())) {
+					// 再生する音声を選択
+					for (int i = 0; i < static_cast<int>(soundEntries.size()); ++i) {
+						const bool isSelected = selectedSoundIndex == i;
+						// 選択肢を表示
+						if (ImGui::Selectable(soundEntries[i].displayName.c_str(), isSelected)) {
+							selectedSoundIndex = i;
+						}
+						// 選んだ選択肢をデフォルトフォーカスにする
+						if (isSelected) {
+							ImGui::SetItemDefaultFocus();
+						}
+					}
+
+					ImGui::EndCombo();
+				}
+
+				// Soundの再生
+				if (ImGui::Button("Play Sound")) {
+					audio.AudioPlayWave(soundEntries[selectedSoundIndex].soundData);
+				}
+			}
 		}
 
 		imguiManager.End();		// 以上でImGuiの内容を終える
