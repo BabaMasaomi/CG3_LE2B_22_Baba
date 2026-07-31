@@ -39,7 +39,6 @@ namespace Engine {
 		/// </summary>
 		/// <param name="dxCommon">DirectXCommonのインスタンス</param>
 		/// <param name="textureManager">TextureManagerのインスタンス</param>
-		/// <param name="directory">ファイルディレクトリ</param>
 		/// <param name="filename">ファイル名</param>
 		void Initialize(DirectXCommon* dxCommon, TextureManager* textureManager, const std::string& filename);
 
@@ -54,14 +53,12 @@ namespace Engine {
 		/// <summary>
 		/// OBJファイルを読み込む
 		/// </summary>
-		/// <param name="directryPath">ファイルディレクトリ</param>
 		/// <param name="filename">ファイル名</param>
 		void LoadObjFile(const std::string& filename);
 
 		/// <summary>
 		/// マテリアルテンプレートファイルを読み込む
 		/// </summary>
-		/// <param name="directoryPath">ファイルディレクトリ</param>
 		/// <param name="filename">ファイル名</param>
 		/// <returns>読み込まれたマテリアルデータ</returns>
 		MaterialData LoadMaterialTemplateFile(const std::string& filename);

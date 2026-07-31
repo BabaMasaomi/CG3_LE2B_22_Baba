@@ -23,7 +23,6 @@ namespace Engine {
 		/// <summary>
 		/// モデルを読み込む
 		/// </summary>
-		/// <param name="directory">ファイルディレクトリ</param>
 		/// <param name="filename">ファイル名</param>
 		/// <returns>読み込まれたモデルのポインタ</returns>
 		Model* LoadModel(const std::string& filename);
@@ -31,10 +30,10 @@ namespace Engine {
 		/// <summary>
 		/// 球モデルを作成
 		/// </summary>
-		/// <param name="modelName"></param>
-		/// <param name="radius"></param>
-		/// <param name="subdivision"></param>
-		/// <param name="textureFilePath"></param>
+		/// <param name="modelName">モデル名</param>
+		/// <param name="radius">球の半径</param>
+		/// <param name="subdivision">分割数</param>
+		/// <param name="textureFilePath">使用するテクスチャ</param>
 		/// <returns></returns>
 		Model* CreateSphereModel(const std::string& modelName, float radius,
 			uint32_t subdivision, const std::string& textureFilePath);

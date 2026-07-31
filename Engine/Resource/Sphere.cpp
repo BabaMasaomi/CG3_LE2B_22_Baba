@@ -6,10 +6,7 @@
 namespace Engine {
 
 	/*-------------------- 球体のModelDataを生成 --------------------*/
-	ModelData Sphere::Generate(
-		float radius,
-		uint32_t subdivision,
-		const std::string& textureFilePath) {
+	ModelData Sphere::Generate(float radius, uint32_t subdivision, const std::string& textureFilePath) {
 		// 引数のチェック
 		assert(radius > 0.0f);
 		assert(subdivision >= 3);

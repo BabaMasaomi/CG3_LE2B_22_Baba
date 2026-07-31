@@ -25,8 +25,8 @@ namespace Engine {
 		/// <param name="spritePSO">SpritePSOのインスタンス</param>
 		/// <param name="textureManager">TextureManagerのインスタンス</param>
 		/// <param name="winApp">WinAppのインスタンス</param>
-		/// <param name="textureIndex"></param>
-		/// <param name="size"></param>
+		/// <param name="textureIndex">Textureのインデックス</param>
+		/// <param name="size">Spriteのサイズ</param>
 		void Initialize(DirectXCommon* dxCommon, SpritePSO* spritePSO, TextureManager* textureManager,
 			WinApp* winApp, uint32_t textureIndex, const Vector2& size);
 		/// <summary>
