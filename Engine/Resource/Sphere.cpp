@@ -1,5 +1,4 @@
 #include "Sphere.h"
-
 #include <cassert>
 #include <cmath>
 
