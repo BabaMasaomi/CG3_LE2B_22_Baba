@@ -212,9 +212,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 
 	// 音声読み込み
 	std::vector<SoundEntry> soundEntries = {
-		{"Fanfare", "resources/fanfare.wav", {}},
-		{"Mokugyo", "resources/mokugyo.wav", {}},
-		{"Start", "resources/start.wav", {}},
+		{"Fanfare", "resources/Audio/fanfare.wav", {}},
+		{"Mokugyo", "resources/Audio/mokugyo.wav", {}},
+		{"Start", "resources/Audio/start.wav", {}},
 	};
 
 	// 音声ファイルを最初に一度だけ読み込む

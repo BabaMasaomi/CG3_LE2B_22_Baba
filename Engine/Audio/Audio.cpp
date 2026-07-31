@@ -179,7 +179,7 @@ namespace Engine {
 
 	/*-------------------- すべての音声を停止 --------------------*/
 	void Audio::StopAllSounds() {
-		for (IXAudio2SourceVoice* sourceVoice : sourceVoices_) {			
+		for (IXAudio2SourceVoice* sourceVoice : sourceVoices_) {
 			if (sourceVoice == nullptr) {
 				continue;
 			}
