@@ -15,7 +15,7 @@ namespace Engine {
 	/*-------------------- モデル読み込み --------------------*/
 	Model* ModelManager::LoadModel(const std::string& filename) {
 		// キーを設定
-		std::string key = "resources/Textures/" + filename;
+		std::string key = "resources/Objects/" + filename;
 
 		// 既に読み込んだか確認
 		auto it = models_.find(key);
@@ -46,7 +46,7 @@ namespace Engine {
 			return it->second.get();
 		}
 		// 生成済みでなければ新規作成
-		ModelData sphereData = Sphere::Generate(radius, subdivision, "resources/Textures/" + textureFilePath);
+		ModelData sphereData = Sphere::Generate(radius, subdivision, "resources/Objects/" + textureFilePath);
 		// Modelの生成
 		auto model = std::make_unique<Model>();
 		// 初期化

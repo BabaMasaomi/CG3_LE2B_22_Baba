@@ -49,7 +49,7 @@ namespace Engine {
 		std::string line;				// ファイルから読んだ1行を格納するもの
 
 		// 2.ファイルを開く
-		std::ifstream file("resources/Textures/" + filename);	// ファイルを開く
+		std::ifstream file("resources/Objects/" + filename);	// ファイルを開く
 		assert(file.is_open());	// 開けなかったら止める
 
 		// 3.実際にファイルを読み、ModelDataを構築していく
@@ -122,7 +122,7 @@ namespace Engine {
 		std::string line;			// ファイルから読んだ1行を格納するもの
 
 		// 2.ファイルを開く
-		std::ifstream file("resources/Textures/" + filename);	// ファイルを開く
+		std::ifstream file("resources/Objects/" + filename);	// ファイルを開く
 		assert(file.is_open());								// 開けなかったら止める
 
 		// 3.実際にファイルを読み、MaterialDataを構築していく
@@ -136,7 +136,7 @@ namespace Engine {
 				std::string textureFilename;
 				s >> textureFilename;
 				// 連結してファイルパスにする
-				materialData.textureFilePath = "resources/Textures/" + textureFilename;
+				materialData.textureFilePath = "resources/Objects/" + textureFilename;
 
 			} else if (identifier == "Kd") {
 				s >> materialData.diffuseColor.x >> materialData.diffuseColor.y >> materialData.diffuseColor.z;
