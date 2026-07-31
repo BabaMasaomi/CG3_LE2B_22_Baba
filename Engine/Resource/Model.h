@@ -41,8 +41,7 @@ namespace Engine {
 		/// <param name="textureManager">TextureManagerのインスタンス</param>
 		/// <param name="directory">ファイルディレクトリ</param>
 		/// <param name="filename">ファイル名</param>
-		void Initialize(DirectXCommon* dxCommon, TextureManager* textureManager,
-			const std::string& directory, const std::string& filename);
+		void Initialize(DirectXCommon* dxCommon, TextureManager* textureManager, const std::string& filename);
 
 		/// <summary>
 		/// プログラムで生成したModelDataから初期化
@@ -57,7 +56,7 @@ namespace Engine {
 		/// </summary>
 		/// <param name="directryPath">ファイルディレクトリ</param>
 		/// <param name="filename">ファイル名</param>
-		void LoadObjFile(const std::string& directryPath, const std::string& filename);
+		void LoadObjFile(const std::string& filename);
 
 		/// <summary>
 		/// マテリアルテンプレートファイルを読み込む
@@ -65,7 +64,7 @@ namespace Engine {
 		/// <param name="directoryPath">ファイルディレクトリ</param>
 		/// <param name="filename">ファイル名</param>
 		/// <returns>読み込まれたマテリアルデータ</returns>
-		MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
+		MaterialData LoadMaterialTemplateFile(const std::string& filename);
 
 		/// <summary>
 		/// UV変換行列を更新する

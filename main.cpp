@@ -147,7 +147,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		RenderObjectType  type;
 
 		// 3Dモデル用
-		std::string directoryPath;
 		std::string filename;
 		Model* model = nullptr;
 
@@ -174,19 +173,19 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	std::vector<PlacedObject> placedObjects;
 
 	// Sprite用のテクスチャ
-	uint32_t spriteTextureIndex = textureManager.LoadTexture("resources/uvChecker.png");
+	uint32_t spriteTextureIndex = textureManager.LoadTexture("resources/Textures/uvChecker.png");
 
 	// SphereをModelとして生成
-	Model* sphereModel = modelManager.CreateSphereModel("UnitSphere", 1.0f, 16, "resources/uvChecker.png");
+	Model* sphereModel = modelManager.CreateSphereModel("UnitSphere", 1.0f, 16, "resources/Textures/uvChecker.png");
 
 	// モデルの読み込み
 	std::vector<RenderEntry> renderEntries = {
-		{"Sprite", RenderObjectType::kSprite2D, "", "", nullptr, spriteTextureIndex,{ 640.0f, 360.0f } },
-		{"Sphere", RenderObjectType::kModel3D, "", "", sphereModel, 0, {} },
-		{"Axis", RenderObjectType::kModel3D,"resources", "axis.obj", nullptr, 0, {}},
-		{"Plane", RenderObjectType::kModel3D, "resources", "plane.obj", nullptr, 0, {}},
-		{"Bunny", RenderObjectType::kModel3D, "resources",  "bunny.obj", nullptr, 0, {}},
-		{"Teapot", RenderObjectType::kModel3D, "resources",  "teapot.obj", nullptr, 0, {}},
+		{"Sprite", RenderObjectType::kSprite2D,  "", nullptr, spriteTextureIndex,{ 640.0f, 360.0f } },
+		{"Sphere", RenderObjectType::kModel3D, "", sphereModel, 0, {} },
+		{"Axis", RenderObjectType::kModel3D, "axis.obj", nullptr, 0, {}},
+		{"Plane", RenderObjectType::kModel3D, "plane.obj", nullptr, 0, {}},
+		{"Bunny", RenderObjectType::kModel3D,  "bunny.obj", nullptr, 0, {}},
+		{"Teapot", RenderObjectType::kModel3D, "teapot.obj", nullptr, 0, {}},
 	};
 
 	// 各モデルの読み込み
@@ -195,7 +194,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		if (entry.type == RenderObjectType::kModel3D &&
 			entry.model == nullptr) {
 
-			entry.model = modelManager.LoadModel(entry.directoryPath, entry.filename);
+			entry.model = modelManager.LoadModel(entry.filename);
 		}
 	}
 

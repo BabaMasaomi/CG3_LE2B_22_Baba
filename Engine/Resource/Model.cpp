@@ -9,14 +9,13 @@
 namespace Engine {
 
 	/*-------------------- OBJファイルから初期化 --------------------*/
-	void Model::Initialize(DirectXCommon* dxCommon, TextureManager* textureManager,
-		const std::string& directory, const std::string& filename) {
+	void Model::Initialize(DirectXCommon* dxCommon, TextureManager* textureManager, const std::string& filename) {
 		// ポインタを保存しておく
 		dxCommon_ = dxCommon;
 		textureManager_ = textureManager;
 
 		// モデル読み込み
-		LoadObjFile(directory, filename);
+		LoadObjFile(filename);
 
 		// テクスチャの読み込み
 		textureIndex_ = textureManager_->LoadTexture(modelData_.material.textureFilePath);
@@ -42,7 +41,7 @@ namespace Engine {
 	}
 
 	/*-------------------- objファイルを読み込む --------------------*/
-	void Model::LoadObjFile(const std::string& directryPath, const std::string& filename) {
+	void Model::LoadObjFile(const std::string& filename) {
 		// 1.中で必要となる変数の宣言
 		std::vector<Vector4> positions;	// 位置
 		std::vector<Vector3> normals;	// 法線
@@ -50,7 +49,7 @@ namespace Engine {
 		std::string line;				// ファイルから読んだ1行を格納するもの
 
 		// 2.ファイルを開く
-		std::ifstream file(directryPath + "/" + filename);	// ファイルを開く
+		std::ifstream file("resources/Textures/" + filename);	// ファイルを開く
 		assert(file.is_open());	// 開けなかったら止める
 
 		// 3.実際にファイルを読み、ModelDataを構築していく
@@ -111,19 +110,19 @@ namespace Engine {
 				std::string materialFilename;
 				s >> materialFilename;
 				// 基本的にobjファイルと同一階層にmtlは存在させるので、ディレクトリ名とファイル名を渡す
-				modelData_.material = LoadMaterialTemplateFile(directryPath, materialFilename);
+				modelData_.material = LoadMaterialTemplateFile(materialFilename);
 			}
 		}
 	}
 
 	/*-------------------- mtlファイルを読み込む --------------------*/
-	MaterialData Model::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename) {
+	MaterialData Model::LoadMaterialTemplateFile(const std::string& filename) {
 		// 1.中で必要となる変数の宣言
 		MaterialData materialData;	// 構築するMaterialData
 		std::string line;			// ファイルから読んだ1行を格納するもの
 
 		// 2.ファイルを開く
-		std::ifstream file(directoryPath + "/" + filename);	// ファイルを開く
+		std::ifstream file("resources/Textures/" + filename);	// ファイルを開く
 		assert(file.is_open());								// 開けなかったら止める
 
 		// 3.実際にファイルを読み、MaterialDataを構築していく
@@ -137,7 +136,7 @@ namespace Engine {
 				std::string textureFilename;
 				s >> textureFilename;
 				// 連結してファイルパスにする
-				materialData.textureFilePath = directoryPath + "/" + textureFilename;
+				materialData.textureFilePath = "resources/Textures/" + textureFilename;
 
 			} else if (identifier == "Kd") {
 				s >> materialData.diffuseColor.x >> materialData.diffuseColor.y >> materialData.diffuseColor.z;

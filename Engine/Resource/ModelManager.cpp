@@ -13,9 +13,9 @@ namespace Engine {
 	}
 
 	/*-------------------- モデル読み込み --------------------*/
-	Model* ModelManager::LoadModel(const std::string& directory, const std::string& filename) {
+	Model* ModelManager::LoadModel(const std::string& filename) {
 		// キーを設定
-		std::string key = directory + "/" + filename;
+		std::string key = "resources/Textures/" + filename;
 
 		// 既に読み込んだか確認
 		auto it = models_.find(key);
@@ -26,7 +26,7 @@ namespace Engine {
 		auto model = std::make_unique<Model>();
 
 		// 初期化
-		model->Initialize(dxCommon_, textureManager_, directory, filename);
+		model->Initialize(dxCommon_, textureManager_, filename);
 		// 生成したモデルのポインタを返す
 		Model* result = model.get();
 		// マップに登録

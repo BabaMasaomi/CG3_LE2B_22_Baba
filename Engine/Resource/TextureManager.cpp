@@ -17,7 +17,7 @@ namespace Engine {
 		dxCommon_ = dxCommon;
 	}
 
-	/*-------------------- 1.Textureデータを読み込む --------------------*/	// mainなどでtextureManager.LoadTexture("resources/uvChecker.png");として呼び出す
+	/*-------------------- 1.Textureデータを読み込む --------------------*/	// mainなどでtextureManager.LoadTexture("uvChecker.png");として呼び出す
 	uint32_t TextureManager::LoadTexture(const std::string& filePath) {
 		// 読み込み済みならその番号を返す
 		auto it = textureMap_.find(filePath);

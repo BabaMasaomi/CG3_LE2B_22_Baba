@@ -26,7 +26,7 @@ namespace Engine {
 		/// <param name="directory">ファイルディレクトリ</param>
 		/// <param name="filename">ファイル名</param>
 		/// <returns>読み込まれたモデルのポインタ</returns>
-		Model* LoadModel(const std::string& directory, const std::string& filename);
+		Model* LoadModel(const std::string& filename);
 
 		/// <summary>
 		/// 球モデルを作成
