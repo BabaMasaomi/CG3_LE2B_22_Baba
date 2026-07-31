@@ -176,7 +176,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	uint32_t spriteTextureIndex = textureManager.LoadTexture("resources/Textures/uvChecker.png");
 
 	// SphereをModelとして生成
-	Model* sphereModel = modelManager.CreateSphereModel("UnitSphere", 1.0f, 16, "resources/Textures/uvChecker.png");
+	Model* sphereModel = modelManager.CreateSphereModel("UnitSphere", 1.0f, 16, "uvChecker.png");
 
 	// モデルの読み込み
 	std::vector<RenderEntry> renderEntries = {

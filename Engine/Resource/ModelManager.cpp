@@ -46,7 +46,7 @@ namespace Engine {
 			return it->second.get();
 		}
 		// 生成済みでなければ新規作成
-		ModelData sphereData = Sphere::Generate(radius, subdivision, textureFilePath);
+		ModelData sphereData = Sphere::Generate(radius, subdivision, "resources/Textures/" + textureFilePath);
 		// Modelの生成
 		auto model = std::make_unique<Model>();
 		// 初期化
