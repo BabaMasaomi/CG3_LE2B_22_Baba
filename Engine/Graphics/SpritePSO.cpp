@@ -100,8 +100,21 @@ namespace Engine {
 
 		// BlendStateの設定
 		D3D12_BLEND_DESC blendDesc{};
+		D3D12_RENDER_TARGET_BLEND_DESC& blend =blendDesc.RenderTarget[0];
+		// αブレンドを有効化
+		blend.BlendEnable = TRUE;
+		// 論理演算は使用しない
+		blend.LogicOpEnable = FALSE;
+		// RGBのブレンド設定
+		blend.SrcBlend = D3D12_BLEND_SRC_ALPHA;
+		blend.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+		blend.BlendOp = D3D12_BLEND_OP_ADD;
+		// α値自体のブレンド設定
+		blend.SrcBlendAlpha = D3D12_BLEND_ONE;
+		blend.DestBlendAlpha = D3D12_BLEND_ZERO;
+		blend.BlendOpAlpha = D3D12_BLEND_OP_ADD;
 		// 全ての色要素を書き込む
-		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		blend.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 
 		// RasterizerStateの設定
 		D3D12_RASTERIZER_DESC rasterizerDesc{};

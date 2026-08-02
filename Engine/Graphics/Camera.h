@@ -25,13 +25,18 @@ namespace Engine {
 		/// </summary>
 		void Update();
 
+		/// <summary>
+		/// デバッグカメラを初期状態へ戻す
+		/// </summary>
+		void ResetDebugCamera();
+
 		/*==================== アクセッサ ====================*/
 		// ゲッター
 		Matrix4x4 GetViewProjectionMatrix() const { return viewProjectionMatrix_; }
-		Vector3 GetRotate() { return rotate_; }
-		Vector3 GetTranslate() { return translate_; }
-		float GetDistance() { return distance_; }
-		bool GetDebugMode() { return isDebugMode_; }
+		Vector3 GetRotate() const { return rotate_; }
+		Vector3 GetTranslate() const { return translate_; }
+		float GetDistance() const { return distance_; }
+		bool GetDebugMode() const { return isDebugMode_; }
 
 		// セッター
 		void SetRotate(Vector3 rotate) { rotate_ = rotate; }
@@ -41,10 +46,14 @@ namespace Engine {
 
 	private:
 		/*==================== メンバ関数の宣言 ====================*/
-		// モード別のカメラの更新
-		// ゲーム中のカメラ更新
+		// モード別のカメラの更新		
+		/// <summary>
+		/// ゲーム中のカメラ更新
+		/// </summary>
 		void UpdateGameCamera();
-		// デバッグカメラ更新
+		/// <summary>
+		/// デバッグカメラ更新
+		/// </summary>
 		void UpdateDebugCamera();
 
 		/*==================== メンバ変数 ====================*/

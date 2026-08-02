@@ -1,8 +1,8 @@
 #pragma once
 #include <d3d12.h>
 #include <cstdint>
-#include"struct.h"
 #include <wrl.h>
+#include"struct.h"
 
 namespace Engine {
 
@@ -12,6 +12,12 @@ namespace Engine {
 	class DirectionalLight;
 	class Model;
 	class Camera;
+
+	// Object3Dごとのライティング設定
+	struct ObjectLightingData {
+		int32_t lightingType;
+		float padding[3];
+	};
 
 	class Object3D {
 	public:
@@ -47,11 +53,17 @@ namespace Engine {
 		const Vector3 GetScale() { return scale_; }
 		const Vector3 GetRotate() { return rotate_; }
 		const Vector3 GetTranslate() { return translate_; }
+		const Vector4& GetColor() const { return color_; }
+		const Transform& GetUVTransform() const { return uvTransform_; }
+		LightingMode GetLightingMode() const { return lightingMode_; }
 
 		// セッター
 		void SetScale(Vector3 scale) { scale_ = scale; }
 		void SetRotate(Vector3 rotate) { rotate_ = rotate; }
 		void SetTranslate(Vector3 translate) { translate_ = translate; }
+		void SetColor(const Vector4& color) { color_ = color; }
+		void SetUVTransform(const Transform& uvTransform) { uvTransform_ = uvTransform; }
+		void SetLightingMode(LightingMode lightingMode) { lightingMode_ = lightingMode; }
 
 	private:
 		/*==================== メンバ関数の宣言 ====================*/
@@ -64,6 +76,15 @@ namespace Engine {
 		/// 変換行列データをマップする
 		/// </summary>
 		void MapTransformationMatrix();
+
+		/// <summary>
+		/// マテリアル用のResourceとデータの作成関数
+		/// </summary>
+		void CreateMaterialResource();
+		/// <summary>
+		/// マテリアルを更新する
+		/// </summary>
+		void UpdateMaterial();
 
 		/*==================== メンバ変数 ====================*/
 		// DirectXCommonのインスタンス
@@ -87,14 +108,7 @@ namespace Engine {
 			Vector4 pos;
 			Vector2 texcoord;
 			Vector3 normal;
-		};
-
-		// UVTransform用の変数
-		Transform uvTransform_ = {
-			{1.0f,1.0f,1.0f},	// scale
-			{0.0f,0.0f,0.0f},	// rotate
-			{0.0f,0.0f,0.0f},	// translate
-		};
+		};		
 
 		// 変換行列用のリソース
 		Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource_ = nullptr;
@@ -105,5 +119,25 @@ namespace Engine {
 		Vector3 scale_;
 		Vector3 rotate_;
 		Vector3 translate_;
+
+		// Object3Dごとのマテリアル
+		Microsoft::WRL::ComPtr<ID3D12Resource>materialResource_ = nullptr;
+		// Object3Dごとのマテリアルデータ
+		Material* materialData_ = nullptr;
+		// Object3Dごとの色
+		Vector4 color_ = { 1.0f,1.0f,1.0f,1.0f };
+		// UVTransform用の変数
+		Transform uvTransform_ = {
+			{1.0f,1.0f,1.0f},	// scale
+			{0.0f,0.0f,0.0f},	// rotate
+			{0.0f,0.0f,0.0f},	// translate
+		};
+
+		// Object3Dごとのライティング形式
+		LightingMode lightingMode_ = LightingMode::HalfLambert;
+		// Object3Dごとのライティング設定用のリソース
+		Microsoft::WRL::ComPtr<ID3D12Resource>objectLightingResource_ = nullptr;
+		// Object3Dごとのライティング設定用のデータ
+		ObjectLightingData* objectLightingData_ = nullptr;
 	};
 }

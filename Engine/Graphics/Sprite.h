@@ -25,7 +25,10 @@ namespace Engine {
 		/// <param name="spritePSO">SpritePSOのインスタンス</param>
 		/// <param name="textureManager">TextureManagerのインスタンス</param>
 		/// <param name="winApp">WinAppのインスタンス</param>
-		void Initialize(DirectXCommon* dxCommon, SpritePSO* spritePSO, TextureManager* textureManager, WinApp* winApp);
+		/// <param name="textureIndex">Textureのインデックス</param>
+		/// <param name="size">Spriteのサイズ</param>
+		void Initialize(DirectXCommon* dxCommon, SpritePSO* spritePSO, TextureManager* textureManager,
+			WinApp* winApp, uint32_t textureIndex, const Vector2& size);
 		/// <summary>
 		/// Spriteの更新
 		/// </summary>
@@ -37,14 +40,24 @@ namespace Engine {
 
 		/*==================== アクセッサ ====================*/
 		// ゲッター
-		const Vector3 GetUVTransformScale() { return uvTransform_.scale; }
-		const Vector3 GetUVTransformRotate() { return uvTransform_.rotate; }
-		const Vector3 GetUVTransformTranslate() { return uvTransform_.translate; }
+		const Vector3& GetScale() const { return transform_.scale; }
+		const Vector3& GetRotate() const { return transform_.rotate; }
+		const Vector3& GetTranslate() const { return transform_.translate; }
+		// UV用
+		const Vector3 GetUVTransformScale() const { return uvTransform_.scale; }
+		const Vector3 GetUVTransformRotate() const { return uvTransform_.rotate; }
+		const Vector3 GetUVTransformTranslate() const { return uvTransform_.translate; }
+		const Vector4& GetColor() const { return color_; }
 
 		// セッター
+		void SetScale(const Vector3& scale) { transform_.scale = scale; }
+		void SetRotate(const Vector3& rotate) { transform_.rotate = rotate; }
+		void SetTranslate(const Vector3& translate) { transform_.translate = translate; }
+		// UV用
 		void SetUVTransformScale(Vector3 scale) { uvTransform_.scale = scale; }
 		void SetUVTransformRotate(Vector3 rotate) { uvTransform_.rotate = rotate; }
 		void SetUVTransformTranslate(Vector3 translate) { uvTransform_.translate = translate; }
+		void SetColor(const Vector4& color) { color_ = color; }
 
 	private:
 		/*==================== メンバ関数の宣言 ====================*/
@@ -138,12 +151,16 @@ namespace Engine {
 			float padding[3];
 			Matrix4x4 uvTransform;
 		};
+
 		// UVTransform用の変数
 		Transform uvTransform_ = {
 			{1.0f,1.0f,1.0f},	// scale
 			{0.0f,0.0f,0.0f},	// rotate
 			{0.0f,0.0f,0.0f},	// translate
 		};
+
+		// Spriteごとの色
+		Vector4 color_ = { 1.0f,1.0f,1.0f,1.0f };
 
 		// マテリアルリソース
 		Microsoft::WRL::ComPtr<ID3D12Resource> materialResource_ = nullptr;
@@ -154,5 +171,10 @@ namespace Engine {
 		Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource_ = nullptr;
 		// 変換行列データ
 		TransformationMatrix* transformationMatrixData_ = nullptr;
+
+		// Spriteの表示サイズ
+		Vector2 size_ = {
+			640.0f,360.0f
+		};
 	};
 }

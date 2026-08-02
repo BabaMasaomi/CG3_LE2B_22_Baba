@@ -16,25 +16,18 @@ namespace Engine {
 		Vector4 pos;
 		Vector2 texcoord;
 		Vector3 normal;
-	};
-
-	// マテリアルデータの構造体
-	struct Material {
-		Vector4 color;
-		int32_t enableLighting;
-		float padding[3];
-		Matrix4x4 uvTransform;
-	};
+	};	
 
 	struct MaterialData {
 		std::string textureFilePath;
-		Vector3 diffuseColor;
-		Vector3 specularColor;
-		float shininess;
+		Vector3 diffuseColor = { 1.0f,1.0f,1.0f };		// 初期値を設定しておく
+		Vector3 specularColor = { 1.0f,1.0f,1.0f };
+		float shininess = 32.0f;
 	};
 
 	struct ModelData {
 		std::vector<VertexData> vertices;
+		std::vector<uint32_t> indices;
 		MaterialData material;
 	};
 
@@ -42,29 +35,33 @@ namespace Engine {
 	public:
 		/*==================== メンバ関数の宣言 ====================*/
 		/// <summary>
-		/// モデルの初期化
+		/// OBJファイルから初期化
 		/// </summary>
 		/// <param name="dxCommon">DirectXCommonのインスタンス</param>
 		/// <param name="textureManager">TextureManagerのインスタンス</param>
-		/// <param name="directory">ファイルディレクトリ</param>
 		/// <param name="filename">ファイル名</param>
-		void Initialize(DirectXCommon* dxCommon, TextureManager* textureManager,
-			const std::string& directory, const std::string& filename);
+		void Initialize(DirectXCommon* dxCommon, TextureManager* textureManager, const std::string& filename);
+
+		/// <summary>
+		/// プログラムで生成したModelDataから初期化
+		/// </summary>
+		/// <param name="dxCommon">DirectXCommonのインスタンス</param>
+		/// <param name="textureManager">TextureManagerのインスタンス</param>
+		/// <param name="modelData">ModelDataのインスタンス</param>
+		void Initialize(DirectXCommon* dxCommon, TextureManager* textureManager, ModelData modelData);
 
 		/// <summary>
 		/// OBJファイルを読み込む
 		/// </summary>
-		/// <param name="directryPath">ファイルディレクトリ</param>
 		/// <param name="filename">ファイル名</param>
-		void LoadObjFile(const std::string& directryPath, const std::string& filename);
+		void LoadObjFile(const std::string& filename);
 
 		/// <summary>
 		/// マテリアルテンプレートファイルを読み込む
 		/// </summary>
-		/// <param name="directoryPath">ファイルディレクトリ</param>
 		/// <param name="filename">ファイル名</param>
 		/// <returns>読み込まれたマテリアルデータ</returns>
-		MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
+		MaterialData LoadMaterialTemplateFile(const std::string& filename);
 
 		/// <summary>
 		/// UV変換行列を更新する
@@ -81,8 +78,18 @@ namespace Engine {
 		uint32_t GetIndexCount() const { return indexCount_; }
 		ID3D12Resource* GetMaterialResource() const { return materialResource_.Get(); }
 
+		// 
+		bool HasIndices() const {
+			return !modelData_.indices.empty();
+		}
+
 	private:
 		/*==================== メンバ関数の宣言 ====================*/
+		/// <summary>
+		/// リソース作成をまとめる
+		/// </summary>
+		void CreateResources();
+
 		// VertexResourceとVertexBufferViewの作成関数	
 		/// <summary>
 		/// 頂点リソースを作成する
@@ -109,7 +116,7 @@ namespace Engine {
 
 		/*==================== メンバ変数 ====================*/
 		// DirectXCommonのインスタンス
-		DirectXCommon* dxCommon_ = nullptr;		
+		DirectXCommon* dxCommon_ = nullptr;
 
 		// ModelDataを保持する
 		ModelData modelData_ = {};

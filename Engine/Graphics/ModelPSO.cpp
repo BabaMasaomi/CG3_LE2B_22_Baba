@@ -28,7 +28,7 @@ namespace Engine {
 			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 		// RootParameterを作成
-		D3D12_ROOT_PARAMETER rootParameters[4] = {};
+		D3D12_ROOT_PARAMETER rootParameters[5] = {};
 		// Material用
 		rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		// CBVを使う(b0のbと一致)
 		rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		// PixelShaderで使う
@@ -37,6 +37,7 @@ namespace Engine {
 		rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		// CBVを使う(b1のbと一致)
 		rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;	// VertexShaderで使う
 		rootParameters[1].Descriptor.ShaderRegister = 1;						// レジスタ番号1を使う
+		// SRV用
 		descriptionRootSignature.pParameters = rootParameters;					// ルートパラメータ配列へのポインタ
 		descriptionRootSignature.NumParameters = _countof(rootParameters);		// 配列の長さ
 		// DescriptorRangeを用意(SRVのため)
@@ -54,6 +55,10 @@ namespace Engine {
 		rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		// CBVを使う
 		rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		// PixelShaderで使う
 		rootParameters[3].Descriptor.ShaderRegister = 1;						// レジスタ番号1を使う
+		// Object3Dごとのライティング形式
+		rootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		// CBVを使う
+		rootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		// PixelShaderで使う
+		rootParameters[4].Descriptor.ShaderRegister = 2;						// レジスタ番号2を使う
 
 		// Samplerの設定
 		D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
@@ -108,8 +113,28 @@ namespace Engine {
 
 		// BlendStateの設定
 		D3D12_BLEND_DESC blendDesc{};
+		// マルチサンプリングを利用した透過は使用しない
+		blendDesc.AlphaToCoverageEnable = FALSE;
+		// レンダーターゲットごとに異なるブレンド設定は使用しない
+		blendDesc.IndependentBlendEnable = FALSE;
+		// 1つ目のレンダーターゲットの設定
+		D3D12_RENDER_TARGET_BLEND_DESC& renderTargetBlend = blendDesc.RenderTarget[0];
+		// αブレンドを有効化
+		renderTargetBlend.BlendEnable = TRUE;
+		// 論理演算は使用しない
+		renderTargetBlend.LogicOpEnable = FALSE;
+		// RGBのブレンド設定
+		renderTargetBlend.SrcBlend = D3D12_BLEND_SRC_ALPHA;
+		renderTargetBlend.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+		renderTargetBlend.BlendOp = D3D12_BLEND_OP_ADD;
+		// α値自体のブレンド設定
+		renderTargetBlend.SrcBlendAlpha = D3D12_BLEND_ONE;
+		renderTargetBlend.DestBlendAlpha = D3D12_BLEND_ZERO;
+		renderTargetBlend.BlendOpAlpha = D3D12_BLEND_OP_ADD;
+		// 論理演算は行わない
+		renderTargetBlend.LogicOp = D3D12_LOGIC_OP_NOOP;
 		// 全ての色要素を書き込む
-		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		renderTargetBlend.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 
 		// RasterizerStateの設定
 		D3D12_RASTERIZER_DESC rasterizerDesc{};
@@ -162,5 +187,5 @@ namespace Engine {
 		// 実際に生成
 		hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&pipelineState_));
 		assert(SUCCEEDED(hr));
-	}	
+	}
 }

@@ -37,6 +37,22 @@ namespace Engine {
 		// 変換行列用のResourceとデータの作成関数
 		CreateTransformationMatrixResource();
 		MapTransformationMatrix();
+
+		// マテリアル用のResourceとデータの作成関数
+		CreateMaterialResource();
+
+		// Object3Dごとのライティング設定用リソース
+		objectLightingResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(ObjectLightingData));
+		// 書き込むためのアドレスを取得
+		HRESULT hr = objectLightingResource_->Map(0, nullptr, reinterpret_cast<void**>(&objectLightingData_));
+		assert(SUCCEEDED(hr));
+
+		// ライティングモードを設定
+		objectLightingData_->lightingType = static_cast<int32_t>(lightingMode_);
+		// パディングを設定
+		objectLightingData_->padding[0] = 0.0f;
+		objectLightingData_->padding[1] = 0.0f;
+		objectLightingData_->padding[2] = 0.0f;
 	}
 
 	/*-------------------- 変換行列用のResourceの生成 --------------------*/
@@ -52,6 +68,37 @@ namespace Engine {
 		// 単位行列を書きこんでおく
 		transformationMatrixData_->WVP = MakeIdentity4x4();
 		transformationMatrixData_->World = MakeIdentity4x4();
+	}
+
+	/*-------------------- マテリアル用のResourceとデータの作成関数 --------------------*/
+	void Object3D::CreateMaterialResource() {
+		// マテリアル用のResouceを作成
+		materialResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(Material));
+
+		HRESULT hr = materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
+		assert(SUCCEEDED(hr));
+
+		// 初期値を設定
+		materialData_->color = color_;
+		materialData_->enableLighting = true;
+
+		materialData_->padding[0] = 0.0f;
+		materialData_->padding[1] = 0.0f;
+		materialData_->padding[2] = 0.0f;
+
+		materialData_->uvTransform = MakeIdentity4x4();
+	}
+
+	/*-------------------- マテリアルを更新する --------------------*/
+	void Object3D::UpdateMaterial() {
+		// マテリアルの色を更新
+		materialData_->color = color_;
+		// マテリアルのUVTransformを更新
+		materialData_->uvTransform = MakeAffineMatrix(
+			uvTransform_.scale,
+			uvTransform_.rotate,
+			uvTransform_.translate
+		);
 	}
 
 	/*-------------------- 更新 --------------------*/
@@ -78,6 +125,12 @@ namespace Engine {
 		Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix_, camera.GetViewProjectionMatrix());
 		transformationMatrixData_->WVP = worldViewProjectionMatrix;
 		transformationMatrixData_->World = worldMatrix_;
+
+		// マテリアルを更新
+		UpdateMaterial();
+
+		// ライティングモードを設定
+		objectLightingData_->lightingType = static_cast<int32_t>(lightingMode_);
 	}
 
 	/*-------------------- 描画 --------------------*/
@@ -87,15 +140,15 @@ namespace Engine {
 		// RootSignature設定
 		commandList->SetGraphicsRootSignature(modelPSO_->GetRootSignature());
 		commandList->SetPipelineState(modelPSO_->GetPipelineState());	// PSOを設定
-		commandList->IASetVertexBuffers(0, 1, &model_->GetVertexBufferView());		// VertexBufferViewを設定
-		commandList->IASetIndexBuffer(&model_->GetIndexBufferView());				// IndexBufferViewを設定
+		commandList->IASetVertexBuffers(0, 1, &model_->GetVertexBufferView());	// VertexBufferViewを設定
 		// 形状を設定
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		commandList->SetGraphicsRootConstantBufferView(0, model_->GetMaterialResource()->GetGPUVirtualAddress());	// マテリアルCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());				// マテリアルCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(1, transformationMatrixResource_->GetGPUVirtualAddress());	// wvp用のCBufferの場所を設定
 		// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
 		commandList->SetGraphicsRootDescriptorTable(2, model_->GetTextureHandle());
 		commandList->SetGraphicsRootConstantBufferView(3, directionalLight_->GetResource()->GetGPUVirtualAddress());	// 平行光源を適用
+		commandList->SetGraphicsRootConstantBufferView(4, objectLightingResource_->GetGPUVirtualAddress());				// Object3Dごとのライティング設定
 		// 描画！(DrawCall)
 		commandList->DrawInstanced(UINT(model_->GetModelData().vertices.size()), 1, 0, 0);
 	}
@@ -104,5 +157,14 @@ namespace Engine {
 	void Object3D::SetModel(Model* model) {
 		// モデルを設定
 		model_ = model;
+
+		// モデルのマテリアルの拡散色を取得して、Object3Dのマテリアルに反映
+		const Vector3& diffuseColor = model_->GetModelData().material.diffuseColor;
+		// 拡散色を反映
+		color_ = { diffuseColor.x,diffuseColor.y,diffuseColor.z,1.0f };
+		// マテリアルデータが存在する場合は、マテリアルデータの色も更新
+		if (materialData_) {
+			materialData_->color = color_;
+		}
 	}
 }

@@ -3,12 +3,13 @@
 #include <wrl.h>
 #include"struct.h"
 
-namespace Engine {
+namespace Engine {	
 
+	// 平行光源の構造体
 	struct DirectionalLightData {
-		Vector4 color;      // ライトの色
-		Vector3 direction;  // ライトの向き
-		float intensity;    // 輝度
+		Vector4 color;			// ライトの色
+		Vector3 direction;		// ライトの向き
+		float intensity;		// 輝度
 	};
 
 	class DirectXCommon;

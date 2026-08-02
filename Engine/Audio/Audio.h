@@ -11,7 +11,7 @@ namespace Engine {
 	// チャンクヘッダ
 	struct ChunkHeader {
 		char id[4];		// チャンク毎のID
-		int32_t size;	// チャンクサイズ
+		uint32_t size;	// チャンクサイズ
 	};
 
 	// RIFFヘッダチャンク
@@ -57,15 +57,41 @@ namespace Engine {
 		void AudioPlayWave(const SoundData& soundData);
 
 		/// <summary>
+		/// 再生終了したSourceVoiceを破棄
+		/// </summary>
+		void Update();
+
+		/// <summary>
+		/// すべての音声を停止
+		/// </summary>
+		void StopAllSounds();
+
+		/// <summary>
+		/// 音声の重なりを設定
+		/// </summary>
+		/// <param name="allowOverlap"></param>
+		void SetAllowOverlap(bool allowOverlap);
+
+		/// <summary>
 		/// サウンドの終了処理
 		/// </summary>
 		void Finalize();
+
+		/*==================== アクセッサ ====================*/
+		// ゲッター
+		bool GetAllowOverlap() const { return allowOverlap_; }
 
 	private:
 		/*==================== メンバ変数 ====================*/
 		// XAudio2のインスタンス
 		Microsoft::WRL::ComPtr<IXAudio2> xAudio2_ = nullptr;
 		// マスターボイス
-		IXAudio2MasteringVoice* masterVoice_;
+		IXAudio2MasteringVoice* masterVoice_ = nullptr;
+		// 再生中のSourceVoice
+		std::vector<IXAudio2SourceVoice*> sourceVoices_;
+
+		// true：複数音声の同時再生を許可
+		// false：新しい音を鳴らす前に既存の音を停止
+		bool allowOverlap_ = false;
 	};
 }
