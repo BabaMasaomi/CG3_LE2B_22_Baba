@@ -14,6 +14,8 @@
 #include "ModelPSO.h"
 #include "Model.h"
 #include "Object3D.h"
+#include "LinePSO.h"
+#include "Line.h"
 #include "Audio.h"
 // オブジェクト描画用
 #include <memory>
@@ -135,6 +137,18 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	ModelPSO modelPSO;
 	modelPSO.Initialize(&dxCommon, &dxcManager);
 
+	LinePSO linePSO;
+	linePSO.Initialize(&dxCommon,&dxcManager);
+
+	Line line;
+
+	line.Initialize(
+		&dxCommon,
+		&linePSO,
+		{ 0.0f, 0.0f, 0.0f },
+		{ 3.0f, 2.0f, 0.0f }
+	);
+
 	// レンダーの種類
 	enum class RenderObjectType {
 		kModel3D,
@@ -255,6 +269,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 				placedObject.sprite->Update();
 			}
 		}
+
+		line.Update(camera);
 
 		// 音声の更新
 		audio.Update();
@@ -547,6 +563,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 				placedObject.sprite->Draw();
 			}
 		}
+
+		line.Draw();
 
 		// ImGuiの描画
 #ifdef USE_IMGUI

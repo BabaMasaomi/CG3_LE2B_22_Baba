@@ -125,6 +125,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Debug\ImGuiManager.cpp" />
     <ClCompile Include="Engine\Input\Input.cpp" />
     <ClCompile Include="Engine\Utility\Logger.cpp" />
+    <ClCompile Include="Line.cpp" />
+    <ClCompile Include="LinePSO.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Resource\Model.cpp" />
     <ClCompile Include="Engine\Resource\ModelManager.cpp" />
@@ -167,8 +169,18 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Base\GameObject.h" />
     <ClInclude Include="Engine\Graphics\SpritePSO.h" />
     <ClInclude Include="Engine\Resource\Sphere.h" />
+    <ClInclude Include="Line.h" />
+    <ClInclude Include="LinePSO.h" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="Line.PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Line.VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
     <FxCompile Include="Object3d.VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
