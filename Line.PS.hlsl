@@ -8,9 +8,6 @@ cbuffer LineMaterial : register(b0)
     float4 materialColor;
 };
 
-//ConstantBuffer<LineMaterial>
-  //  gMaterial : register(b0);
-
 PixelShaderOutput main()
 {
     PixelShaderOutput output;

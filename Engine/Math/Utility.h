@@ -192,5 +192,5 @@ namespace Engine {
 	/// <param name="v">入力法線ベクトル</param>
 	/// <param name="m">変換行列</param>
 	/// <returns>変換された法線ベクトル</returns>
-	Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m);
+	Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m);	
 }

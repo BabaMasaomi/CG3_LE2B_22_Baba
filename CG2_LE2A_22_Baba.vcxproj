@@ -139,6 +139,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Base\WinApp.cpp" />
     <ClCompile Include="Engine\Graphics\SpritePSO.cpp" />
     <ClCompile Include="Engine\Resource\Sphere.cpp" />
+    <ClCompile Include="MultiPendulum.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Graphics\Camera.h" />
@@ -171,6 +172,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Resource\Sphere.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="LinePSO.h" />
+    <ClInclude Include="MultiPendulum.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Line.PS.hlsl">

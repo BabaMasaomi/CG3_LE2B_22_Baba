@@ -16,6 +16,7 @@
 #include "Object3D.h"
 #include "LinePSO.h"
 #include "Line.h"
+#include "MultiPendulum.h"
 #include "Audio.h"
 // オブジェクト描画用
 #include <memory>
@@ -212,6 +213,19 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		}
 	}
 
+	/*-------------------- 多重振り子 --------------------*/
+	MultiPendulum multiPendulum;
+	multiPendulum.Initialize(
+		5,                         // 支点を含む質点数
+		{ 0.0f, 4.0f, 0.0f },       // 支点の位置
+		1.0f,                      // 軸1本の長さ
+		& dxCommon,
+		& modelPSO,
+		& linePSO,
+		& directionalLight,
+		sphereModel
+	);
+
 	/*-------------------- 音声の初期化 --------------------*/
 	// Audioの初期化
 	Audio audio;
@@ -246,6 +260,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	bool showSprite = false;
 	// Comboで現在選択している音声
 	int selectedSoundIndex = 0;
+	// デルタタイム
+	constexpr float kDeltaTime = 1.0f / 60.0f;
 
 	/*-------------------- ゲームループの処理 --------------------*/
 	MSG msg{};
@@ -272,6 +288,11 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 
 		line.Update(camera);
 
+		multiPendulum.Update(
+			kDeltaTime,
+			camera
+		);
+
 		// 音声の更新
 		audio.Update();
 
@@ -292,258 +313,276 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 			camera.ResetDebugCamera();
 		}
 
+		//ImGui::Separator();
+		//// Objectを選択
+		//if (ImGui::BeginCombo("Object Type", renderEntries[selectedModelIndex].displayName.c_str())) {
+		//	// 追加するオブジェクトを選択
+		//	for (int i = 0; i < static_cast<int>(renderEntries.size()); ++i) {
+		//		const bool isSelected = (selectedModelIndex == i);
+		//		// 選択肢を表示
+		//		if (ImGui::Selectable(renderEntries[i].displayName.c_str(), isSelected)) {
+		//			selectedModelIndex = i;
+		//		}
+		//		// 選んだ選択肢をデフォルトフォーカスにする
+		//		if (isSelected) {
+		//			ImGui::SetItemDefaultFocus();
+		//		}
+		//	}
+		//	ImGui::EndCombo();
+		//}
+		//// Objectを追加する
+		//if (ImGui::Button("Add")) {
+		//	// 現在選択されているモデル情報
+		//	const RenderEntry& entry = renderEntries[selectedModelIndex];
+
+		//	PlacedObject placedObject{};
+		//	placedObject.type = entry.type;
+		//	placedObject.displayName = entry.displayName;
+
+		//	// Objectの種類別で追加
+		//	if (entry.type == RenderObjectType::kModel3D) {
+		//		// 3Dモデルの場合
+		//		auto object = std::make_unique<Object3D>();
+		//		// モデルを初期化
+		//		object->Initialize(&dxCommon, &modelPSO, &directionalLight);
+		//		// モデルをセット
+		//		object->SetModel(entry.model);
+		//		// 描画される前にWVPを一度更新する
+		//		object->Update(camera);
+		//		// 
+		//		placedObject.object3D = std::move(object);
+
+		//	} else {
+		//		// 2Dのスプライトの場合
+		//		auto sprite = std::make_unique<Sprite>();
+		//		// ここは現在のSprite::Initializeの引数に合わせる
+		//		sprite->Initialize(&dxCommon, &spritePSO, &textureManager,
+		//			&winApp, entry.textureIndex, entry.spriteSize);
+
+		//		// 初期SRT
+		//		sprite->SetScale({ 1.0f,1.0f,1.0f });
+		//		sprite->SetRotate({ 0.0f,0.0f,0.0f });
+		//		sprite->SetTranslate({ 0.0f,0.0f,0.0f });
+
+		//		// 追加したフレームで正しい行列を使用する
+		//		sprite->Update();
+		//		// 
+		//		placedObject.sprite = std::move(sprite);
+		//	}
+		//	// Object3Dのリスト追加とモデル名の保存を一緒に
+		//	placedObjects.push_back(std::move(placedObject));
+		//}
+
+		//// 削除するモデルを記録する変数
+		//int deleteObjectIndex = -1;
+
+		//// 配置済みモデルの調整
+		//for (size_t i = 0; i < placedObjects.size(); ++i) {
+		//	// Objectを管理
+		//	PlacedObject& placedObject = placedObjects[i];
+
+		//	ImGui::PushID(static_cast<int>(i));
+		//	// ラベルを作成
+		//	std::string label = "Object " + std::to_string(i) + " : " + placedObject.displayName;
+		//	// 個別でモデルを調整
+		//	if (ImGui::CollapsingHeader(label.c_str())) {
+		//		// 3Dモデルの場合の処理
+		//		if (placedObject.type == RenderObjectType::kModel3D) {
+		//			Object3D& object = *placedObject.object3D;
+
+		//			// SRTを取得
+		//			Vector3 scale = object.GetScale();
+		//			Vector3 rotate = object.GetRotate();
+		//			Vector3 translate = object.GetTranslate();
+		//			// SRTを変更
+		//			if (ImGui::DragFloat3("Scale", &scale.x, 0.01f, 0.01f, 100.0f)) {	// スケールを変更
+		//				object.SetScale(scale);
+		//			}
+		//			if (ImGui::DragFloat3("Rotate", &rotate.x, 0.01f)) {				// 回転を変更
+		//				object.SetRotate(rotate);
+		//			}
+		//			if (ImGui::DragFloat3("Translate", &translate.x, 0.01f)) {			// 移動を変更
+		//				object.SetTranslate(translate);
+		//			}
+		//			// モデルを削除
+		//			if (ImGui::Button("Delete")) {
+		//				deleteObjectIndex = static_cast<int>(i);
+		//			}
+
+		//			// UV、色、Lightingを調整
+		//			if (ImGui::TreeNode("Model")) {
+		//				// UVTransformを取得
+		//				Transform uvTransform = object.GetUVTransform();
+		//				// UVを変更したか記録
+		//				bool uvChanged = false;
+		//				uvChanged |= ImGui::DragFloat2("UV Scale", &uvTransform.scale.x, 0.01f, 0.01f, 10.0f);	// スケールを変更
+		//				uvChanged |= ImGui::DragFloat2("UV Translate", &uvTransform.translate.x, 0.01f);		// 移動を変更
+		//				uvChanged |= ImGui::DragFloat("UV Rotate", &uvTransform.rotate.z, 0.01f);				// 回転を変更
+		//				// UVで使用しない成分を固定
+		//				if (uvChanged) {
+		//					uvTransform.scale.z = 1.0f;
+		//					uvTransform.rotate.x = 0.0f;
+		//					uvTransform.rotate.y = 0.0f;
+		//					uvTransform.translate.z = 0.0f;
+		//					object.SetUVTransform(uvTransform);
+		//				}
+
+		//				// テクスチャの色を取得
+		//				Vector4 color = object.GetColor();
+		//				// 色を変更
+		//				if (ImGui::ColorEdit4("Color", &color.x)) {
+		//					object.SetColor(color);
+		//				}
+
+		//				// ライティングモードを記録する
+		//				int lightingMode = static_cast<int>(object.GetLightingMode());
+		//				// ライティングを変更
+		//				ImGui::Combo("Lighting", &lightingMode, "None\0Lambert\0Half Lambert\0");
+		//				object.SetLightingMode(static_cast<LightingMode>(lightingMode));
+
+		//				ImGui::TreePop();
+		//			}
+
+		//		} else {
+		//			// 3DSpriteの場合の処理 
+		//			Sprite& sprite = *placedObject.sprite;
+
+		//			// SRTを取得
+		//			Vector3 scale = sprite.GetScale();
+		//			Vector3 rotate = sprite.GetRotate();
+		//			Vector3 translate = sprite.GetTranslate();
+		//			// SpriteではXYスケールを使用
+		//			if (ImGui::DragFloat2("Scale", &scale.x, 0.01f, 0.01f, 100.0f)) {
+		//				scale.z = 1.0f;
+		//				sprite.SetScale(scale);
+		//			}
+		//			// SpriteではZ回転を使用
+		//			if (ImGui::DragFloat("Rotate", &rotate.z, 0.01f)) {
+		//				rotate.x = 0.0f;
+		//				rotate.y = 0.0f;
+		//				sprite.SetRotate(rotate);
+		//			}
+		//			// SpriteではXY移動を使用
+		//			if (ImGui::DragFloat2("Translate", &translate.x, 1.0f)) {
+		//				translate.z = 0.0f;
+		//				sprite.SetTranslate(translate);
+		//			}
+		//			// Spriteを削除
+		//			if (ImGui::Button("Delete")) {
+		//				deleteObjectIndex =
+		//					static_cast<int>(i);
+		//			}
+
+		//			// UV、色を調整
+		//			if (ImGui::TreeNode("Model")) {
+		//				// UVTransformを取得
+		//				Vector3 UVScale = sprite.GetUVTransformScale();
+		//				Vector3 UVTranslate = sprite.GetUVTransformTranslate();
+		//				Vector3 UVRotate = sprite.GetUVTransformRotate();
+		//				if (ImGui::DragFloat2("UV Scale", &UVScale.x, 0.01f, -10.0f, 10.0f)) {			// スケールを変更
+		//					sprite.SetUVTransformScale(UVScale);
+		//				}
+		//				if (ImGui::DragFloat2("UV Translate", &UVTranslate.x, 0.01f, -10.0f, 10.0f)) {	// 移動を変更
+		//					sprite.SetUVTransformTranslate(UVTranslate);
+		//				}
+		//				if (ImGui::SliderAngle("UV Rotate", &UVRotate.z)) {								// 回転を変更
+		//					sprite.SetUVTransformRotate(UVRotate);
+		//				}
+
+		//				// テクスチャの色を取得
+		//				Vector4 color = sprite.GetColor();
+		//				// 色を変更
+		//				if (ImGui::ColorEdit4("Color", &color.x, ImGuiColorEditFlags_AlphaBar)) {
+		//					sprite.SetColor(color);
+		//				}
+
+		//				ImGui::TreePop();
+		//			}
+		//		}
+		//	}
+		//	ImGui::PopID();
+		//}
+		//// 削除するモデルがあれば削除
+		//if (deleteObjectIndex >= 0) {
+		//	placedObjects.erase(placedObjects.begin() + deleteObjectIndex);
+		//}
+
+		//ImGui::Separator();
+		//// Lightを調整
+		//if (ImGui::CollapsingHeader("Light")) {
+		//	Vector4 color = directionalLight.GetColor();
+		//	Vector3 direction = directionalLight.GetDirection();
+		//	float intensity = directionalLight.GetIntensity();
+		//	if (ImGui::ColorEdit4("Color", &color.x)) {								// 色を変更
+		//		directionalLight.SetColor(color);
+		//	}
+		//	if (ImGui::DragFloat3("Direction", &direction.x, 0.01f)) {				// 向きを変更
+		//		directionalLight.SetDirection(direction);
+		//	}
+		//	if (ImGui::DragFloat("Intensity", &intensity, 0.01f, 0.0f, 10.0f)) {	// 輝度を変更
+		//		directionalLight.SetIntensity(intensity);
+		//	}
+		//}
+
+		//ImGui::Separator();
+		//if (ImGui::CollapsingHeader("Audio")) {
+		//	if (soundEntries.empty()) {
+		//		// 音声が無ければ操作項目を非表示に
+		//		ImGui::Text("No sound data");
+
+		//	} else {
+		//		if (ImGui::BeginCombo("Sound Type", soundEntries[selectedSoundIndex].displayName.c_str())) {
+		//			// 再生する音声を選択
+		//			for (int i = 0; i < static_cast<int>(soundEntries.size()); ++i) {
+		//				const bool isSelected = selectedSoundIndex == i;
+		//				// 選択肢を表示
+		//				if (ImGui::Selectable(soundEntries[i].displayName.c_str(), isSelected)) {
+		//					selectedSoundIndex = i;
+		//				}
+		//				// 選んだ選択肢をデフォルトフォーカスにする
+		//				if (isSelected) {
+		//					ImGui::SetItemDefaultFocus();
+		//				}
+		//			}
+
+		//			ImGui::EndCombo();
+		//		}
+
+		//		// Soundの再生
+		//		if (ImGui::Button("Play Sound")) {
+		//			audio.AudioPlayWave(soundEntries[selectedSoundIndex].soundData);
+		//		}
+
+		//		// 音声の重なりが許可されているか
+		//		bool allowOverlap = audio.GetAllowOverlap();
+		//		// 音声の重なりの許可を切り替える
+		//		ImGui::SameLine();
+		//		if (ImGui::Checkbox("Allow Sound Overlap", &allowOverlap)) {
+		//			audio.SetAllowOverlap(allowOverlap);
+		//		}
+
+		//		// 再生を即座に停止
+		//		if (ImGui::Button("Stop Sounds")) {
+		//			audio.StopAllSounds();
+		//		}
+		//	}
+		//}
+
 		ImGui::Separator();
-		// Objectを選択
-		if (ImGui::BeginCombo("Object Type", renderEntries[selectedModelIndex].displayName.c_str())) {
-			// 追加するオブジェクトを選択
-			for (int i = 0; i < static_cast<int>(renderEntries.size()); ++i) {
-				const bool isSelected = (selectedModelIndex == i);
-				// 選択肢を表示
-				if (ImGui::Selectable(renderEntries[i].displayName.c_str(), isSelected)) {
-					selectedModelIndex = i;
-				}
-				// 選んだ選択肢をデフォルトフォーカスにする
-				if (isSelected) {
-					ImGui::SetItemDefaultFocus();
-				}
+		if (ImGui::CollapsingHeader("Multi Pendulum")) {
+			bool isRunning =
+				multiPendulum.GetIsRunning();
+
+			if (ImGui::Button(
+				isRunning ? "Pause" : "Run")) {
+
+				multiPendulum.SetIsRunning(
+					!isRunning
+				);
 			}
-			ImGui::EndCombo();
-		}
-		// Objectを追加する
-		if (ImGui::Button("Add")) {
-			// 現在選択されているモデル情報
-			const RenderEntry& entry = renderEntries[selectedModelIndex];
 
-			PlacedObject placedObject{};
-			placedObject.type = entry.type;
-			placedObject.displayName = entry.displayName;
-
-			// Objectの種類別で追加
-			if (entry.type == RenderObjectType::kModel3D) {
-				// 3Dモデルの場合
-				auto object = std::make_unique<Object3D>();
-				// モデルを初期化
-				object->Initialize(&dxCommon, &modelPSO, &directionalLight);
-				// モデルをセット
-				object->SetModel(entry.model);
-				// 描画される前にWVPを一度更新する
-				object->Update(camera);
-				// 
-				placedObject.object3D = std::move(object);
-
-			} else {
-				// 2Dのスプライトの場合
-				auto sprite = std::make_unique<Sprite>();
-				// ここは現在のSprite::Initializeの引数に合わせる
-				sprite->Initialize(&dxCommon, &spritePSO, &textureManager,
-					&winApp, entry.textureIndex, entry.spriteSize);
-
-				// 初期SRT
-				sprite->SetScale({ 1.0f,1.0f,1.0f });
-				sprite->SetRotate({ 0.0f,0.0f,0.0f });
-				sprite->SetTranslate({ 0.0f,0.0f,0.0f });
-
-				// 追加したフレームで正しい行列を使用する
-				sprite->Update();
-				// 
-				placedObject.sprite = std::move(sprite);
-			}
-			// Object3Dのリスト追加とモデル名の保存を一緒に
-			placedObjects.push_back(std::move(placedObject));
-		}
-
-		// 削除するモデルを記録する変数
-		int deleteObjectIndex = -1;
-
-		// 配置済みモデルの調整
-		for (size_t i = 0; i < placedObjects.size(); ++i) {
-			// Objectを管理
-			PlacedObject& placedObject = placedObjects[i];
-
-			ImGui::PushID(static_cast<int>(i));
-			// ラベルを作成
-			std::string label = "Object " + std::to_string(i) + " : " + placedObject.displayName;
-			// 個別でモデルを調整
-			if (ImGui::CollapsingHeader(label.c_str())) {
-				// 3Dモデルの場合の処理
-				if (placedObject.type == RenderObjectType::kModel3D) {
-					Object3D& object = *placedObject.object3D;
-
-					// SRTを取得
-					Vector3 scale = object.GetScale();
-					Vector3 rotate = object.GetRotate();
-					Vector3 translate = object.GetTranslate();
-					// SRTを変更
-					if (ImGui::DragFloat3("Scale", &scale.x, 0.01f, 0.01f, 100.0f)) {	// スケールを変更
-						object.SetScale(scale);
-					}
-					if (ImGui::DragFloat3("Rotate", &rotate.x, 0.01f)) {				// 回転を変更
-						object.SetRotate(rotate);
-					}
-					if (ImGui::DragFloat3("Translate", &translate.x, 0.01f)) {			// 移動を変更
-						object.SetTranslate(translate);
-					}
-					// モデルを削除
-					if (ImGui::Button("Delete")) {
-						deleteObjectIndex = static_cast<int>(i);
-					}
-
-					// UV、色、Lightingを調整
-					if (ImGui::TreeNode("Model")) {
-						// UVTransformを取得
-						Transform uvTransform = object.GetUVTransform();
-						// UVを変更したか記録
-						bool uvChanged = false;
-						uvChanged |= ImGui::DragFloat2("UV Scale", &uvTransform.scale.x, 0.01f, 0.01f, 10.0f);	// スケールを変更
-						uvChanged |= ImGui::DragFloat2("UV Translate", &uvTransform.translate.x, 0.01f);		// 移動を変更
-						uvChanged |= ImGui::DragFloat("UV Rotate", &uvTransform.rotate.z, 0.01f);				// 回転を変更
-						// UVで使用しない成分を固定
-						if (uvChanged) {
-							uvTransform.scale.z = 1.0f;
-							uvTransform.rotate.x = 0.0f;
-							uvTransform.rotate.y = 0.0f;
-							uvTransform.translate.z = 0.0f;
-							object.SetUVTransform(uvTransform);
-						}
-
-						// テクスチャの色を取得
-						Vector4 color = object.GetColor();
-						// 色を変更
-						if (ImGui::ColorEdit4("Color", &color.x)) {
-							object.SetColor(color);
-						}
-
-						// ライティングモードを記録する
-						int lightingMode = static_cast<int>(object.GetLightingMode());
-						// ライティングを変更
-						ImGui::Combo("Lighting", &lightingMode, "None\0Lambert\0Half Lambert\0");
-						object.SetLightingMode(static_cast<LightingMode>(lightingMode));
-
-						ImGui::TreePop();
-					}
-
-				} else {
-					// 3DSpriteの場合の処理 
-					Sprite& sprite = *placedObject.sprite;
-
-					// SRTを取得
-					Vector3 scale = sprite.GetScale();
-					Vector3 rotate = sprite.GetRotate();
-					Vector3 translate = sprite.GetTranslate();
-					// SpriteではXYスケールを使用
-					if (ImGui::DragFloat2("Scale", &scale.x, 0.01f, 0.01f, 100.0f)) {
-						scale.z = 1.0f;
-						sprite.SetScale(scale);
-					}
-					// SpriteではZ回転を使用
-					if (ImGui::DragFloat("Rotate", &rotate.z, 0.01f)) {
-						rotate.x = 0.0f;
-						rotate.y = 0.0f;
-						sprite.SetRotate(rotate);
-					}
-					// SpriteではXY移動を使用
-					if (ImGui::DragFloat2("Translate", &translate.x, 1.0f)) {
-						translate.z = 0.0f;
-						sprite.SetTranslate(translate);
-					}
-					// Spriteを削除
-					if (ImGui::Button("Delete")) {
-						deleteObjectIndex =
-							static_cast<int>(i);
-					}
-
-					// UV、色を調整
-					if (ImGui::TreeNode("Model")) {
-						// UVTransformを取得
-						Vector3 UVScale = sprite.GetUVTransformScale();
-						Vector3 UVTranslate = sprite.GetUVTransformTranslate();
-						Vector3 UVRotate = sprite.GetUVTransformRotate();
-						if (ImGui::DragFloat2("UV Scale", &UVScale.x, 0.01f, -10.0f, 10.0f)) {			// スケールを変更
-							sprite.SetUVTransformScale(UVScale);
-						}
-						if (ImGui::DragFloat2("UV Translate", &UVTranslate.x, 0.01f, -10.0f, 10.0f)) {	// 移動を変更
-							sprite.SetUVTransformTranslate(UVTranslate);
-						}
-						if (ImGui::SliderAngle("UV Rotate", &UVRotate.z)) {								// 回転を変更
-							sprite.SetUVTransformRotate(UVRotate);
-						}
-
-						// テクスチャの色を取得
-						Vector4 color = sprite.GetColor();
-						// 色を変更
-						if (ImGui::ColorEdit4("Color", &color.x, ImGuiColorEditFlags_AlphaBar)) {
-							sprite.SetColor(color);
-						}
-
-						ImGui::TreePop();
-					}
-				}
-			}
-			ImGui::PopID();
-		}
-		// 削除するモデルがあれば削除
-		if (deleteObjectIndex >= 0) {
-			placedObjects.erase(placedObjects.begin() + deleteObjectIndex);
-		}
-
-		ImGui::Separator();
-		// Lightを調整
-		if (ImGui::CollapsingHeader("Light")) {
-			Vector4 color = directionalLight.GetColor();
-			Vector3 direction = directionalLight.GetDirection();
-			float intensity = directionalLight.GetIntensity();
-			if (ImGui::ColorEdit4("Color", &color.x)) {								// 色を変更
-				directionalLight.SetColor(color);
-			}
-			if (ImGui::DragFloat3("Direction", &direction.x, 0.01f)) {				// 向きを変更
-				directionalLight.SetDirection(direction);
-			}
-			if (ImGui::DragFloat("Intensity", &intensity, 0.01f, 0.0f, 10.0f)) {	// 輝度を変更
-				directionalLight.SetIntensity(intensity);
-			}
-		}
-
-		ImGui::Separator();
-		if (ImGui::CollapsingHeader("Audio")) {
-			if (soundEntries.empty()) {
-				// 音声が無ければ操作項目を非表示に
-				ImGui::Text("No sound data");
-
-			} else {
-				if (ImGui::BeginCombo("Sound Type", soundEntries[selectedSoundIndex].displayName.c_str())) {
-					// 再生する音声を選択
-					for (int i = 0; i < static_cast<int>(soundEntries.size()); ++i) {
-						const bool isSelected = selectedSoundIndex == i;
-						// 選択肢を表示
-						if (ImGui::Selectable(soundEntries[i].displayName.c_str(), isSelected)) {
-							selectedSoundIndex = i;
-						}
-						// 選んだ選択肢をデフォルトフォーカスにする
-						if (isSelected) {
-							ImGui::SetItemDefaultFocus();
-						}
-					}
-
-					ImGui::EndCombo();
-				}
-
-				// Soundの再生
-				if (ImGui::Button("Play Sound")) {
-					audio.AudioPlayWave(soundEntries[selectedSoundIndex].soundData);
-				}
-
-				// 音声の重なりが許可されているか
-				bool allowOverlap = audio.GetAllowOverlap();
-				// 音声の重なりの許可を切り替える
-				ImGui::SameLine();
-				if (ImGui::Checkbox("Allow Sound Overlap", &allowOverlap)) {
-					audio.SetAllowOverlap(allowOverlap);
-				}
-
-				// 再生を即座に停止
-				if (ImGui::Button("Stop Sounds")) {
-					audio.StopAllSounds();
-				}
+			if (ImGui::Button("Reset")) {
+				multiPendulum.Reset();
 			}
 		}
 
@@ -565,6 +604,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		}
 
 		line.Draw();
+
+		multiPendulum.Draw();
 
 		// ImGuiの描画
 #ifdef USE_IMGUI

@@ -1,4 +1,5 @@
 #pragma once
+#include <math.h>
 
 // 2頂点の構造体
 struct Vector2 {
@@ -103,4 +104,26 @@ enum class LightingMode {
 	None,
 	Lambert,
 	HalfLambert,
+};
+
+
+/*-------------------- TR用 --------------------*/
+// 質点の情報
+struct PendulumParticle {
+	Vector3 position;
+	Vector3 previousPosition;
+	Vector3 acceleration;
+
+	float mass;
+	float inverseMass;
+
+	bool isFixed;
+};
+
+// 質点の距離拘束
+struct DistanceConstraint {
+	int particleIndexA;
+	int particleIndexB;
+
+	float restLength;
 };
