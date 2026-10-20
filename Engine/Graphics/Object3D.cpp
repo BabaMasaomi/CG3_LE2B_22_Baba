@@ -4,7 +4,7 @@
 #include "Model.h"
 #include "DirectionalLight.h"
 #include "Camera.h"
-#include "Utility.h"
+#include "Function.h"
 #include "Logger.h"
 #include <format>			// フォーマットの自動指定をしてくれる(+安全策)
 #include <cmath>

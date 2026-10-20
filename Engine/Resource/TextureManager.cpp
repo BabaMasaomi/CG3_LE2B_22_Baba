@@ -1,7 +1,7 @@
 #include "externals/DirectXTex/d3dx12.h"
 #include "TextureManager.h"
 #include "DirectXCommon.h"
-#include "Utility.h"
+#include "Function.h"
 #include <cassert>
 #include <vector>
 

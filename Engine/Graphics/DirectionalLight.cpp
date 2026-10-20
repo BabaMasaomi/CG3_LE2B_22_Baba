@@ -1,6 +1,6 @@
 #include "DirectionalLight.h"
 #include "DirectXCommon.h"
-#include "Utility.h"
+#include "Function.h"
 
 namespace Engine {
 

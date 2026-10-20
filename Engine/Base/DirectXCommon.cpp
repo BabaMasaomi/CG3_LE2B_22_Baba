@@ -1,6 +1,6 @@
 #include "DirectXCommon.h"
 #include "WinApp.h"
-#include "Utility.h"
+#include "Function.h"
 #include "Logger.h"
 #include <format>			// フォーマットの自動指定をしてくれる(+安全策)
 #include <cassert>

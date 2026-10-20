@@ -1,6 +1,6 @@
 #include "Camera.h"
 #include "Input.h"
-#include "Utility.h"
+#include "Function.h"
 #include <algorithm>
 
 namespace Engine {

@@ -1,7 +1,7 @@
 #include "Model.h"
 #include "DirectXCommon.h"
 #include "TextureManager.h"
-#include "Utility.h"
+#include "Function.h"
 #include <fstream>
 #include <sstream>
 #include <cassert>

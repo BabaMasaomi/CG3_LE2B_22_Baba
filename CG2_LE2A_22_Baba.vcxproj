@@ -186,7 +186,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Audio\Audio.cpp" />
     <ClCompile Include="Engine\Graphics\Sprite.cpp" />
     <ClCompile Include="Engine\Resource\TextureManager.cpp" />
-    <ClCompile Include="Engine\Math\Utility.cpp" />
+    <ClCompile Include="Engine\Math\Function.cpp" />
     <ClCompile Include="Engine\Base\WinApp.cpp" />
     <ClCompile Include="Engine\Graphics\SpritePSO.cpp" />
     <ClCompile Include="Engine\Resource\Sphere.cpp" />
@@ -215,7 +215,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Graphics\Sprite.h" />
     <ClInclude Include="Engine\Math\struct.h" />
     <ClInclude Include="Engine\Resource\TextureManager.h" />
-    <ClInclude Include="Engine\Math\Utility.h" />
+    <ClInclude Include="Engine\Math\Function.h" />
     <ClInclude Include="Engine\Base\WinApp.h" />
     <ClInclude Include="Engine\Base\GameObject.h" />
     <ClInclude Include="Engine\Graphics\SpritePSO.h" />

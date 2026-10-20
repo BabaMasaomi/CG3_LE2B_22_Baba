@@ -117,7 +117,7 @@
     <ClCompile Include="Engine\Base\WinApp.cpp">
       <Filter>WinApp</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Math\Utility.cpp">
+    <ClCompile Include="Engine\Math\Function.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Graphics\Object3D.cpp">
@@ -203,7 +203,7 @@
     <ClInclude Include="Engine\Base\WinApp.h">
       <Filter>WinApp</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Math\Utility.h">
+    <ClInclude Include="Engine\Math\Function.h">
       <Filter>Utility</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Graphics\Object3D.h">
