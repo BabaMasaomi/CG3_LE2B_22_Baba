@@ -69,7 +69,7 @@ namespace Engine {
 		/// <summary>
 		/// 音声の重なりを設定
 		/// </summary>
-		/// <param name="allowOverlap"></param>
+		/// <param name="allowOverlap">重複再生の許可・禁止</param>
 		void SetAllowOverlap(bool allowOverlap);
 
 		/// <summary>

@@ -1,6 +1,6 @@
 #include "Logger.h"
 #include <Windows.h>
-#include "Utility.h"
+#include "Function.h"
 #include <format>			// フォーマットの自動指定をしてくれる(+安全策)
 #include <filesystem>		// ファイルを読んだり書いたりするためのライブラリ
 #include <chrono>			// 時間を扱うためのライブラリ

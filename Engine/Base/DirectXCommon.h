@@ -241,9 +241,9 @@ namespace Engine {
 		// SRV,RTV,DSVのDescriptorSizeを取得しておく
 		// DescriptorSizeは、DescriptorHeapの中の1つのDescriptorのサイズを表す
 		uint32_t DescriptorSizeSRV_ = 0;
-		// RTVとDSVはSRVと同じサイズなので、SRVのサイズを取得しておけば良い
+		// RTVとDSVはSRVと同じサイズなので、SRVのサイズを取得しておけば良い (実装は種類ごとに取得しているため、その説明に揃える
 		uint32_t DescriptorSizeRTV_ = 0;
-		// DSVのサイズは、RTVと同じサイズなので、RTVのサイズを取得しておけば良い
+		// DSVのサイズは、RTVと同じサイズなので、RTVのサイズを取得しておけば良い (実装は種類ごとに取得しているため、その説明に揃える
 		uint32_t DescriptorSizeDSV_ = 0;
 
 	};

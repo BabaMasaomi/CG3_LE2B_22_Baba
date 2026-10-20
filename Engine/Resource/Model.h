@@ -78,7 +78,7 @@ namespace Engine {
 		uint32_t GetIndexCount() const { return indexCount_; }
 		ID3D12Resource* GetMaterialResource() const { return materialResource_.Get(); }
 
-		// 
+		// インデックスデータを持っているか
 		bool HasIndices() const {
 			return !modelData_.indices.empty();
 		}

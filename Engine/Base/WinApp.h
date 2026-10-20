@@ -47,7 +47,7 @@ namespace Engine {
 		// ウィンドウの高さ
 		static const int32_t kClientHeight_ = 720;
 
-		// ウィンドウプロシージャ
+		// ウィンドウハンドル
 		HWND hwnd_ = nullptr;
 		// メッセージ
 		MSG msg_{};

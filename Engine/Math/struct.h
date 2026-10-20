@@ -1,11 +1,11 @@
 #pragma once
 
-// 2頂点の構造体
+// 2次元の構造体
 struct Vector2 {
 	float x, y;
 };
 
-// 3頂点の構造体
+// 3次元の構造体
 struct Vector3 {
 	float x, y, z;
 	// Vector3の演算子オーバーロード
@@ -62,7 +62,7 @@ struct Vector3 {
 	}
 };
 
-// 4頂点の構造体
+// 4次元の構造体
 struct Vector4 {
 	float x, y, z, w;
 };

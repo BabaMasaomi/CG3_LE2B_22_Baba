@@ -34,7 +34,7 @@ namespace Engine {
 		/// <param name="radius">球の半径</param>
 		/// <param name="subdivision">分割数</param>
 		/// <param name="textureFilePath">使用するテクスチャ</param>
-		/// <returns></returns>
+		/// <returns>管理クラスが所有する共有モデルへのポインタ</returns>
 		Model* CreateSphereModel(const std::string& modelName, float radius,
 			uint32_t subdivision, const std::string& textureFilePath);
 

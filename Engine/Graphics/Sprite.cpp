@@ -3,7 +3,7 @@
 #include "SpritePSO.h"
 #include "WinApp.h"
 #include "TextureManager.h"
-#include "Utility.h"
+#include "Function.h"
 #include <cstring>
 
 namespace Engine {

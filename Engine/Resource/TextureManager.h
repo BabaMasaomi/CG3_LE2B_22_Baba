@@ -46,7 +46,7 @@ namespace Engine {
 		/// <param name="mipImages">ミップマップ画像</param>
 		/// <param name="device">DirectX12デバイス</param>
 		/// <param name="commandList">CommandList</param>
-		/// <returns>アップロードされたTextureResource</returns>
+		/// <returns>転送用の中間リソース</returns>
 		Microsoft::WRL::ComPtr<ID3D12Resource> UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages, ID3D12Device* device,
 			ID3D12GraphicsCommandList* commandList);
 

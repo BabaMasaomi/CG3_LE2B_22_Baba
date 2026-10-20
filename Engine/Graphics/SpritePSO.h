@@ -15,7 +15,7 @@ namespace Engine {
 		~SpritePSO();
 
 		/// <summary>
-		/// ModelPSOの初期化
+		/// SpritePSOの初期化
 		/// </summary>
 		/// <param name="dxCommon">DirectXCommonのインスタンス</param>
 		/// <param name="dxcManager">DXCManagerのインスタンス</param>

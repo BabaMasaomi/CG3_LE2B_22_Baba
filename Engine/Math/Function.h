@@ -179,7 +179,7 @@ namespace Engine {
 	Matrix4x4 Transpose(const Matrix4x4& m);
 
 	/// <summary>
-	/// 座標変換行列を作成する関数
+	/// 座標を変換する関数
 	/// </summary>
 	/// <param name="vector">入力ベクトル</param>
 	/// <param name="matrix">変換行列</param>
@@ -187,7 +187,7 @@ namespace Engine {
 	Vector3 CoordinateTransform(const Vector3& vector, const Matrix4x4& matrix);
 
 	/// <summary>
-	/// 法線変換行列を作成する関数
+	/// 法線を変換する関数
 	/// </summary>
 	/// <param name="v">入力法線ベクトル</param>
 	/// <param name="m">変換行列</param>
