@@ -3,6 +3,7 @@
 #include "Function.h"
 #include "Logger.h"
 #include <format>			// フォーマットの自動指定をしてくれる(+安全策)
+#include <thread>
 #include <cassert>
 // Debug用のあれこれを使える様にする
 #include <strsafe.h>
@@ -23,6 +24,9 @@ namespace Engine {
 	/*-------------------- DirectXの初期化 --------------------*/
 	void DirectXCommon::Initialize(WinApp* winApp) {
 		winApp_ = winApp;
+
+		// FPS固定初期化
+		InitializeFixFPS();
 
 		// DirectXの初期化
 		InitializeDevice();
@@ -357,6 +361,8 @@ namespace Engine {
 		Present();
 		// GPUを待機
 		WaitForGPU();
+		// FPS固定(GPU待機の直後に入れる)
+		UpdateFixFPS();
 		// commandListのReset
 		ResetCommandList();
 	}
@@ -391,10 +397,10 @@ namespace Engine {
 	}
 	/*-------------------- GPUを待機 --------------------*/
 	void DirectXCommon::WaitForGPU() {
-		// Fenceの値の更新
-		fenceValue_++;
+		//// Fenceの値の更新
+		//fenceValue_++;
 		// GPUがここまでたどり着いた時、Fenceの値を指定した値に代入するようにSignalを送る
-		commandQueue_->Signal(fence_.Get(), fenceValue_);
+		commandQueue_->Signal(fence_.Get(), ++fenceValue_);
 		// Fenceの値が指定したSignalの値にたどり着いているか確認する
 		// GetCompletedValueの初期値はFence作成時に渡した初期値
 		if (fence_->GetCompletedValue() < fenceValue_) {
@@ -437,5 +443,35 @@ namespace Engine {
 		DescriptorSizeRTV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 		// DSVのサイズを取得
 		DescriptorSizeDSV_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+	}
+
+	/*-------------------- FPS固定初期化 --------------------*/
+	void DirectXCommon::InitializeFixFPS() {
+		// 現在時間を記録する
+		reference_ = std::chrono::steady_clock::now();
+	}
+
+	/*-------------------- FPS固定更新 --------------------*/
+	void DirectXCommon::UpdateFixFPS() {
+		// 定数を準備
+		// 1/60秒ジャストの時間
+		const std::chrono::microseconds kMInTime(uint64_t(1000000.0f / 60.0f));
+		// 1/60秒より僅かに短い時間
+		const std::chrono::microseconds kMInCheckTime(uint64_t(1000000.0f / 65.0f));
+
+		// 更新
+		// 現在時間を取得する
+		std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+		// 前回の記録から経過時間を取得
+		std::chrono::microseconds elapsed = std::chrono::duration_cast<std::chrono::microseconds>(now - reference_);
+
+		// 1/60秒(より僅かに短い時間)経っていない場合
+		if (elapsed < kMInTime) {
+			// 1/60秒経過するまで微小なスリープを繰り返し実行
+			std::this_thread::sleep_for(std::chrono::microseconds(1));
+		}
+
+		// 現在の時間を記録
+		reference_ = std::chrono::steady_clock::now();
 	}
 }

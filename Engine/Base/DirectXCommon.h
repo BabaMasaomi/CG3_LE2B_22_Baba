@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include <cstdint>
 #include <wrl.h>
+#include <chrono>
 // DirectXを使うためのライブラリ
 #include <d3d12.h>
 #include <dxgi1_6.h>
@@ -175,6 +176,14 @@ namespace Engine {
 		/// descriptorSizeを取得
 		/// </summary>
 		void InitializeDescriptorSize();
+
+		// FPS固定初期化
+		void InitializeFixFPS();
+		// FPS固定更新
+		void UpdateFixFPS();
+
+		// 記録時間(FPS固定用)
+		std::chrono::steady_clock::time_point reference_;
 
 		/*==================== メンバ変数 ====================*/
 		// ウィンドウアプリケーションのポインタ
