@@ -5,12 +5,14 @@
 #include "externals/imgui/imgui.h"
 #include "externals/imgui/imgui_impl_win32.h"
 
+#pragma comment(lib,"winmm.lib")
+
 // ImGuiのウィンドウプロシージャ
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 	HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 #endif
 
-namespace Engine {
+namespace Engine {	
 
 	// WinAppのインスタンスを保持する静的メンバ変数の初期化
 	WinApp* WinApp::instance_ = nullptr;
@@ -63,6 +65,9 @@ namespace Engine {
 #ifdef USE_IMGUI
 		IMGUI_CHECKVERSION();
 #endif
+
+		// システムタイマーの精度を上げる
+		timeBeginPeriod(1);
 
 		WNDCLASS wc{};
 		// ウィンドウプロシージャ

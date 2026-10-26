@@ -294,7 +294,7 @@ namespace Engine {
 	/*-------------------- 6.描画前の処理 --------------------*/
 	void DirectXCommon::PreDraw() {
 		// これから書き込むバッファのインデックスを取得
-		UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
+		UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();		
 
 		// バリアを設定
 		TransitionToRenderTarget(backBufferIndex);
@@ -358,7 +358,7 @@ namespace Engine {
 		// コマンドを実行
 		ExecuteCommandList();
 		// 画面の交換を指示
-		Present();
+		Present();		
 		// GPUを待機
 		WaitForGPU();
 		// FPS固定(GPU待機の直後に入れる)
@@ -466,11 +466,13 @@ namespace Engine {
 		std::chrono::microseconds elapsed = std::chrono::duration_cast<std::chrono::microseconds>(now - reference_);
 
 		// 1/60秒(より僅かに短い時間)経っていない場合
-		if (elapsed < kMInTime) {
+		if (elapsed < kMInCheckTime) {
 			// 1/60秒経過するまで微小なスリープを繰り返し実行
-			std::this_thread::sleep_for(std::chrono::microseconds(1));
+			while (std::chrono::steady_clock::now() - reference_ < kMInTime) {
+				// 1マイクロ秒スリープ
+				std::this_thread::sleep_for(std::chrono::microseconds(1));
+			}
 		}
-
 		// 現在の時間を記録
 		reference_ = std::chrono::steady_clock::now();
 	}
