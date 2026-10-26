@@ -393,7 +393,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 						// テクスチャの色を取得
 						Vector4 color = object.GetColor();
 						// 色を変更
-						if (ImGui::ColorEdit4("Color", &color.x)) {
+						if (ImGui::ColorEdit4("Color", &color.x/*, ImGuiColorEditFlags_Float*/)) {
 							object.SetColor(color);
 						}
 
@@ -455,7 +455,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 						// テクスチャの色を取得
 						Vector4 color = sprite.GetColor();
 						// 色を変更
-						if (ImGui::ColorEdit4("Color", &color.x, ImGuiColorEditFlags_AlphaBar)) {
+						if (ImGui::ColorEdit4("Color", &color.x, ImGuiColorEditFlags_AlphaBar/*ImGuiColorEditFlags_Float*/)) {
 							sprite.SetColor(color);
 						}
 
@@ -476,13 +476,13 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 			Vector4 color = directionalLight.GetColor();
 			Vector3 direction = directionalLight.GetDirection();
 			float intensity = directionalLight.GetIntensity();
-			if (ImGui::ColorEdit4("Color", &color.x)) {								// 色を変更
+			if (ImGui::ColorEdit4("Color", &color.x/*, ImGuiColorEditFlags_Float*/)) {	// 色を変更
 				directionalLight.SetColor(color);
 			}
-			if (ImGui::DragFloat3("Direction", &direction.x, 0.01f)) {				// 向きを変更
+			if (ImGui::DragFloat3("Direction", &direction.x, 0.01f)) {					// 向きを変更
 				directionalLight.SetDirection(direction);
 			}
-			if (ImGui::DragFloat("Intensity", &intensity, 0.01f, 0.0f, 10.0f)) {	// 輝度を変更
+			if (ImGui::DragFloat("Intensity", &intensity, 0.01f, 0.0f, 10.0f)) {		// 輝度を変更
 				directionalLight.SetIntensity(intensity);
 			}
 		}

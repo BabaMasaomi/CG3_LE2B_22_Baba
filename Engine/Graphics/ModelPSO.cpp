@@ -125,8 +125,8 @@ namespace Engine {
 		renderTargetBlend.LogicOpEnable = FALSE;
 		// RGBのブレンド設定
 		renderTargetBlend.SrcBlend = D3D12_BLEND_SRC_ALPHA;
-		renderTargetBlend.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
 		renderTargetBlend.BlendOp = D3D12_BLEND_OP_ADD;
+		renderTargetBlend.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
 		// α値自体のブレンド設定
 		renderTargetBlend.SrcBlendAlpha = D3D12_BLEND_ONE;
 		renderTargetBlend.DestBlendAlpha = D3D12_BLEND_ZERO;
