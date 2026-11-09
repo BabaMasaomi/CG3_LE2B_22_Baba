@@ -7,7 +7,7 @@
 #include <cassert>
 // Debug用のあれこれを使える様にする
 #include <strsafe.h>
-// ReportLiveObjects(DXGIに問い合わせできる様にする)
+#include <stdexcept>
 
 // libのリンク
 #pragma comment(lib,"dxguid.lib")
@@ -202,7 +202,11 @@ namespace Engine {
 		// ディスクリプタヒープを作成(deviceは,Typeはレンダーターゲットビュー用,ダブルバッファ用に2つ,shaderVisibleはfalse)
 		rtvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
 		// SRV用の物も作成(deviceは,Typeはレンダーターゲットビュー用,数は128,shaderVisibleはtrue)
-		srvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
+		srvDescriptorHeap_ = CreateDescriptorHeap(
+			device_.Get(),
+			D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+			kSrvCapacity,
+			true);
 	}
 	/*-------------------- SwapChainのリソースを作成 --------------------*/
 	void DirectXCommon::CreateSwapChainResources() {
@@ -419,6 +423,15 @@ namespace Engine {
 		assert(SUCCEEDED(hr));
 		hr = commandList_->Reset(commandAllocator_.Get(), nullptr);
 		assert(SUCCEEDED(hr));
+	}
+
+	/*-------------------- Instancing用のSRV配置番号を取得する --------------------*/
+	uint32_t DirectXCommon::AllocateInstancingSrv() {
+		if (nextInstancingSrvIndex_ >= kSrvCapacity) {
+			throw std::runtime_error("Instancing用SRVの空きがありません");
+		}
+
+		return nextInstancingSrvIndex_++;
 	}
 
 	/*-------------------- ViewPortとScissorRectの初期化 --------------------*/

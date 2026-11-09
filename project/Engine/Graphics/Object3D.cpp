@@ -10,6 +10,7 @@
 #include <cmath>
 #include <cassert>
 #include <cstring>
+#include <stdexcept>
 
 namespace Engine {
 
@@ -29,6 +30,15 @@ namespace Engine {
 		// CPUで動かす用のTransformを作る
 		transform_ = { {1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };
 
+		// 10枚動かす用のTransform
+		for (uint32_t i = 0; i < kMaxInstanceCount; ++i) {
+			instanceTransforms_[i] = {
+				{1.0f, 1.0f, 1.0f}, // scale
+				{0.0f, 0.0f, 0.0f}, // rotate
+				{0.0f, 0.0f, 0.0f}  // translate
+			};
+		}
+
 		// ImGui用
 		scale_ = transform_.scale;
 		rotate_ = transform_.rotate;
@@ -38,11 +48,19 @@ namespace Engine {
 		CreateTransformationMatrixResource();
 		MapTransformationMatrix();
 
+		// ParticleのInstancing用
+		CreateInstancingResource();
+
 		// マテリアル用のResourceとデータの作成関数
 		CreateMaterialResource();
 
 		// Object3Dごとのライティング設定用リソース
 		objectLightingResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(ObjectLightingData));
+
+		// Particle用にリソースを作成
+		CreateInstancingResource();
+		CreateInstancingSRV();
+
 		// 書き込むためのアドレスを取得
 		HRESULT hr = objectLightingResource_->Map(0, nullptr, reinterpret_cast<void**>(&objectLightingData_));
 		assert(SUCCEEDED(hr));
@@ -68,6 +86,51 @@ namespace Engine {
 		// 単位行列を書きこんでおく
 		transformationMatrixData_->WVP = MakeIdentity4x4();
 		transformationMatrixData_->World = MakeIdentity4x4();
+	}
+
+	/*-------------------- Particle用にInstancing用の変換行列バッファを生成・初期化する --------------------*/
+	void Object3D::CreateInstancingResource() {
+		// TransformationMatrixを10個格納する領域を確保
+		instancingResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(TransformationMatrix) * kMaxInstanceCount);
+		// CPUから書き込めるようにする
+		HRESULT hr = instancingResource_->Map(0, nullptr, reinterpret_cast<void**>(&instancingData_));
+
+		assert(SUCCEEDED(hr));
+
+		// 全要素を単位行列で初期化
+		for (uint32_t i = 0; i < kMaxInstanceCount; ++i) {
+			instancingData_[i].WVP = MakeIdentity4x4();
+			instancingData_[i].World = MakeIdentity4x4();
+		}
+	}
+
+	/*-------------------- SRV作成処理 --------------------*/
+	void Object3D::CreateInstancingSRV() {
+		// このObject3D専用の配置番号を確保
+		const uint32_t srvIndex = dxCommon_->AllocateInstancingSrv();
+
+		auto* heap = dxCommon_->GetSrvDescriptorHeap();
+		const uint32_t descriptorSize = dxCommon_->GetDescriptorSizeSRV();
+
+		const auto cpuHandle = GetCPUDescriptorHandle(heap, descriptorSize, srvIndex);
+
+		instancingSrvHandleGPU_ = GetGPUDescriptorHandle(heap, descriptorSize, srvIndex);
+
+		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+		srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+		srvDesc.Shader4ComponentMapping =
+			D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+
+		srvDesc.Buffer.FirstElement = 0;
+		srvDesc.Buffer.NumElements = kMaxInstanceCount;
+		srvDesc.Buffer.StructureByteStride = sizeof(TransformationMatrix);
+		srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+
+		dxCommon_->GetDevice()->CreateShaderResourceView(
+			instancingResource_.Get(),
+			&srvDesc,
+			cpuHandle);
 	}
 
 	/*-------------------- マテリアル用のResourceとデータの作成関数 --------------------*/
@@ -123,8 +186,24 @@ namespace Engine {
 
 		// WVP行列を計算して、CBufferに書き込む
 		Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix_, camera.GetViewProjectionMatrix());
-		transformationMatrixData_->WVP = worldViewProjectionMatrix;
-		transformationMatrixData_->World = worldMatrix_;
+
+		for (uint32_t i = 0; i < instanceCount_; ++i) {
+			const Transform& instance = instanceTransforms_[i];
+
+			const Matrix4x4 localMatrix = MakeAffineMatrix(
+				instance.scale,
+				instance.rotate,
+				instance.translate);
+
+			// 各インスタンスの配置に、Object3D全体の変換を適用
+			const Matrix4x4 instanceWorld =
+				Multiply(localMatrix, worldMatrix_);
+
+			instancingData_[i].World = instanceWorld;
+			instancingData_[i].WVP = Multiply(
+				instanceWorld,
+				camera.GetViewProjectionMatrix());
+		}
 
 		// マテリアルを更新
 		UpdateMaterial();
@@ -139,18 +218,18 @@ namespace Engine {
 		auto* commandList = dxCommon_->GetCommandList();
 		// RootSignature設定
 		commandList->SetGraphicsRootSignature(modelPSO_->GetRootSignature());
-		commandList->SetPipelineState(modelPSO_->GetPipelineState());	// PSOを設定
+		commandList->SetPipelineState(modelPSO_->GetPipelineState());			// PSOを設定
 		commandList->IASetVertexBuffers(0, 1, &model_->GetVertexBufferView());	// VertexBufferViewを設定
 		// 形状を設定
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());				// マテリアルCBufferの場所を設定
-		commandList->SetGraphicsRootConstantBufferView(1, transformationMatrixResource_->GetGPUVirtualAddress());	// wvp用のCBufferの場所を設定
+		commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());	// マテリアルCBufferの場所を設定
+		commandList->SetGraphicsRootDescriptorTable(1, instancingSrvHandleGPU_);						// wvp用のCBufferの場所を設定
 		// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である
 		commandList->SetGraphicsRootDescriptorTable(2, model_->GetTextureHandle());
 		commandList->SetGraphicsRootConstantBufferView(3, directionalLight_->GetResource()->GetGPUVirtualAddress());	// 平行光源を適用
 		commandList->SetGraphicsRootConstantBufferView(4, objectLightingResource_->GetGPUVirtualAddress());				// Object3Dごとのライティング設定
 		// 描画！(DrawCall)
-		commandList->DrawInstanced(UINT(model_->GetModelData().vertices.size()), 1, 0, 0);
+		commandList->DrawInstanced(UINT(model_->GetModelData().vertices.size()), instanceCount_, 0, 0);
 	}
 
 	/*-------------------- モデルを設定 --------------------*/
@@ -166,5 +245,24 @@ namespace Engine {
 		if (materialData_) {
 			materialData_->color = color_;
 		}
+	}
+
+	/*-------------------- セッター --------------------*/
+	void Object3D::SetInstanceCount(uint32_t count) {
+		if (count > kMaxInstanceCount) {
+			throw std::out_of_range("インスタンス数が上限を超えています");
+		}
+
+		instanceCount_ = count;
+	}
+
+	void Object3D::SetInstanceTransform(
+		uint32_t index, const Transform& transform) {
+
+		if (index >= kMaxInstanceCount) {
+			throw std::out_of_range("インスタンス番号が範囲外です");
+		}
+
+		instanceTransforms_[index] = transform;
 	}
 }

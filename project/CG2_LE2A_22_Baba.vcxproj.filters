@@ -239,6 +239,8 @@
     <FxCompile Include="Object3d.PS.hlsl" />
     <FxCompile Include="Sprite.VS.hlsl" />
     <FxCompile Include="Sprite.PS.hlsl" />
+    <FxCompile Include="Particle.VS.hlsl" />
+    <FxCompile Include="Particle.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">
@@ -248,5 +250,6 @@
   <ItemGroup>
     <None Include="Object3d.hlsli" />
     <None Include="Sprite.hlsli" />
+    <None Include="Particle.hlsli" />
   </ItemGroup>
 </Project>

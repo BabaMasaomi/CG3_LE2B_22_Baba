@@ -4,6 +4,7 @@
 #include "Function.h"
 #include <cassert>
 #include <vector>
+#include <stdexcept>
 
 namespace Engine {
 
@@ -24,6 +25,12 @@ namespace Engine {
 		if (it != textureMap_.end()) {
 			return it->second;
 		}
+
+		// テクスチャ読み込み上限チェック
+		if (nextTextureIndex_ > DirectXCommon::kTextureCapacity) {
+			throw std::runtime_error("テクスチャの最大数を超えました");
+		}
+
 		// 0.テクスチャインデックスを進める
 		uint32_t index = nextTextureIndex_++;
 		// 1.テクスチャファイルを読み込んでプログラムで扱えるようにする

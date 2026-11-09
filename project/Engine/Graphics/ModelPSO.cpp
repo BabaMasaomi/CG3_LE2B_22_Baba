@@ -33,10 +33,10 @@ namespace Engine {
 		rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		// CBVを使う(b0のbと一致)
 		rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		// PixelShaderで使う
 		rootParameters[0].Descriptor.ShaderRegister = 0;						// レジスタ番号0とバインド(b0の0と一致)
-		// WVP用
-		rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		// CBVを使う(b1のbと一致)
-		rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;	// VertexShaderで使う
-		rootParameters[1].Descriptor.ShaderRegister = 1;						// レジスタ番号1を使う
+		//// WVP用
+		//rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		// CBVを使う(b1のbと一致)
+		//rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;	// VertexShaderで使う
+		//rootParameters[1].Descriptor.ShaderRegister = 1;						// レジスタ番号1を使う		
 		// SRV用
 		descriptionRootSignature.pParameters = rootParameters;					// ルートパラメータ配列へのポインタ
 		descriptionRootSignature.NumParameters = _countof(rootParameters);		// 配列の長さ
@@ -59,6 +59,18 @@ namespace Engine {
 		rootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		// CBVを使う
 		rootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		// PixelShaderで使う
 		rootParameters[4].Descriptor.ShaderRegister = 2;						// レジスタ番号2を使う
+
+		// Particle用
+		D3D12_DESCRIPTOR_RANGE descriptorRangeForInstancing[1] = {};
+		descriptorRangeForInstancing[0].BaseShaderRegister = 0;														// 0から始まる
+		descriptorRangeForInstancing[0].NumDescriptors = 1;															// 数は1つ
+		descriptorRangeForInstancing[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;								// SRVを使う
+		descriptorRangeForInstancing[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;	// Offsetは自動計算
+
+		rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+		rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+		rootParameters[1].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing;
+		rootParameters[1].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing);
 
 		// Samplerの設定
 		D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
@@ -145,13 +157,13 @@ namespace Engine {
 
 		// Shaderのコンパイル
 		// vertexShader
-		Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = dxcManager_->CompileShader(L"Object3D.VS.hlsl",
+		Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = dxcManager_->CompileShader(L"Particle.VS.hlsl",
 			L"vs_6_0", dxcManager_->GetDxcUtils(), dxcManager_->GetDxcCompiler(), dxcManager_->GetIncludeHandler()
 		);
 		assert(vertexShaderBlob != nullptr);
 
 		// pixelShader
-		Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = dxcManager_->CompileShader(L"Object3D.PS.hlsl",
+		Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = dxcManager_->CompileShader(L"Particle.PS.hlsl",
 			L"ps_6_0", dxcManager_->GetDxcUtils(), dxcManager_->GetDxcCompiler(), dxcManager_->GetIncludeHandler()
 		);
 		assert(pixelShaderBlob != nullptr);
@@ -188,4 +200,4 @@ namespace Engine {
 		hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&pipelineState_));
 		assert(SUCCEEDED(hr));
 	}
-}
+}	

@@ -310,6 +310,20 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 				object->Initialize(&dxCommon, &modelPSO, &directionalLight);
 				// モデルをセット
 				object->SetModel(entry.model);
+
+				// 同じモデルを10個まとめて描画する
+				object->SetInstanceCount(10);
+
+				for (uint32_t i = 0; i < 10; ++i) {
+					Transform instance{
+						{1.0f, 1.0f, 1.0f}, // 拡大率
+						{0.0f, 0.0f, 0.0f}, // 回転
+						{static_cast<float>(i) * 2.0f, 0.0f, 0.0f} // 位置
+					};
+
+					object->SetInstanceTransform(i, instance);
+				}
+
 				// 描画される前にWVPを一度更新する
 				object->Update(camera);
 				// 

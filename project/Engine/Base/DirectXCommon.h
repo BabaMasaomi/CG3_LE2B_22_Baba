@@ -112,6 +112,15 @@ namespace Engine {
 		DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() const { return swapChainDesc_; }
 		D3D12_RENDER_TARGET_VIEW_DESC GetrtvDesc() const { return rtvDesc_; }
 
+		/*==================== メンバ変数の宣言 ====================*/
+		// Particle用に追加
+		static constexpr uint32_t kTextureCapacity = 256;
+		static constexpr uint32_t kInstancingSrvStart = kTextureCapacity + 1;
+		static constexpr uint32_t kSrvCapacity = 1024;
+
+		// Instancing用のSRV配置番号を取得する
+		uint32_t AllocateInstancingSrv();
+
 	private:
 
 		/*==================== メンバ関数の宣言 ====================*/
@@ -254,6 +263,9 @@ namespace Engine {
 		uint32_t DescriptorSizeRTV_ = 0;
 		// DSVのサイズは、RTVと同じサイズなので、RTVのサイズを取得しておけば良い
 		uint32_t DescriptorSizeDSV_ = 0;
+		
+		// Particle用に追加
+		uint32_t nextInstancingSrvIndex_ = kInstancingSrvStart;
 
 	};
 }

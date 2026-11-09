@@ -2,6 +2,7 @@
 #include <d3d12.h>
 #include <cstdint>
 #include <wrl.h>
+#include <array>
 #include"struct.h"
 
 namespace Engine {
@@ -65,6 +66,9 @@ namespace Engine {
 		void SetUVTransform(const Transform& uvTransform) { uvTransform_ = uvTransform; }
 		void SetLightingMode(LightingMode lightingMode) { lightingMode_ = lightingMode; }
 
+		void SetInstanceCount(uint32_t count);
+		void SetInstanceTransform(uint32_t index, const Transform& transform);
+
 	private:
 		/*==================== メンバ関数の宣言 ====================*/
 		// 変換行列用のResourceとデータの作成関数
@@ -76,6 +80,16 @@ namespace Engine {
 		/// 変換行列データをマップする
 		/// </summary>
 		void MapTransformationMatrix();
+
+		/// <summary>
+		/// Particle用にInstancing用の変換行列バッファを生成・初期化する
+		/// </summary>
+		void CreateInstancingResource();
+
+		/// <summary>
+		/// SRV作成処理
+		/// </summary>
+		void CreateInstancingSRV();
 
 		/// <summary>
 		/// マテリアル用のResourceとデータの作成関数
@@ -114,6 +128,21 @@ namespace Engine {
 		Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource_ = nullptr;
 		// 変換行列データ
 		TransformationMatrix* transformationMatrixData_ = nullptr;
+
+		// Particle用の変数群
+		// 1回の描画で扱える最大インスタンス数
+		static constexpr uint32_t kMaxInstanceCount = 10;
+		// Instancing用の変換行列バッファ
+		Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource_;
+		// Mapして取得した、配列の先頭アドレス
+		TransformationMatrix* instancingData_ = nullptr;
+		// 
+		D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandleGPU_{};
+
+		// 各インスタンスの相対的な配置
+		std::array<Transform, kMaxInstanceCount> instanceTransforms_{};
+		// 実際に描画する個数。最初は既存表示を保つため1個
+		uint32_t instanceCount_ = 1;
 
 		// ImGuiで弄る用
 		Vector3 scale_;
