@@ -24,7 +24,7 @@ namespace Engine {
 	/*-------------------- Logファイル作成 --------------------*/
 	std::ofstream CreateLogFile() {
 		// Logのディレクトリを用意
-		std::filesystem::create_directories("logs");
+		std::filesystem::create_directories("../generated/logs");
 		// 現在時刻を取得
 		auto now = std::chrono::system_clock::now();
 		// コンマ何秒かはいらないので、秒単位に変換
@@ -34,7 +34,7 @@ namespace Engine {
 		// formatを使って年月日_時分秒の文字列を作る
 		std::string dateString = std::format("{:%Y%m%d_%H%M%S}", localTime);
 		// 時刻を使ってログファイルの名前を作る
-		std::string filePath = std::string("logs/") + dateString + ".log";
+		std::string filePath = std::string("../generated/logs/") + dateString + ".log";
 		// ファイルを作って書き込み準備
 		std::ofstream logStream(filePath);
 

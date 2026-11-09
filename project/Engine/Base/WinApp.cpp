@@ -1,11 +1,12 @@
 #include <Windows.h>
 #include "WinApp.h"
+
+#pragma comment(lib,"winmm.lib")
+
 // ImGuiの表示に必要
 #ifdef USE_IMGUI
 #include "externals/imgui/imgui.h"
 #include "externals/imgui/imgui_impl_win32.h"
-
-#pragma comment(lib,"winmm.lib")
 
 // ImGuiのウィンドウプロシージャ
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
