@@ -229,14 +229,11 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 			Transform uv = plane.GetUVTransform();
 			bool uvChanged = false;
 
-			uvChanged |= ImGui::DragFloat2(
-				"UV Scale", &uv.scale.x, 0.01f, 0.01f, 10.0f);
+			uvChanged |= ImGui::DragFloat2("UV Scale", &uv.scale.x, 0.01f, 0.01f, 10.0f);
 
-			uvChanged |= ImGui::DragFloat2(
-				"UV Translate", &uv.translate.x, 0.01f);
+			uvChanged |= ImGui::DragFloat2("UV Translate", &uv.translate.x, 0.01f);
 
-			uvChanged |= ImGui::DragFloat(
-				"UV Rotate", &uv.rotate.z, 0.01f);
+			uvChanged |= ImGui::DragFloat("UV Rotate", &uv.rotate.z, 0.01f);
 
 			if (uvChanged) {
 				plane.SetUVTransform(uv);
