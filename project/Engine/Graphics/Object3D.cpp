@@ -127,10 +127,7 @@ namespace Engine {
 		srvDesc.Buffer.StructureByteStride = sizeof(TransformationMatrix);
 		srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 
-		dxCommon_->GetDevice()->CreateShaderResourceView(
-			instancingResource_.Get(),
-			&srvDesc,
-			cpuHandle);
+		dxCommon_->GetDevice()->CreateShaderResourceView(instancingResource_.Get(), &srvDesc, cpuHandle);
 	}
 
 	/*-------------------- マテリアル用のResourceとデータの作成関数 --------------------*/
@@ -196,13 +193,10 @@ namespace Engine {
 				instance.translate);
 
 			// 各インスタンスの配置に、Object3D全体の変換を適用
-			const Matrix4x4 instanceWorld =
-				Multiply(localMatrix, worldMatrix_);
+			const Matrix4x4 instanceWorld = Multiply(localMatrix, worldMatrix_);
 
 			instancingData_[i].World = instanceWorld;
-			instancingData_[i].WVP = Multiply(
-				instanceWorld,
-				camera.GetViewProjectionMatrix());
+			instancingData_[i].WVP = Multiply(instanceWorld, camera.GetViewProjectionMatrix());
 		}
 
 		// マテリアルを更新
