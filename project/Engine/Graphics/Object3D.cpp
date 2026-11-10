@@ -48,9 +48,6 @@ namespace Engine {
 		CreateTransformationMatrixResource();
 		MapTransformationMatrix();
 
-		// ParticleのInstancing用
-		CreateInstancingResource();
-
 		// マテリアル用のResourceとデータの作成関数
 		CreateMaterialResource();
 
