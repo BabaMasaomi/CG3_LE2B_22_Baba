@@ -193,8 +193,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </ClCompile>
     <ClCompile Include="Engine\Resource\Model.cpp" />
     <ClCompile Include="Engine\Resource\ModelManager.cpp" />
-    <ClCompile Include="Engine\Graphics\ModelPSO.cpp" />
-    <ClCompile Include="Engine\Graphics\Object3D.cpp" />
+    <ClCompile Include="Engine\Graphics\ParticlePSO.cpp" />
+    <ClCompile Include="Engine\Graphics\ParticleSystem.cpp" />
     <ClCompile Include="Engine\Audio\Audio.cpp" />
     <ClCompile Include="Engine\Graphics\Sprite.cpp" />
     <ClCompile Include="Engine\Resource\TextureManager.cpp" />
@@ -221,8 +221,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Utility\Logger.h" />
     <ClInclude Include="Engine\Resource\Model.h" />
     <ClInclude Include="Engine\Resource\ModelManager.h" />
-    <ClInclude Include="Engine\Graphics\ModelPSO.h" />
-    <ClInclude Include="Engine\Graphics\Object3D.h" />
+    <ClInclude Include="Engine\Graphics\ParticlePSO.h" />
+    <ClInclude Include="Engine\Graphics\ParticleSystem.h" />
     <ClInclude Include="Engine\Audio\Audio.h" />
     <ClInclude Include="Engine\Graphics\Sprite.h" />
     <ClInclude Include="Engine\Math\struct.h" />

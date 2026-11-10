@@ -8,14 +8,14 @@ namespace Engine {
 	class DirectXCommon;
 	class DXCManager;
 
-	class ModelPSO {
+	class ParticlePSO {
 	public:
 		/*==================== メンバ関数とデストラクタの宣言 ====================*/
 		// デストラクタ
-		~ModelPSO();
+		~ParticlePSO();
 
 		/// <summary>
-		/// ModelPSOの初期化
+		/// ParticlePSOの初期化
 		/// </summary>
 		/// <param name="dxCommon">DirectXCommonのインスタンス</param>
 		/// <param name="dxcManager">DXCManagerのインスタンス</param>

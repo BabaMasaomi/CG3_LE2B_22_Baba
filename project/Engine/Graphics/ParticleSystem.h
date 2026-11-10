@@ -9,37 +9,37 @@ namespace Engine {
 
 	// 前方宣言
 	class DirectXCommon;
-	class ModelPSO;
+	class ParticlePSO;
 	class DirectionalLight;
 	class Model;
 	class Camera;
 
-	// Object3Dごとのライティング設定
+	// ParticleSystemごとのライティング設定
 	struct ObjectLightingData {
 		int32_t lightingType;
 		float padding[3];
 	};
 
-	class Object3D {
+	class ParticleSystem {
 	public:
 		/*==================== メンバ関数とデストラクタの宣言 ====================*/
 		// デストラクタ
-		~Object3D();
+		~ParticleSystem();
 
 		/// <summary>
-		/// Object3Dの初期化
+		/// Particleの初期化
 		/// </summary>
 		/// <param name="dxCommon">DirectXCommonのインスタンス</param>
-		/// <param name="modelPSO">ModelPSOのインスタンス</param>
+		/// <param name="modelPSO">ParticlePSOのインスタンス</param>
 		/// <param name="directionalLight">DirectionalLightのインスタンス</param>
-		void Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, DirectionalLight* directionalLight);
+		void Initialize(DirectXCommon* dxCommon, ParticlePSO* particlePSO, DirectionalLight* directionalLight);
 		/// <summary>
-		/// Object3Dの更新
+		/// Particleの更新
 		/// </summary>
 		/// <param name="camera">カメラのインスタンス</param>
 		void Update(const Camera& camera);
 		/// <summary>
-		/// Object3Dの描画
+		/// Particleの描画
 		/// </summary>
 		void Draw();
 
@@ -103,8 +103,8 @@ namespace Engine {
 		/*==================== メンバ変数 ====================*/
 		// DirectXCommonのインスタンス
 		DirectXCommon* dxCommon_ = nullptr;
-		// ModelPSOのインスタンス
-		ModelPSO* modelPSO_ = nullptr;
+		// ParticlePSOのインスタンス
+		ParticlePSO* particlePSO_ = nullptr;
 		// DirectionalLightのインスタンス
 		DirectionalLight* directionalLight_ = nullptr;
 		// モデルのインスタンス
@@ -149,11 +149,11 @@ namespace Engine {
 		Vector3 rotate_;
 		Vector3 translate_;
 
-		// Object3Dごとのマテリアル
+		// Particleごとのマテリアル
 		Microsoft::WRL::ComPtr<ID3D12Resource>materialResource_ = nullptr;
-		// Object3Dごとのマテリアルデータ
+		// Particleごとのマテリアルデータ
 		Material* materialData_ = nullptr;
-		// Object3Dごとの色
+		// Particleごとの色
 		Vector4 color_ = { 1.0f,1.0f,1.0f,1.0f };
 		// UVTransform用の変数
 		Transform uvTransform_ = {
@@ -162,11 +162,11 @@ namespace Engine {
 			{0.0f,0.0f,0.0f},	// translate
 		};
 
-		// Object3Dごとのライティング形式
+		// Particleごとのライティング形式
 		LightingMode lightingMode_ = LightingMode::HalfLambert;
-		// Object3Dごとのライティング設定用のリソース
+		// Particleごとのライティング設定用のリソース
 		Microsoft::WRL::ComPtr<ID3D12Resource>objectLightingResource_ = nullptr;
-		// Object3Dごとのライティング設定用のデータ
+		// Particleごとのライティング設定用のデータ
 		ObjectLightingData* objectLightingData_ = nullptr;
 	};
 }

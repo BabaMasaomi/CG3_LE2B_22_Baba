@@ -1,4 +1,4 @@
-#include "ModelPSO.h"
+#include "ParticlePSO.h"
 #include "DirectXCommon.h"
 #include "DXCManager.h"
 #include "Logger.h"
@@ -6,12 +6,12 @@
 
 namespace Engine {
 
-	ModelPSO::~ModelPSO() {
-		OutputDebugStringA("~ModelPSO\n");
+	ParticlePSO::~ParticlePSO() {
+		OutputDebugStringA("~ParticlePSO\n");
 	}
 
 	/*-------------------- 初期化 --------------------*/
-	void ModelPSO::Initialize(DirectXCommon* dxCommon, DXCManager* dxcManager) {
+	void ParticlePSO::Initialize(DirectXCommon* dxCommon, DXCManager* dxcManager) {
 		dxCommon_ = dxCommon;
 		dxcManager_ = dxcManager;
 		CreateRootSignature();
@@ -19,7 +19,7 @@ namespace Engine {
 	}
 
 	// -------------------- - ルートシグネチャの生成-------------------- * //	
-	void ModelPSO::CreateRootSignature() {
+	void ParticlePSO::CreateRootSignature() {
 		HRESULT hr;
 
 		// RootSignatureの設定
@@ -102,7 +102,7 @@ namespace Engine {
 	}
 
 	/* -------------------- - グラフィックスパイプラインの生成-------------------- */
-	void ModelPSO::CreateGraphicsPipeline() {
+	void ParticlePSO::CreateGraphicsPipeline() {
 		HRESULT hr;
 
 		// InputLayoutの設定

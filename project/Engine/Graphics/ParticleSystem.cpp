@@ -1,6 +1,6 @@
-#include "Object3D.h"
+#include "ParticleSystem.h"
 #include "DirectXCommon.h"
-#include "ModelPSO.h"
+#include "ParticlePSO.h"
 #include "Model.h"
 #include "DirectionalLight.h"
 #include "Camera.h"
@@ -15,16 +15,16 @@
 namespace Engine {
 
 	// デストラクタ
-	Object3D::~Object3D() {
-		OutputDebugStringA("~Object3D\n");
+	ParticleSystem::~ParticleSystem() {
+		OutputDebugStringA("~ParticleSystem\n");
 	}
 
 	/*-------------------- 初期化 --------------------*/
-	void Object3D::Initialize(DirectXCommon* dxCommon, ModelPSO* modelPSO, DirectionalLight* directionalLight) {
+	void ParticleSystem::Initialize(DirectXCommon* dxCommon, ParticlePSO* particlePSO, DirectionalLight* directionalLight) {
 
 		// ポインタを保存しておく
 		dxCommon_ = dxCommon;
-		modelPSO_ = modelPSO;
+		particlePSO_ = particlePSO;
 		directionalLight_ = directionalLight;
 
 		// CPUで動かす用のTransformを作る
@@ -71,12 +71,12 @@ namespace Engine {
 	}
 
 	/*-------------------- 変換行列用のResourceの生成 --------------------*/
-	void Object3D::CreateTransformationMatrixResource() {
+	void ParticleSystem::CreateTransformationMatrixResource() {
 		transformationMatrixResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(TransformationMatrix));
 	}
 
 	/*-------------------- 変換行列用のResourceにデータを書き込む --------------------*/
-	void Object3D::MapTransformationMatrix() {
+	void ParticleSystem::MapTransformationMatrix() {
 		// 書き込むためのアドレスを取得
 		HRESULT hr = transformationMatrixResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixData_));
 		assert(SUCCEEDED(hr));
@@ -86,7 +86,7 @@ namespace Engine {
 	}
 
 	/*-------------------- Particle用にInstancing用の変換行列バッファを生成・初期化する --------------------*/
-	void Object3D::CreateInstancingResource() {
+	void ParticleSystem::CreateInstancingResource() {
 		// TransformationMatrixを10個格納する領域を確保
 		instancingResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(TransformationMatrix) * kMaxInstanceCount);
 		// CPUから書き込めるようにする
@@ -102,7 +102,7 @@ namespace Engine {
 	}
 
 	/*-------------------- SRV作成処理 --------------------*/
-	void Object3D::CreateInstancingSRV() {
+	void ParticleSystem::CreateInstancingSRV() {
 		// このObject3D専用の配置番号を確保
 		const uint32_t srvIndex = dxCommon_->AllocateInstancingSrv();
 
@@ -128,7 +128,7 @@ namespace Engine {
 	}
 
 	/*-------------------- マテリアル用のResourceとデータの作成関数 --------------------*/
-	void Object3D::CreateMaterialResource() {
+	void ParticleSystem::CreateMaterialResource() {
 		// マテリアル用のResouceを作成
 		materialResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(Material));
 
@@ -147,7 +147,7 @@ namespace Engine {
 	}
 
 	/*-------------------- マテリアルを更新する --------------------*/
-	void Object3D::UpdateMaterial() {
+	void ParticleSystem::UpdateMaterial() {
 		// マテリアルの色を更新
 		materialData_->color = color_;
 		// マテリアルのUVTransformを更新
@@ -159,7 +159,7 @@ namespace Engine {
 	}
 
 	/*-------------------- 更新 --------------------*/
-	void Object3D::Update(const Camera& camera) {
+	void ParticleSystem::Update(const Camera& camera) {
 		// UVTransform用の行列を作成
 		Matrix4x4 uvTransformMatrix = MakeScaleMatrix(uvTransform_.scale);
 		uvTransformMatrix = Multiply(uvTransformMatrix, MakeRotateZMatrix(uvTransform_.rotate.z));
@@ -204,12 +204,12 @@ namespace Engine {
 	}
 
 	/*-------------------- 描画 --------------------*/
-	void Object3D::Draw() {
+	void ParticleSystem::Draw() {
 		// コマンドリストを取得
 		auto* commandList = dxCommon_->GetCommandList();
 		// RootSignature設定
-		commandList->SetGraphicsRootSignature(modelPSO_->GetRootSignature());
-		commandList->SetPipelineState(modelPSO_->GetPipelineState());			// PSOを設定
+		commandList->SetGraphicsRootSignature(particlePSO_->GetRootSignature());
+		commandList->SetPipelineState(particlePSO_->GetPipelineState());			// PSOを設定
 		commandList->IASetVertexBuffers(0, 1, &model_->GetVertexBufferView());	// VertexBufferViewを設定
 		// 形状を設定
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -224,7 +224,7 @@ namespace Engine {
 	}
 
 	/*-------------------- モデルを設定 --------------------*/
-	void Object3D::SetModel(Model* model) {
+	void ParticleSystem::SetModel(Model* model) {
 		// モデルを設定
 		model_ = model;
 
@@ -239,7 +239,7 @@ namespace Engine {
 	}
 
 	/*-------------------- セッター --------------------*/
-	void Object3D::SetInstanceCount(uint32_t count) {
+	void ParticleSystem::SetInstanceCount(uint32_t count) {
 		if (count > kMaxInstanceCount) {
 			throw std::out_of_range("インスタンス数が上限を超えています");
 		}
@@ -247,7 +247,7 @@ namespace Engine {
 		instanceCount_ = count;
 	}
 
-	void Object3D::SetInstanceTransform(
+	void ParticleSystem::SetInstanceTransform(
 		uint32_t index, const Transform& transform) {
 
 		if (index >= kMaxInstanceCount) {

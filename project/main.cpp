@@ -10,9 +10,9 @@
 #include "Camera.h"
 #include "DirectionalLight.h"
 #include "SpritePSO.h"
-#include "ModelPSO.h"
+#include "ParticlePSO.h"
 #include "Model.h"
-#include "Object3D.h"
+#include "ParticleSystem.h"
 // オブジェクト描画用
 #include <memory>
 #include <vector>
@@ -129,18 +129,18 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	SpritePSO spritePSO;
 	spritePSO.Initialize(&dxCommon, &dxcManager);
 
-	// ModelPSOの初期化
-	ModelPSO modelPSO;
-	modelPSO.Initialize(&dxCommon, &dxcManager);
+	// ParticlePSOの初期化
+	ParticlePSO particlePSO;
+	particlePSO.Initialize(&dxCommon, &dxcManager);
 
 	// 板ポリのモデルを読み込む
 	Model* planeModel = modelManager.LoadModel("plane.obj");
 
-	// 板ポリ10枚をまとめて描画するObject3D
-	Object3D plane;
-	plane.Initialize(&dxCommon, &modelPSO, &directionalLight);
-	plane.SetModel(planeModel);
-	plane.SetInstanceCount(10);
+	// 板ポリ10枚をまとめて描画するParticleのInstancing描画
+	ParticleSystem particle;
+	particle.Initialize(&dxCommon, &particlePSO, &directionalLight);
+	particle.SetModel(planeModel);
+	particle.SetInstanceCount(10);
 
 	// 1枚ずつ左上へずらして配置
 	for (uint32_t i = 0; i < 10; ++i) {
@@ -152,7 +152,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 			{-0.1f * offset, 0.1f * offset, -0.1f * offset}
 		};
 
-		plane.SetInstanceTransform(i, instance);
+		particle.SetInstanceTransform(i, instance);
 	}
 
 	// ログ出力
@@ -175,7 +175,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		directionalLight.Update();
 
 		// 板ポリを配置
-		plane.Update(camera);
+		particle.Update(camera);
 
 		/*-------------------- 描画処理 --------------------*/
 		dxCommon.PreDraw();		// 描画前の処理
@@ -197,36 +197,36 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		ImGui::Separator();
 		// 板ポリ10枚を表示
 		if (ImGui::CollapsingHeader(
-			"Plane", ImGuiTreeNodeFlags_DefaultOpen)) {
+			"Particle", ImGuiTreeNodeFlags_DefaultOpen)) {
 
 			// 10枚全体の変換
-			Vector3 scale = plane.GetScale();
-			Vector3 rotate = plane.GetRotate();
-			Vector3 translate = plane.GetTranslate();
+			Vector3 scale = particle.GetScale();
+			Vector3 rotate = particle.GetRotate();
+			Vector3 translate = particle.GetTranslate();
 
 			if (ImGui::DragFloat3(
 				"Scale", &scale.x, 0.01f, 0.01f, 100.0f)) {
-				plane.SetScale(scale);
+				particle.SetScale(scale);
 			}
 
 			if (ImGui::DragFloat3("Rotate", &rotate.x, 0.01f)) {
-				plane.SetRotate(rotate);
+				particle.SetRotate(rotate);
 			}
 
 			if (ImGui::DragFloat3("Translate", &translate.x, 0.01f)) {
-				plane.SetTranslate(translate);
+				particle.SetTranslate(translate);
 			}
 
 			// 10枚共通の色
-			Vector4 color = plane.GetColor();
+			Vector4 color = particle.GetColor();
 
 			if (ImGui::ColorEdit4(
 				"Color", &color.x, ImGuiColorEditFlags_Float)) {
-				plane.SetColor(color);
+				particle.SetColor(color);
 			}
 
 			// 10枚共通のUV
-			Transform uv = plane.GetUVTransform();
+			Transform uv = particle.GetUVTransform();
 			bool uvChanged = false;
 
 			uvChanged |= ImGui::DragFloat2("UV Scale", &uv.scale.x, 0.01f, 0.01f, 10.0f);
@@ -236,12 +236,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 			uvChanged |= ImGui::DragFloat("UV Rotate", &uv.rotate.z, 0.01f);
 
 			if (uvChanged) {
-				plane.SetUVTransform(uv);
+				particle.SetUVTransform(uv);
 			}
 		}
 
 		// ImGuiで変更した値を、このフレームの描画に反映
-		plane.Update(camera);
+		particle.Update(camera);
 
 		ImGui::Separator();
 		// Lightを調整
@@ -264,7 +264,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 #endif
 
 		// 板ポリ10枚をInstancing描画
-		plane.Draw();
+		particle.Draw();
 
 		// ImGuiの描画
 #ifdef USE_IMGUI
