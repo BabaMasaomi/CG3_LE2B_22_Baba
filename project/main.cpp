@@ -227,46 +227,46 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 
 		ImGui::Separator();
 		// パーティクルのUV,Lightingを編集
-		if (ImGui::CollapsingHeader("Particle UV&Lighting", ImGuiTreeNodeFlags_DefaultOpen)) {
+		ImGui::Text("Particle UV&Lighting");
 
-			// パーティクル全体の変換
-			Vector3 scale = particle.GetScale();
-			Vector3 rotate = particle.GetRotate();
-			Vector3 translate = particle.GetTranslate();
+		// パーティクル全体の変換
+		Vector3 scale = particle.GetScale();
+		Vector3 rotate = particle.GetRotate();
+		Vector3 translate = particle.GetTranslate();
 
-			if (ImGui::DragFloat3(
-				"Scale", &scale.x, 0.01f, 0.01f, 100.0f)) {
-				particle.SetScale(scale);
-			}
-
-			if (ImGui::DragFloat3("Rotate", &rotate.x, 0.01f)) {
-				particle.SetRotate(rotate);
-			}
-
-			if (ImGui::DragFloat3("Translate", &translate.x, 0.01f)) {
-				particle.SetTranslate(translate);
-			}
-
-			// パーティクルの共通の色
-			Vector4 color = particle.GetColor();
-
-			if (ImGui::ColorEdit4(
-				"Color", &color.x, ImGuiColorEditFlags_Float)) {
-				particle.SetColor(color);
-			}
-
-			// パーティクルの共通のUV
-			Transform uv = particle.GetUVTransform();
-			bool uvChanged = false;
-
-			uvChanged |= ImGui::DragFloat2("UV Scale", &uv.scale.x, 0.01f, 0.01f, 10.0f);
-			uvChanged |= ImGui::DragFloat2("UV Translate", &uv.translate.x, 0.01f);
-			uvChanged |= ImGui::DragFloat("UV Rotate", &uv.rotate.z, 0.01f);
-
-			if (uvChanged) {
-				particle.SetUVTransform(uv);
-			}
+		if (ImGui::DragFloat3(
+			"Scale", &scale.x, 0.01f, 0.01f, 100.0f)) {
+			particle.SetScale(scale);
 		}
+
+		if (ImGui::DragFloat3("Rotate", &rotate.x, 0.01f)) {
+			particle.SetRotate(rotate);
+		}
+
+		if (ImGui::DragFloat3("Translate", &translate.x, 0.01f)) {
+			particle.SetTranslate(translate);
+		}
+
+		// パーティクルの共通の色
+		Vector4 color = particle.GetColor();
+
+		if (ImGui::ColorEdit4(
+			"UV Color", &color.x, ImGuiColorEditFlags_Float)) {
+			particle.SetColor(color);
+		}
+
+		// パーティクルの共通のUV
+		Transform uv = particle.GetUVTransform();
+		bool uvChanged = false;
+
+		uvChanged |= ImGui::DragFloat2("UV Scale", &uv.scale.x, 0.01f, 0.01f, 10.0f);
+		uvChanged |= ImGui::DragFloat2("UV Translate", &uv.translate.x, 0.01f);
+		uvChanged |= ImGui::DragFloat("UV Rotate", &uv.rotate.z, 0.01f);
+
+		if (uvChanged) {
+			particle.SetUVTransform(uv);
+		}
+
 
 		ImGui::Separator();
 		// Lightを調整

@@ -26,6 +26,13 @@ namespace Engine {
 		Vector3 velocity{};
 		float lifeTime{};
 		float currentTime{};
+		Vector4 color{ 1.0f, 1.0f, 1.0f, 1.0f };
+	};
+
+	struct ParticleForGPU {
+		Matrix4x4 WVP{};
+		Matrix4x4 World{};
+		Vector4 color{1.0f,1.0f,1.0f,1.0f};
 	};
 
 	class ParticleSystem {
@@ -155,8 +162,8 @@ namespace Engine {
 		// Instancing用の変換行列バッファ
 		Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource_;
 		// Mapして取得した、配列の先頭アドレス
-		TransformationMatrix* instancingData_ = nullptr;
-		// 
+		ParticleForGPU* instancingData_ = nullptr;
+		// GPUに送る用の
 		D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandleGPU_{};
 
 		// 同時に保持・描画できる最大インスタンス数

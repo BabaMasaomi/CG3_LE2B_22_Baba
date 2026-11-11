@@ -24,8 +24,7 @@ namespace Engine {
 
 		// RootSignatureの設定
 		D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
-		descriptionRootSignature.Flags =
-			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+		descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 		// RootParameterを作成
 		D3D12_ROOT_PARAMETER rootParameters[5] = {};
@@ -66,7 +65,7 @@ namespace Engine {
 		descriptorRangeForInstancing[0].NumDescriptors = 1;															// 数は1つ
 		descriptorRangeForInstancing[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;								// SRVを使う
 		descriptorRangeForInstancing[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;	// Offsetは自動計算
-
+		// こっちに新しくWVP用を
 		rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 		rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 		rootParameters[1].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing;
@@ -173,7 +172,7 @@ namespace Engine {
 		// Depthの機能を有効化する
 		depthStencilDesc.DepthEnable = true;
 		//書き込みする
-		depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+		depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
 		// 比較関数はLessEqual (近ければ描画される)
 		depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 
@@ -200,4 +199,4 @@ namespace Engine {
 		hr = dxCommon_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&pipelineState_));
 		assert(SUCCEEDED(hr));
 	}
-}	
+}

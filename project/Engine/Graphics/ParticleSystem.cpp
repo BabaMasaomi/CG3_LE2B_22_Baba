@@ -10,8 +10,7 @@
 #include <cmath>
 #include <numbers>
 #include <cassert>
-#include <cstring>
-#include <stdexcept>
+#include <algorithm>
 
 namespace Engine {
 
@@ -84,9 +83,11 @@ namespace Engine {
 	/*-------------------- Particle用にInstancing用の変換行列バッファを生成・初期化する --------------------*/
 	void ParticleSystem::CreateInstancingResource() {
 		// TransformationMatrixを10個格納する領域を確保
-		instancingResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(TransformationMatrix) * kMaxInstanceCount);
-		// CPUから書き込めるようにする
-		HRESULT hr = instancingResource_->Map(0, nullptr, reinterpret_cast<void**>(&instancingData_));
+		instancingResource_ = CreateBufferResource(dxCommon_->GetDevice(), sizeof(ParticleForGPU) * kMaxInstanceCount);
+
+		// CPUでは読み取らず、書き込みだけを行う
+		const D3D12_RANGE readRange{ 0, 0 };
+		HRESULT hr = instancingResource_->Map(0, &readRange, reinterpret_cast<void**>(&instancingData_));
 
 		assert(SUCCEEDED(hr));
 
@@ -94,6 +95,7 @@ namespace Engine {
 		for (uint32_t i = 0; i < kMaxInstanceCount; ++i) {
 			instancingData_[i].WVP = MakeIdentity4x4();
 			instancingData_[i].World = MakeIdentity4x4();
+			instancingData_[i].color = { 1.0f, 1.0f, 1.0f, 1.0f };
 		}
 	}
 
@@ -117,7 +119,7 @@ namespace Engine {
 
 		srvDesc.Buffer.FirstElement = 0;
 		srvDesc.Buffer.NumElements = kMaxInstanceCount;
-		srvDesc.Buffer.StructureByteStride = sizeof(TransformationMatrix);
+		srvDesc.Buffer.StructureByteStride = sizeof(ParticleForGPU);
 		srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 
 		dxCommon_->GetDevice()->CreateShaderResourceView(instancingResource_.Get(), &srvDesc, cpuHandle);
@@ -164,10 +166,17 @@ namespace Engine {
 
 		// 粒子の移動と寿命の更新
 		for (Particle& particle : particles_) {
-			particle.transform.translate +=
-				particle.velocity * deltaTime;
-
+			// 移動
+			particle.transform.translate += particle.velocity * deltaTime;
+			// 寿命
 			particle.currentTime += deltaTime;
+			// 透明度
+			if (particle.lifeTime > 0.0f) {
+				particle.color.w = std::clamp(1.0f - particle.currentTime / particle.lifeTime, 0.0f, 1.0f);
+
+			} else {
+				particle.color.w = 0.0f;
+			}
 		}
 
 		// 寿命が来た粒子を削除する（C++20）
@@ -204,6 +213,7 @@ namespace Engine {
 
 			instancingData_[i].World = world;
 			instancingData_[i].WVP = Multiply(world, viewProjectionMatrix);
+			instancingData_[i].color = particles_[i].color;
 		}
 
 		// マテリアルを更新
@@ -260,10 +270,11 @@ namespace Engine {
 		const uint32_t spawnCount = count < available ? count : available;
 
 		// 指定範囲の値を均等な確率で生成する分布
-		std::uniform_real_distribution<float> lifeTimeDist(1.0f, 3.0f);
-		std::uniform_real_distribution<float> positionDist(-0.5f, 0.5f);
-		std::uniform_real_distribution<float> angleDist(0.0f, 2.0f * std::numbers::pi_v<float>);
-		std::uniform_real_distribution<float> speedDist(0.5f, 2.0f);
+		std::uniform_real_distribution<float> lifeTimeDist(1.0f, 3.0f);								// 生存時間
+		std::uniform_real_distribution<float> positionDist(-0.5f, 0.5f);							// 生成位置
+		std::uniform_real_distribution<float> angleDist(0.0f, 2.0f * std::numbers::pi_v<float>);	// 拡散方向
+		std::uniform_real_distribution<float> speedDist(0.5f, 2.0f);								// 拡散速度
+		std::uniform_real_distribution<float> distColor(0.0f, 1.0f);
 
 		for (uint32_t i = 0; i < spawnCount; ++i) {
 			Particle particle{};
@@ -285,9 +296,12 @@ namespace Engine {
 				0.0f
 			};
 
-			// 粒子ごとに寿命を抽選する
+			// パーティクル毎に寿命を抽選する
 			particle.lifeTime = lifeTimeDist(randomEngine_);
 			particle.currentTime = 0.0f;
+
+			// パーティクル毎に色を抽選する
+			particle.color = { distColor(randomEngine_),distColor(randomEngine_) ,distColor(randomEngine_) ,1.0f };
 
 			particles_.push_back(particle);
 		}
