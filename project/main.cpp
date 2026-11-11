@@ -17,6 +17,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <chrono>
 // Debug用のあれこれを使える様にする
 #include <dbghelp.h>
 #include <strsafe.h>
@@ -129,6 +130,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	SpritePSO spritePSO;
 	spritePSO.Initialize(&dxCommon, &dxcManager);
 
+	/*-------------------- パーティクルの初期化 --------------------*/
 	// ParticlePSOの初期化
 	ParticlePSO particlePSO;
 	particlePSO.Initialize(&dxCommon, &dxcManager);
@@ -140,20 +142,28 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	ParticleSystem particle;
 	particle.Initialize(&dxCommon, &particlePSO, &directionalLight);
 	particle.SetModel(planeModel);
-	particle.SetInstanceCount(10);
 
-	// 1枚ずつ左上へずらして配置
-	for (uint32_t i = 0; i < 10; ++i) {
-		const float offset = static_cast<float>(i);
+	// 出現数
+	int spawnCount = 20;
 
-		Transform instance{
-			{1.0f, 1.0f, 1.0f},
+	// 出現したパーティクル
+	auto emitParticles = [&]() {
+		const Transform spawnTransform{
+			{0.2f, 0.2f, 0.2f},
 			{0.0f, 0.0f, 0.0f},
-			{-0.1f * offset, 0.1f * offset, -0.1f * offset}
+			{0.0f, 0.0f, 0.0f}
 		};
 
-		particle.SetInstanceTransform(i, instance);
-	}
+		// ここでパーティクル生成
+		particle.Emit(static_cast<uint32_t>(spawnCount), spawnTransform);
+
+		};
+
+	// 起動時にも一度生成する
+	emitParticles();
+
+	// ゲームループ前の時刻を記録
+	auto previousTime = std::chrono::steady_clock::now();
 
 	// ログ出力
 	Log(logStream, "Start logging!");
@@ -174,8 +184,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		camera.Update();
 		directionalLight.Update();
 
-		// 板ポリを配置
-		particle.Update(camera);
+		// このループでの現在時刻を記録
+		const auto now = std::chrono::steady_clock::now();
+		// デルタタイムを取得
+		const float deltaTime = std::chrono::duration<float>(now - previousTime).count();
+		// 次回ループで直前の時間として使用
+		previousTime = now;
 
 		/*-------------------- 描画処理 --------------------*/
 		dxCommon.PreDraw();		// 描画前の処理
@@ -195,11 +209,28 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		}
 
 		ImGui::Separator();
-		// 板ポリ10枚を表示
+		ImGui::Text("Particle : Emit&Clear");
+		// Particleの生成を管理
+		ImGui::SliderInt("Spawn Count", &spawnCount, 1, 200);
+
+		if (ImGui::Button("Emit")) {
+			emitParticles();
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Clear")) {
+			particle.ClearParticles();
+		}
+
+		ImGui::Text("Alive: %u", particle.GetParticleCount());
+
+		ImGui::Separator();
+		// パーティクルのUV,Lightingを編集
 		if (ImGui::CollapsingHeader(
 			"Particle", ImGuiTreeNodeFlags_DefaultOpen)) {
 
-			// 10枚全体の変換
+			// パーティクル全体の変換
 			Vector3 scale = particle.GetScale();
 			Vector3 rotate = particle.GetRotate();
 			Vector3 translate = particle.GetTranslate();
@@ -217,7 +248,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 				particle.SetTranslate(translate);
 			}
 
-			// 10枚共通の色
+			// パーティクルの共通の色
 			Vector4 color = particle.GetColor();
 
 			if (ImGui::ColorEdit4(
@@ -225,23 +256,18 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 				particle.SetColor(color);
 			}
 
-			// 10枚共通のUV
+			// パーティクルの共通のUV
 			Transform uv = particle.GetUVTransform();
 			bool uvChanged = false;
 
 			uvChanged |= ImGui::DragFloat2("UV Scale", &uv.scale.x, 0.01f, 0.01f, 10.0f);
-
 			uvChanged |= ImGui::DragFloat2("UV Translate", &uv.translate.x, 0.01f);
-
 			uvChanged |= ImGui::DragFloat("UV Rotate", &uv.rotate.z, 0.01f);
 
 			if (uvChanged) {
 				particle.SetUVTransform(uv);
 			}
 		}
-
-		// ImGuiで変更した値を、このフレームの描画に反映
-		particle.Update(camera);
 
 		ImGui::Separator();
 		// Lightを調整
@@ -263,7 +289,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		imguiManager.End();		// 以上でImGuiの内容を終える
 #endif
 
-		// 板ポリ10枚をInstancing描画
+		// パーティクルを更新、描画
+		particle.Update(camera, deltaTime);
 		particle.Draw();
 
 		// ImGuiの描画

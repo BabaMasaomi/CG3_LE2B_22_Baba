@@ -8,6 +8,7 @@
 #include "Logger.h"
 #include <format>			// フォーマットの自動指定をしてくれる(+安全策)
 #include <cmath>
+#include <numbers>
 #include <cassert>
 #include <cstring>
 #include <stdexcept>
@@ -30,14 +31,9 @@ namespace Engine {
 		// CPUで動かす用のTransformを作る
 		transform_ = { {1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };
 
-		// 10枚動かす用のTransform
-		for (uint32_t i = 0; i < kMaxInstanceCount; ++i) {
-			instanceTransforms_[i] = {
-				{1.0f, 1.0f, 1.0f}, // scale
-				{0.0f, 0.0f, 0.0f}, // rotate
-				{0.0f, 0.0f, 0.0f}  // translate
-			};
-		}
+		// パーティクル用
+		particles_.clear();
+		particles_.reserve(kMaxInstanceCount);
 
 		// ImGui用
 		scale_ = transform_.scale;
@@ -159,12 +155,25 @@ namespace Engine {
 	}
 
 	/*-------------------- 更新 --------------------*/
-	void ParticleSystem::Update(const Camera& camera) {
+	void ParticleSystem::Update(const Camera& camera, float deltaTime) {
 		// UVTransform用の行列を作成
 		Matrix4x4 uvTransformMatrix = MakeScaleMatrix(uvTransform_.scale);
 		uvTransformMatrix = Multiply(uvTransformMatrix, MakeRotateZMatrix(uvTransform_.rotate.z));
 		uvTransformMatrix = Multiply(uvTransformMatrix, MakeTranslateMatrix(uvTransform_.translate));
 		model_->UpdateUVTransform(uvTransformMatrix);
+
+		// 粒子の移動と寿命の更新
+		for (Particle& particle : particles_) {
+			particle.transform.translate +=
+				particle.velocity * deltaTime;
+
+			particle.currentTime += deltaTime;
+		}
+
+		// 寿命が来た粒子を削除する（C++20）
+		std::erase_if(particles_, [](const Particle& particle) {
+			return particle.currentTime >= particle.lifeTime;
+			});
 
 		// ImGuiの変更を反映する
 		transform_.scale = scale_;
@@ -179,21 +188,22 @@ namespace Engine {
 		);
 
 		// WVP行列を計算して、CBufferに書き込む
-		Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix_, camera.GetViewProjectionMatrix());
+		Matrix4x4 viewProjectionMatrix = camera.GetViewProjectionMatrix();
 
-		for (uint32_t i = 0; i < instanceCount_; ++i) {
-			const Transform& instance = instanceTransforms_[i];
+		// 生存粒子を先頭から連続してGPUバッファへ書き込む
+		for (std::size_t i = 0; i < particles_.size(); ++i) {
+			const Transform& transform = particles_[i].transform;
 
 			const Matrix4x4 localMatrix = MakeAffineMatrix(
-				instance.scale,
-				instance.rotate,
-				instance.translate);
+				transform.scale,
+				transform.rotate,
+				transform.translate);
 
-			// 各インスタンスの配置に、Object3D全体の変換を適用
-			const Matrix4x4 instanceWorld = Multiply(localMatrix, worldMatrix_);
+			const Matrix4x4 world =
+				Multiply(localMatrix, worldMatrix_);
 
-			instancingData_[i].World = instanceWorld;
-			instancingData_[i].WVP = Multiply(instanceWorld, camera.GetViewProjectionMatrix());
+			instancingData_[i].World = world;
+			instancingData_[i].WVP = Multiply(world, viewProjectionMatrix);
 		}
 
 		// マテリアルを更新
@@ -205,6 +215,11 @@ namespace Engine {
 
 	/*-------------------- 描画 --------------------*/
 	void ParticleSystem::Draw() {
+		// パーティクルが無ければ描画自体をしない
+		if (particles_.empty() || model_ == nullptr) {
+			return;
+		}
+
 		// コマンドリストを取得
 		auto* commandList = dxCommon_->GetCommandList();
 		// RootSignature設定
@@ -220,7 +235,7 @@ namespace Engine {
 		commandList->SetGraphicsRootConstantBufferView(3, directionalLight_->GetResource()->GetGPUVirtualAddress());	// 平行光源を適用
 		commandList->SetGraphicsRootConstantBufferView(4, objectLightingResource_->GetGPUVirtualAddress());				// Object3Dごとのライティング設定
 		// 描画！(DrawCall)
-		commandList->DrawInstanced(UINT(model_->GetModelData().vertices.size()), instanceCount_, 0, 0);
+		commandList->DrawInstanced(UINT(model_->GetModelData().vertices.size()), GetParticleCount(), 0, 0);
 	}
 
 	/*-------------------- モデルを設定 --------------------*/
@@ -238,22 +253,69 @@ namespace Engine {
 		}
 	}
 
-	/*-------------------- セッター --------------------*/
-	void ParticleSystem::SetInstanceCount(uint32_t count) {
-		if (count > kMaxInstanceCount) {
-			throw std::out_of_range("インスタンス数が上限を超えています");
+	/*-------------------- 指定地点から周囲にパーティクルを生成 --------------------*/
+	uint32_t ParticleSystem::Emit(uint32_t count, const Transform& baseTransform) {
+
+		const uint32_t available = kMaxInstanceCount - GetParticleCount();
+		const uint32_t spawnCount = count < available ? count : available;
+
+		// 指定範囲の値を均等な確率で生成する分布
+		std::uniform_real_distribution<float> lifeTimeDist(1.0f, 3.0f);
+		std::uniform_real_distribution<float> positionDist(-0.5f, 0.5f);
+		std::uniform_real_distribution<float> angleDist(0.0f, 2.0f * std::numbers::pi_v<float>);
+		std::uniform_real_distribution<float> speedDist(0.5f, 2.0f);
+
+		for (uint32_t i = 0; i < spawnCount; ++i) {
+			Particle particle{};
+			particle.transform = baseTransform;
+
+			// 生成中心の周囲で、X・Yを独立に抽選する
+			particle.transform.translate.x += positionDist(randomEngine_);
+			particle.transform.translate.y += positionDist(randomEngine_);
+			// Z位置はbaseTransformの値を維持する
+
+			// 方向と速さを独立に抽選する
+			const float angle = angleDist(randomEngine_);
+			const float speed = speedDist(randomEngine_);
+
+			// XY平面の単位方向ベクトル × 速さ
+			particle.velocity = {
+				std::cos(angle) * speed,
+				std::sin(angle) * speed,
+				0.0f
+			};
+
+			// 粒子ごとに寿命を抽選する
+			particle.lifeTime = lifeTimeDist(randomEngine_);
+			particle.currentTime = 0.0f;
+
+			particles_.push_back(particle);
 		}
 
-		instanceCount_ = count;
+		return spawnCount;
 	}
 
-	void ParticleSystem::SetInstanceTransform(
-		uint32_t index, const Transform& transform) {
-
-		if (index >= kMaxInstanceCount) {
-			throw std::out_of_range("インスタンス番号が範囲外です");
-		}
-
-		instanceTransforms_[index] = transform;
+	/*--------------------  --------------------*/
+	void ParticleSystem::ClearParticles() {
+		particles_.clear();
 	}
+
+	///*-------------------- セッター --------------------*/
+	//void ParticleSystem::SetInstanceCount(uint32_t count) {
+	//	if (count > kMaxInstanceCount) {
+	//		throw std::out_of_range("インスタンス数が上限を超えています");
+	//	}
+
+	//	instanceCount_ = count;
+	//}
+
+	//void ParticleSystem::SetInstanceTransform(
+	//	uint32_t index, const Transform& transform) {
+
+	//	if (index >= kMaxInstanceCount) {
+	//		throw std::out_of_range("インスタンス番号が範囲外です");
+	//	}
+
+	//	instanceTransforms_[index] = transform;
+	//}
 }

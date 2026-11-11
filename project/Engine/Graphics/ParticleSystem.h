@@ -1,9 +1,10 @@
 #pragma once
+#include"struct.h"
 #include <d3d12.h>
 #include <cstdint>
 #include <wrl.h>
-#include <array>
-#include"struct.h"
+#include <vector>
+#include <random>
 
 namespace Engine {
 
@@ -18,6 +19,13 @@ namespace Engine {
 	struct ObjectLightingData {
 		int32_t lightingType;
 		float padding[3];
+	};
+
+	struct Particle {
+		Transform transform{};
+		Vector3 velocity{};
+		float lifeTime{};
+		float currentTime{};
 	};
 
 	class ParticleSystem {
@@ -37,7 +45,7 @@ namespace Engine {
 		/// Particleの更新
 		/// </summary>
 		/// <param name="camera">カメラのインスタンス</param>
-		void Update(const Camera& camera);
+		void Update(const Camera& camera, float deltaTime);
 		/// <summary>
 		/// Particleの描画
 		/// </summary>
@@ -49,6 +57,19 @@ namespace Engine {
 		/// <param name="model">設定するモデルのインスタンス</param>
 		void SetModel(Model* model);
 
+		/// <summary>
+		/// 指定地点から周囲にパーティクルを生成
+		/// </summary>
+		/// <param name="count"></param>
+		/// <param name="transform"></param>
+		/// <returns></returns>
+		uint32_t Emit(uint32_t count, const Transform& transform);
+
+		/// <summary>
+		/// すべての粒子を削除する
+		/// </summary>
+		void ClearParticles();
+
 		/*==================== アクセッサ ====================*/
 		// ゲッター
 		const Vector3 GetScale() { return scale_; }
@@ -57,6 +78,7 @@ namespace Engine {
 		const Vector4& GetColor() const { return color_; }
 		const Transform& GetUVTransform() const { return uvTransform_; }
 		LightingMode GetLightingMode() const { return lightingMode_; }
+		uint32_t GetParticleCount() const { return static_cast<uint32_t>(particles_.size()); }
 
 		// セッター
 		void SetScale(Vector3 scale) { scale_ = scale; }
@@ -66,8 +88,8 @@ namespace Engine {
 		void SetUVTransform(const Transform& uvTransform) { uvTransform_ = uvTransform; }
 		void SetLightingMode(LightingMode lightingMode) { lightingMode_ = lightingMode; }
 
-		void SetInstanceCount(uint32_t count);
-		void SetInstanceTransform(uint32_t index, const Transform& transform);
+		//void SetInstanceCount(uint32_t count);
+		//void SetInstanceTransform(uint32_t index, const Transform& transform);
 
 	private:
 		/*==================== メンバ関数の宣言 ====================*/
@@ -122,7 +144,7 @@ namespace Engine {
 			Vector4 pos;
 			Vector2 texcoord;
 			Vector3 normal;
-		};		
+		};
 
 		// 変換行列用のリソース
 		Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResource_ = nullptr;
@@ -130,8 +152,6 @@ namespace Engine {
 		TransformationMatrix* transformationMatrixData_ = nullptr;
 
 		// Particle用の変数群
-		// 1回の描画で扱える最大インスタンス数
-		static constexpr uint32_t kMaxInstanceCount = 10;
 		// Instancing用の変換行列バッファ
 		Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource_;
 		// Mapして取得した、配列の先頭アドレス
@@ -139,10 +159,13 @@ namespace Engine {
 		// 
 		D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandleGPU_{};
 
-		// 各インスタンスの相対的な配置
-		std::array<Transform, kMaxInstanceCount> instanceTransforms_{};
-		// 実際に描画する個数。最初は既存表示を保つため1個
-		uint32_t instanceCount_ = 1;
+		// 同時に保持・描画できる最大インスタンス数
+		static constexpr uint32_t kMaxInstanceCount = 2048;
+		// 生存しているパーティクル
+		std::vector<Particle> particles_;
+
+		// 乱数エンジンの初期化
+		std::mt19937 randomEngine_{ std::random_device{}() };
 
 		// ImGuiで弄る用
 		Vector3 scale_;
