@@ -227,8 +227,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 
 		ImGui::Separator();
 		// パーティクルのUV,Lightingを編集
-		if (ImGui::CollapsingHeader(
-			"Particle", ImGuiTreeNodeFlags_DefaultOpen)) {
+		if (ImGui::CollapsingHeader("Particle UV&Lighting", ImGuiTreeNodeFlags_DefaultOpen)) {
 
 			// パーティクル全体の変換
 			Vector3 scale = particle.GetScale();
