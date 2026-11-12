@@ -226,6 +226,15 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		ImGui::Text("Alive: %u", particle.GetParticleCount());
 
 		ImGui::Separator();
+		// パーティクルのBillboardかを変更
+		bool billboardEnabled = particle.IsBillboardEnabled();
+		// BillboardのON/OFF
+		if (ImGui::Checkbox("Billboard", &billboardEnabled)) {
+			particle.SetBillboardEnabled(billboardEnabled);
+		}
+
+
+		ImGui::Separator();
 		// パーティクルのUV,Lightingを編集
 		ImGui::Text("Particle UV&Lighting");
 

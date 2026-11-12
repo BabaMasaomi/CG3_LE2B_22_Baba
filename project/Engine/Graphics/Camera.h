@@ -37,6 +37,7 @@ namespace Engine {
 		Vector3 GetTranslate() const { return translate_; }
 		float GetDistance() const { return distance_; }
 		bool GetDebugMode() const { return isDebugMode_; }
+		const Matrix4x4& GetViewMatrix() const { return viewMatrix_; }
 
 		// セッター
 		void SetRotate(Vector3 rotate) { rotate_ = rotate; }

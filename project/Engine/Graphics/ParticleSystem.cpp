@@ -28,7 +28,7 @@ namespace Engine {
 		directionalLight_ = directionalLight;
 
 		// CPUで動かす用のTransformを作る
-		transform_ = { {1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };
+		transform_ = { { 1.0f,1.0f,1.0f },{ 0.0f,0.0f,0.0f },{ 0.0f,0.0f,0.0f } };
 
 		// パーティクル用
 		particles_.clear();
@@ -164,7 +164,7 @@ namespace Engine {
 		uvTransformMatrix = Multiply(uvTransformMatrix, MakeTranslateMatrix(uvTransform_.translate));
 		model_->UpdateUVTransform(uvTransformMatrix);
 
-		// 粒子の移動と寿命の更新
+		// パーティクルの移動と寿命の更新
 		for (Particle& particle : particles_) {
 			// 移動
 			particle.transform.translate += particle.velocity * deltaTime;
@@ -179,10 +179,8 @@ namespace Engine {
 			}
 		}
 
-		// 寿命が来た粒子を削除する（C++20）
-		std::erase_if(particles_, [](const Particle& particle) {
-			return particle.currentTime >= particle.lifeTime;
-			});
+		// 寿命が来たパーティクルを削除する（C++20）
+		std::erase_if(particles_, [](const Particle& particle) {return particle.currentTime >= particle.lifeTime; });
 
 		// ImGuiの変更を反映する
 		transform_.scale = scale_;
@@ -199,18 +197,63 @@ namespace Engine {
 		// WVP行列を計算して、CBufferに書き込む
 		Matrix4x4 viewProjectionMatrix = camera.GetViewProjectionMatrix();
 
-		// 生存粒子を先頭から連続してGPUバッファへ書き込む
+		// BilBoard用のMatrixを用意
+		Matrix4x4 billboardMatrix = MakeIdentity4x4();
+
+		if (isBillboardEnabled_) {
+			// ビュー行列の逆行列から、実際のカメラの向きを取得
+			Matrix4x4 cameraWorld = Inverse(camera.GetViewMatrix());
+
+			// 向きだけを使うので、カメラの位置は取り除く
+			cameraWorld.m[3][0] = 0.0f;
+			cameraWorld.m[3][1] = 0.0f;
+			cameraWorld.m[3][2] = 0.0f;
+
+			// 現在のplane.objは正面の法線が+Z。
+			// カメラ側へ正面を向けるため、Y軸に180度回転する。
+			const Matrix4x4 facingCorrection = MakeRotateYMatrix(std::numbers::pi_v<float>);
+
+			billboardMatrix = Multiply(facingCorrection, cameraWorld);
+		}
+
+		// 生存パーティクルを先頭から連続してGPUバッファへ書き込む
 		for (std::size_t i = 0; i < particles_.size(); ++i) {
-			const Transform& transform = particles_[i].transform;
+			const Transform& particleTransform = particles_[i].transform;
 
-			const Matrix4x4 localMatrix = MakeAffineMatrix(
-				transform.scale,
-				transform.rotate,
-				transform.translate);
+			Matrix4x4 world{};
 
-			const Matrix4x4 world =
-				Multiply(localMatrix, worldMatrix_);
+			// Billboard有効時
+			if (isBillboardEnabled_) {
+				// システム全体の変換を、パーティクルの位置に適用する
+				const Vector3 worldPosition = CoordinateTransform(particleTransform.translate,worldMatrix_);
 
+				// パーティクルのサイズにシステム全体の拡大率を反映
+				const Vector3 worldScale{
+					particleTransform.scale.x * transform_.scale.x,
+					particleTransform.scale.y * transform_.scale.y,
+					particleTransform.scale.z * transform_.scale.z
+				};
+
+				const Matrix4x4 scaleMatrix = MakeScaleMatrix(worldScale);
+
+				// カメラに向いた板の面内回転としてZ回転を残す
+				const Matrix4x4 spinMatrix = MakeRotateZMatrix(particleTransform.rotate.z);
+				const Matrix4x4 translateMatrix = MakeTranslateMatrix(worldPosition);
+
+				// 拡大縮小 → 面内回転 → カメラ向き → 配置
+				world = Multiply(Multiply(Multiply(scaleMatrix, spinMatrix), billboardMatrix), translateMatrix);
+
+			} else {
+				// OFFでは従来の変換を使用
+				const Matrix4x4 localMatrix = MakeAffineMatrix(
+					particleTransform.scale,
+					particleTransform.rotate,
+					particleTransform.translate);
+
+				world = Multiply(localMatrix, worldMatrix_);
+			}
+
+			// 共通処理
 			instancingData_[i].World = world;
 			instancingData_[i].WVP = Multiply(world, viewProjectionMatrix);
 			instancingData_[i].color = particles_[i].color;

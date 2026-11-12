@@ -32,7 +32,7 @@ namespace Engine {
 	struct ParticleForGPU {
 		Matrix4x4 WVP{};
 		Matrix4x4 World{};
-		Vector4 color{1.0f,1.0f,1.0f,1.0f};
+		Vector4 color{ 1.0f,1.0f,1.0f,1.0f };
 	};
 
 	class ParticleSystem {
@@ -73,7 +73,13 @@ namespace Engine {
 		uint32_t Emit(uint32_t count, const Transform& transform);
 
 		/// <summary>
-		/// すべての粒子を削除する
+		/// Billboard状態が有効かを確認
+		/// </summary>
+		/// <returns></returns>
+		bool IsBillboardEnabled() const { return isBillboardEnabled_; }
+
+		/// <summary>
+		/// すべてのパーティクルを削除する
 		/// </summary>
 		void ClearParticles();
 
@@ -94,9 +100,7 @@ namespace Engine {
 		void SetColor(const Vector4& color) { color_ = color; }
 		void SetUVTransform(const Transform& uvTransform) { uvTransform_ = uvTransform; }
 		void SetLightingMode(LightingMode lightingMode) { lightingMode_ = lightingMode; }
-
-		//void SetInstanceCount(uint32_t count);
-		//void SetInstanceTransform(uint32_t index, const Transform& transform);
+		void SetBillboardEnabled(bool enabled) { isBillboardEnabled_ = enabled; }
 
 	private:
 		/*==================== メンバ関数の宣言 ====================*/
@@ -187,9 +191,9 @@ namespace Engine {
 		Vector4 color_ = { 1.0f,1.0f,1.0f,1.0f };
 		// UVTransform用の変数
 		Transform uvTransform_ = {
-			{1.0f,1.0f,1.0f},	// scale
-			{0.0f,0.0f,0.0f},	// rotate
-			{0.0f,0.0f,0.0f},	// translate
+			{ 1.0f,1.0f,1.0f },	// scale
+			{ 0.0f,0.0f,0.0f },	// rotate
+			{ 0.0f,0.0f,0.0f },	// translate
 		};
 
 		// Particleごとのライティング形式
@@ -198,5 +202,8 @@ namespace Engine {
 		Microsoft::WRL::ComPtr<ID3D12Resource>objectLightingResource_ = nullptr;
 		// Particleごとのライティング設定用のデータ
 		ObjectLightingData* objectLightingData_ = nullptr;
+
+		// Billboard化が有効か
+		bool isBillboardEnabled_ = true;
 	};
 }
