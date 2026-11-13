@@ -307,7 +307,7 @@ namespace Engine {
 	}
 
 	/*-------------------- 指定地点から周囲にパーティクルを生成 --------------------*/
-	uint32_t ParticleSystem::Emit(uint32_t count, const Transform& baseTransform) {
+	uint32_t ParticleSystem::MakeNewParticle(uint32_t count, const Transform& baseTransform) {
 
 		const uint32_t available = kMaxInstanceCount - GetParticleCount();
 		const uint32_t spawnCount = count < available ? count : available;

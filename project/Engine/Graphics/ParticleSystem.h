@@ -70,7 +70,7 @@ namespace Engine {
 		/// <param name="count"></param>
 		/// <param name="transform"></param>
 		/// <returns></returns>
-		uint32_t Emit(uint32_t count, const Transform& transform);
+		uint32_t MakeNewParticle(uint32_t count, const Transform& transform);
 
 		/// <summary>
 		/// Billboard状態が有効かを確認

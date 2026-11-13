@@ -155,7 +155,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 		};
 
 		// ここでパーティクル生成
-		particle.Emit(static_cast<uint32_t>(spawnCount), spawnTransform);
+		particle.MakeNewParticle(static_cast<uint32_t>(spawnCount), spawnTransform);
 
 		};
 
