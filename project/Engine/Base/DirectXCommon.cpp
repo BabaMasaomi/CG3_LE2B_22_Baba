@@ -341,7 +341,7 @@ namespace Engine {
 	/*-------------------- 画面のクリア --------------------*/
 	void DirectXCommon::ClearScreen(UINT backBufferIndex) {
 		// 指定した色で画面全体をクリアする
-		float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };	// 青っぽい色
+		float clearColor[] = { 0.01f, 0.015f, 0.04f, 1.0f };	// 背景色を課題に合わせて暗めに変更
 		commandList_->ClearRenderTargetView(rtvHandles_[backBufferIndex], clearColor, 0, nullptr);
 		commandList_->ClearDepthStencilView(dsvHandleCPU_, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	}

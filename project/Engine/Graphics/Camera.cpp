@@ -32,6 +32,12 @@ namespace Engine {
 		// ImGui等で弄る用の変数に初期値を入れておく
 		rotate_ = transform_.rotate;
 		translate_ = transform_.translate;
+
+		// カメラ初期位置をデバッグカメラの位置に揃える
+		ResetDebugCamera();
+
+		// 初期姿勢からビュー・プロジェクション行列を作成
+		Update();
 	}
 
 	/*-------------------- 更新処理 --------------------*/

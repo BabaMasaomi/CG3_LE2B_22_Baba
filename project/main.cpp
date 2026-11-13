@@ -136,7 +136,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ LPSTR, _In
 	particlePSO.Initialize(&dxCommon, &dxcManager);
 
 	// 板ポリのモデルを読み込む
-	Model* planeModel = modelManager.LoadModel("plane.obj");
+	Model* planeModel = modelManager.LoadModel("CG3Particle.obj");
 
 	// 板ポリ10枚をまとめて描画するParticleのInstancing描画
 	ParticleSystem particle;
