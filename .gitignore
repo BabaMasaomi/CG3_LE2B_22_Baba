@@ -372,3 +372,6 @@ Dumps/
 imgui.ini
 
 externals/DirectXTex/Shaders/Compiled/
+
+# エンジンのデバッグ機能のソースはGit管理する
+!/project/Engine/Debug/
