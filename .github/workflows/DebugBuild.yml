@@ -18,7 +18,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Add MsBuild to PATH
+      - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v3
         with:
           msbuild-architecture: x64
