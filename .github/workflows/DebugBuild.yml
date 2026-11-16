@@ -7,7 +7,7 @@ on:
 env:
   # リポジトリのルートディレクトリを起点としたソリューションファイルのパス
   SOLUTION_FILE_PATH: project/CG2_LE2A_22_Baba.slnx
-  # Visual Studio の構成(Debug / Release)
+  # Visual Studio の構成(Debug / Development / Release)
   CONFIGURATION: Debug
 
 jobs:
