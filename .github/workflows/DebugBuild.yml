@@ -1,5 +1,4 @@
 name: DebugBuild
-
 on:
   push:
     branches:
@@ -7,7 +6,7 @@ on:
 
 env:
   # リポジトリのルートディレクトリを起点としたソリューションファイルのパス
-  SOLUTION_FILE_PATH: project/CG2_LE2A_22_Baba.sln
+  SOLUTION_FILE_PATH: project/CG2_LE2A_22_Baba.slnx
   # Visual Studio の構成(Debug / Release)
   CONFIGURATION: Debug
 
