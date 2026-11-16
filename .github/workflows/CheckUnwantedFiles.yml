@@ -33,7 +33,7 @@ jobs:
         run: |
           # ディレクトリ条件を構築(最初の不要な -o を後で削除)
           DIR_CONDITIONS=()
-          for patttern in $UNWANTED_DIP_PATTERNS; do
+          for pattern in $UNWANTED_DIP_PATTERNS; do
             DIR_CONDITIONS+=(-o -iname "$pattern")
           done
           unset DIR_CONDITIONS[0]
@@ -50,8 +50,8 @@ jobs:
           # 2. 不要なディレクトリを検索(-type d)し、見つけたパスを出力(-print)し、その中身を枝刈り(-prune)
           # 3. または(-o)不要なファイルを検索(-type f)し、パスを出力(-print)
           UNWANTED_LIST=$(find . -path "./.git" -prune -o \
-            \(\( "${DIR_CONDITIONS[@]}" \) -a -type d -print -prune \) -o \
-            \(\( "${NAME_CONDITIONS[@]}" \) -a -type f -print \) \
+            \( \( "${DIR_CONDITIONS[@]}" \) -a -type d -print -prune \) -o \
+            \( \( "${NAME_CONDITIONS[@]}" \) -a -type f -print \) \
           )
 
           # 検索結果があればエラーとして出力し、失敗させる
@@ -59,6 +59,6 @@ jobs:
             echo "::error::不要なファイルまたはディレクトリが見つかりました。"
             echo "$UNWANTED_LIST"
             exit 1
-          files
+          fi
 
           echo "リポジトリはクリーンです。"
