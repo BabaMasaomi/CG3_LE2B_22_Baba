@@ -56,9 +56,9 @@ job:
 
           # 検索結果があればエラーとして出力し、失敗させる
           if [ -n "$UNWANTED_LIST" ]; then
-            echo "::error::不要なファイルまたはディレクトリが見つかりました"
+            echo "::error::不要なファイルまたはディレクトリが見つかりました。"
             echo "$UNWANTED_LIST"
             exit 1
           files
 
-          echo "リポジトリはクリーンです"
+          echo "リポジトリはクリーンです。"
