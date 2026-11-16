@@ -102,9 +102,6 @@
     <ClCompile Include="Engine\Base\DXCManager.cpp">
       <Filter>DXCManager</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Debug\ImGuiManager.cpp">
-      <Filter>ImGuiManager</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Utility\Logger.cpp">
       <Filter>Logger</Filter>
     </ClCompile>
@@ -153,6 +150,9 @@
     <ClCompile Include="Engine\Graphics\Object3D.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Debug\ImGuiManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Math\struct.h">
@@ -193,9 +193,6 @@
     </ClInclude>
     <ClInclude Include="Engine\Base\DXCManager.h">
       <Filter>DXCManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Debug\ImGuiManager.h">
-      <Filter>ImGuiManager</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Utility\Logger.h">
       <Filter>Logger</Filter>
@@ -243,6 +240,9 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Graphics\Object3D.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Debug\ImGuiManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
