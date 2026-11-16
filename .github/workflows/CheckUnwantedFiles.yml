@@ -20,7 +20,7 @@ env:
   # ディレクトリ名のパターン(ビルド出力フォルダなど)
   UNWANTED_DIP_PATTERNS: "generated x64 win32 arm64 .vs bin ipch logs Dump"
 
-job:
+jobs:
   check-files:
     name: 不要なファイルを検索
     runs-on: ubuntu-latest
